@@ -100,7 +100,9 @@ test.describe("version B · creative", () => {
     await page.mouse.wheel(0, 10); // wakes the lazy motion layer (Lenis)
     await expect(page.locator("html.lenis")).toHaveCount(1);
     await page.keyboard.press("Control+k");
+    // Typed right away, before the lazily loaded palette has appeared: nothing is lost.
     await page.keyboard.type("Contact");
+    await expect(page.getByPlaceholder("Type a command or search…")).toHaveValue("Contact");
     await page.keyboard.press("Enter");
     await expect(page.locator("#contact-title")).toBeInViewport({ timeout: 5000 });
   });

@@ -8,7 +8,9 @@ import { useEffect, useState, type ReactNode } from "react";
 import { GitHubIcon, LinkedInIcon } from "@/components/shared/brand-icons";
 import {
   OPEN_EVENT,
+  peekPendingQuery,
   scrollToAnchor,
+  stopBuffering,
   useRegisteredNavigation,
 } from "@/components/shared/command-menu";
 import { copyEmail } from "@/components/shared/ctas";
@@ -25,6 +27,9 @@ export function CommandPalette({ initialOpen }: { initialOpen: boolean }) {
   const localeSwitch = useLocaleSwitch();
   const { setTheme } = useTheme();
   const [open, setOpen] = useState(initialOpen);
+  // Starts with whatever was typed while this component's code was loading.
+  const [search, setSearch] = useState(peekPendingQuery);
+  useEffect(stopBuffering, []);
   const navigation = useRegisteredNavigation();
 
   function navigate(href: string) {
@@ -35,6 +40,7 @@ export function CommandPalette({ initialOpen }: { initialOpen: boolean }) {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
+        setSearch("");
         setOpen((value) => !value);
       }
     }
@@ -47,8 +53,13 @@ export function CommandPalette({ initialOpen }: { initialOpen: boolean }) {
     };
   }, []);
 
+  function changeOpen(next: boolean) {
+    setSearch("");
+    setOpen(next);
+  }
+
   function run(action: () => void) {
-    setOpen(false);
+    changeOpen(false);
     action();
   }
 
@@ -57,13 +68,15 @@ export function CommandPalette({ initialOpen }: { initialOpen: boolean }) {
   return (
     <Command.Dialog
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={changeOpen}
       label={t("command.open")}
       overlayClassName="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px]"
       contentClassName="fixed top-[12dvh] left-1/2 z-50 w-[min(640px,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-xl shadow-2xl"
       className="rounded-xl border border-border bg-surface text-foreground"
     >
       <Command.Input
+        value={search}
+        onValueChange={setSearch}
         placeholder={t("command.placeholder")}
         className="w-full border-b border-border bg-transparent px-4 py-4 text-base outline-none placeholder:text-muted"
       />

@@ -66,6 +66,30 @@ const CommandPalette = dynamic(
   { ssr: false },
 );
 
+/*
+ * Keys typed between ⌘K and the palette's code arriving would be lost, so they
+ * are buffered here and handed to the palette's search field when it mounts.
+ */
+let pendingQuery = "";
+function bufferKeys(event: KeyboardEvent) {
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+  if (event.key.length === 1) pendingQuery += event.key;
+  else if (event.key === "Backspace") pendingQuery = pendingQuery.slice(0, -1);
+}
+function startBuffering() {
+  pendingQuery = "";
+  window.addEventListener("keydown", bufferKeys);
+}
+/** What was typed while the palette was loading (read during the palette's first render). */
+export function peekPendingQuery() {
+  return pendingQuery;
+}
+/** Called once the palette is mounted and its input takes over. */
+export function stopBuffering() {
+  window.removeEventListener("keydown", bufferKeys);
+  pendingQuery = "";
+}
+
 /**
  * Mounts the palette once the page is idle. If ⌘K / Ctrl+K (or a button) asks
  * for it earlier, it loads right away and opens. After that it handles its own keys.
@@ -77,18 +101,21 @@ export function CommandMenu() {
 
   useEffect(() => {
     if (mounted) return;
+    function request() {
+      startBuffering();
+      setRequested(true);
+    }
     function onKeyDown(event: KeyboardEvent) {
       if (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
-        setRequested(true);
+        request();
       }
     }
-    const onOpen = () => setRequested(true);
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener(OPEN_EVENT, onOpen);
+    window.addEventListener(OPEN_EVENT, request);
     return () => {
       window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener(OPEN_EVENT, onOpen);
+      window.removeEventListener(OPEN_EVENT, request);
     };
   }, [mounted]);
 
