@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- "K" + terminal cursor. Navy tile so it reads on light and dark tab bars. -->
+  <rect width="64" height="64" rx="14" fill="#070d1f"/>
+  <path fill="#eef2fb" d="M9 13h9v15l10-15h10L26 31l13 20H29L18 35v16H9z"/>
+  <rect x="42" y="44" width="13" height="7" fill="#4d8dff"/>
+</svg>
