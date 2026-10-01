@@ -8,9 +8,10 @@ import { useEffect, useState, type ReactNode } from "react";
 import { GitHubIcon, LinkedInIcon } from "@/components/shared/brand-icons";
 import {
   OPEN_EVENT,
-  peekPendingQuery,
+  markPaletteReady,
   scrollToAnchor,
-  stopBuffering,
+  startBufferingKeys,
+  takeBufferedKeys,
   useRegisteredNavigation,
 } from "@/components/shared/command-menu";
 import { copyEmail } from "@/components/shared/ctas";
@@ -20,16 +21,14 @@ import { useRouter } from "@/i18n/navigation";
 import { trackCta } from "@/lib/analytics";
 
 /** The ⌘K palette UI. Loaded lazily by <CommandMenu> so cmdk stays off the first load. */
-export function CommandPalette({ initialOpen }: { initialOpen: boolean }) {
+export function CommandPalette() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
   const localeSwitch = useLocaleSwitch();
   const { setTheme } = useTheme();
-  const [open, setOpen] = useState(initialOpen);
-  // Starts with whatever was typed while this component's code was loading.
-  const [search, setSearch] = useState(peekPendingQuery);
-  useEffect(stopBuffering, []);
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const navigation = useRegisteredNavigation();
 
   function navigate(href: string) {
@@ -41,13 +40,21 @@ export function CommandPalette({ initialOpen }: { initialOpen: boolean }) {
       if (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
         setSearch("");
-        setOpen((value) => !value);
+        setOpen((value) => {
+          if (!value) startBufferingKeys();
+          return !value;
+        });
       }
     }
-    const onOpen = () => setOpen(true);
+    const onOpen = () => {
+      startBufferingKeys();
+      setOpen(true);
+    };
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener(OPEN_EVENT, onOpen);
+    markPaletteReady(true);
     return () => {
+      markPaletteReady(false);
       window.removeEventListener("keydown", onKeyDown);
       window.removeEventListener(OPEN_EVENT, onOpen);
     };
@@ -77,6 +84,11 @@ export function CommandPalette({ initialOpen }: { initialOpen: boolean }) {
       <Command.Input
         value={search}
         onValueChange={setSearch}
+        // Keys typed between ⌘K and this focus were buffered; put them in the field.
+        onFocus={() => {
+          const keys = takeBufferedKeys();
+          if (keys) setSearch((value) => value + keys);
+        }}
         placeholder={t("command.placeholder")}
         className="w-full border-b border-border bg-transparent px-4 py-4 text-base outline-none placeholder:text-muted"
       />
