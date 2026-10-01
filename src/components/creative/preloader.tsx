@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { getTranslations } from "next-intl/server";
+import { KevinMark } from "@/components/shared/logo";
 
 /**
  * Runs before the curtain is parsed, so returning visitors never see a flash:
@@ -26,7 +27,10 @@ export async function Preloader() {
       <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
       <div aria-hidden className="preloader" data-print="hide">
         <div className="flex items-start justify-between font-mono text-xs tracking-widest text-muted uppercase">
-          <span>{t("codeBy")}</span>
+          <span className="flex items-center gap-2">
+            <KevinMark className="h-3 w-auto text-accent" />
+            {t("codeBy")}
+          </span>
           <span>{t("intro")}</span>
         </div>
 

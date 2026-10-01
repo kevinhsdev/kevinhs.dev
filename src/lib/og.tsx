@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { KEVIN_MARK_PATH, KEVIN_MARK_VIEWBOX } from "@/components/shared/logo";
 import { siteUrl } from "@/lib/site";
 
 export const ogSize = { width: 1200, height: 630 };
@@ -46,8 +47,20 @@ export async function renderOgImage({ kicker, title, subtitle, footer }: OgImage
         fontSize: 30,
       }}
     >
-      <div style={{ display: "flex", justifyContent: "space-between", color: palette.muted }}>
-        <span>© Code by Kevin</span>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          color: palette.muted,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <svg viewBox={KEVIN_MARK_VIEWBOX} width={38} height={34} fill={palette.accent}>
+            <path d={KEVIN_MARK_PATH} />
+          </svg>
+          <span>© Code by Kevin</span>
+        </div>
         <span style={{ color: palette.accent }}>{kicker}</span>
       </div>
 

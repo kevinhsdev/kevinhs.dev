@@ -111,24 +111,29 @@
   background-size: 100% 1px;
 }
 
-/* Shared "© Code by Kevin" → "Kevin Henrique" roll on hover. */
+/* Shared brand link: the K mark, then "© Code by Kevin" → "Kevin Henrique" rolling on hover. */
 .roll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.roll-text {
   display: inline-grid;
   overflow: hidden;
 }
-.roll > .roll-a,
-.roll > .roll-b {
+.roll-text > .roll-a,
+.roll-text > .roll-b {
   grid-area: 1 / 1;
   transition: translate 450ms var(--ease-out-quint);
 }
-.roll > .roll-b {
+.roll-text > .roll-b {
   translate: 0 110%;
 }
 @media (hover: hover) and (pointer: fine) {
-  .roll:hover > .roll-a {
+  .roll:hover .roll-a {
     translate: 0 -110%;
   }
-  .roll:hover > .roll-b {
+  .roll:hover .roll-b {
     translate: 0 0;
   }
 }

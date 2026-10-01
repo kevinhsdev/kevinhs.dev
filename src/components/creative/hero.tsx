@@ -3,6 +3,7 @@ import { LinkedInIcon } from "@/components/shared/brand-icons";
 import { CommandMenuButton } from "@/components/shared/command-menu-button";
 import { CopyEmailButton, CvButton, LinkedInButton } from "@/components/shared/ctas";
 import { LocaleToggle } from "@/components/shared/locale-toggle";
+import { KevinMark } from "@/components/shared/logo";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { getProject, pick, profile } from "@/content";
@@ -28,14 +29,17 @@ export async function CreativeHeader() {
       className="fixed inset-x-0 top-0 z-40 flex items-center justify-between px-4 pt-[max(0.5rem,env(safe-area-inset-top))] sm:px-8"
       data-print="hide"
     >
-      {/* Small and discreet: "© Code by Kevin" rolls to the full name on hover. */}
+      {/* Small and discreet: the K, then "© Code by Kevin" rolling to the full name on hover. */}
       <Link
         href={HOME_PATH}
-        className="roll h-11 items-center rounded-full bg-background/70 px-4 text-sm font-medium backdrop-blur-md"
+        className="roll h-11 rounded-full bg-background/70 px-4 text-sm font-medium backdrop-blur-md"
       >
-        <span className="roll-a flex h-11 items-center">{t("creative.codeBy")}</span>
-        <span aria-hidden className="roll-b flex h-11 items-center">
-          {profile.fullName}
+        <KevinMark className="h-3.5 w-auto shrink-0 text-accent" />
+        <span className="roll-text">
+          <span className="roll-a flex h-11 items-center">{t("creative.codeBy")}</span>
+          <span aria-hidden className="roll-b flex h-11 items-center">
+            {profile.fullName}
+          </span>
         </span>
         <span className="sr-only"> · {t("nav.home")}</span>
       </Link>
