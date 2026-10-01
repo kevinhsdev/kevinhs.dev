@@ -1,0 +1,119 @@
+<Tldr>
+  A blood bank system built **by a team of 3 at university**: inventory per blood type is kept **by
+  the database itself** through a MySQL trigger, and the donation compatibility rules live in the
+  Java model.
+</Tldr>
+
+## Context and problem
+
+A project for the **Object-Oriented Programming with JDBC** course at UMC, in 2026. The challenge was
+to model a blood bank's daily work: **registering donors, recording donations, tracking the stock of
+each blood type and serving patients**, while keeping the stock numbers always correct.
+
+The tricky part is consistency: every recorded donation changes the stock. If that math depends on
+every screen remembering to update the stock, someday one of them forgets, and the number on screen
+no longer matches the blood that actually exists.
+
+## My role
+
+A **team of 3**. I was responsible for the **DAO layer** and the **MySQL triggers** that update the
+stock, across the Patient, Donor, Donation and Inventory modules.
+
+## Constraints
+
+- **Plain JDBC**, no ORM: the course was about understanding data access under the hood.
+- **Object-oriented design** as a grading criterion: models, responsibilities and clearly separated
+  layers.
+- A course deadline and work split between three people.
+
+## Technical decisions and trade-offs
+
+| Decision                                                     | Alternative                                  | Why                                                                                                                                        |
+| ------------------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Stock updated by a **MySQL trigger**                         | Update the stock in Java after each donation | The rule lives in one place. Stock stays right even if another part of the system records a donation; `EstoqueDAO` only needs to **read**. |
+| **One DAO per entity** plus a `ConnectionFactory`            | SQL scattered across screens                 | Separate layers: screens don't know SQL, and the connection is configured in one place.                                                    |
+| **`PreparedStatement`** for every query                      | Building SQL by concatenating strings        | Typed parameters and protection against SQL injection.                                                                                     |
+| Compatibility as a **rule in the model** (switch expression) | A compatibility table in the database        | Donation rules are fixed, fit in one readable method and are easy to test.                                                                 |
+
+## Architecture
+
+<Diagram
+  label="Layers"
+  flow={[
+    { title: "Web pages", detail: "donors, donations, stock and compatibility" },
+    { title: "Models", detail: "Donor, Donation, Patient, Stock, Compatibility" },
+    { title: "DAOs (JDBC)", detail: "one per entity, PreparedStatement" },
+    { title: "MySQL 8", detail: "a trigger keeps stock per blood type" },
+  ]}
+/>
+
+<Review>
+  The CV mentions **Spring Boot**, while the public repository shows HTML pages, JDBC DAOs and a
+  NetBeans build, with no Spring and no SQL script for the trigger. Explain where Spring Boot comes
+  in (maybe a version that hasn't been pushed yet) and, if possible, commit a `schema.sql` with the
+  trigger.
+</Review>
+
+## Implementation highlights
+
+### The database owns the stock
+
+The evidence is in the code itself: `EstoqueDAO` has no method to insert or update, only to query.
+The `ESTOQUE` table is maintained by the trigger fired on every donation.
+
+```java title="src/DAO/EstoqueDAO.java (trimmed)"
+public List<Estoque> consultarTodos() throws ClassNotFoundException, SQLException {
+    Connection con = ConnectionFactory.getConnection();
+    PreparedStatement comando = con.prepareStatement("select * from ESTOQUE");
+    ResultSet rs = comando.executeQuery();
+    // ...builds the list of Estoque (blood type and amount)
+}
+```
+
+### Readable blood compatibility
+
+The rules for who can donate to whom became a single method using Java switch expressions. The code
+is in Portuguese, as the course required.
+
+```java title="src/Model/Compatibilidade.java (trimmed)"
+return switch (tipoDoador) {
+    case "O-"  -> true;                        // universal donor
+    case "O+"  -> tipoPaciente.endsWith("+");  // every Rh+
+    case "A+"  -> tipoPaciente.equals("A+")  || tipoPaciente.equals("AB+");
+    case "B+"  -> tipoPaciente.equals("B+")  || tipoPaciente.equals("AB+");
+    case "AB+" -> tipoPaciente.equals("AB+");
+    // ...and the negative types
+    default    -> false;
+};
+```
+
+## Results and impact
+
+- Delivered for the course, with the **Patient, Donor, Donation and Inventory** modules and the
+  compatibility screen.
+- In practice, it's where I solidified **JDBC, the DAO pattern and layered design**, the foundation of
+  what I'm now studying with Spring Data JPA.
+
+## What I'd do differently and next steps
+
+<Review>
+  Draft based on the code, for you to confirm (it was a team project):
+  <ul>
+    <li>
+      use <code>try-with-resources</code>, since some queries open a connection and never close it;
+    </li>
+    <li>
+      update a donation by its own <code>id</code>, not by <code>id_doador</code>, which changes
+      every donation from the same donor;
+    </li>
+    <li>commit the database script (tables and trigger) next to the code;</li>
+    <li>
+      write tests for <code>Compatibilidade</code>, the easiest rule to test and the most expensive
+      to get wrong.
+    </li>
+  </ul>
+</Review>
+
+## Links
+
+- [Code on GitHub](https://github.com/kevinhsdev/blood-base-management)

@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "title": "Kevin Henrique · Engenharia de Software",
+    "description": "Estudante de Engenharia de Software buscando estágio em backend (Java/Spring), DevOps/Cloud e IA aplicada. Construo software que uma equipe real usa todos os dias."
+  },
+  "a11y": {
+    "skipToContent": "Pular para o conteúdo",
+    "todo": "Informação pendente"
+  },
+  "cta": {
+    "downloadCv": "Baixar CV",
+    "downloadCvLang": "Baixar CV ({lang})",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "email": "E-mail",
+    "copyEmail": "Copiar e-mail",
+    "emailCopied": "E-mail copiado",
+    "emailCopyFailed": "Não consegui copiar. O e-mail é {email}"
+  },
+  "theme": {
+    "label": "Tema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema",
+    "toggle": "Alternar tema"
+  },
+  "locale": {
+    "switchTo": "Read in English",
+    "pt": "Português",
+    "en": "English"
+  },
+  "command": {
+    "open": "Abrir paleta de comandos",
+    "placeholder": "Digite um comando ou busque…",
+    "empty": "Nada encontrado.",
+    "groups": {
+      "navigate": "Navegar",
+      "actions": "Ações",
+      "preferences": "Preferências",
+      "links": "Links"
+    }
+  },
+  "nav": {
+    "home": "Início",
+    "about": "Sobre",
+    "experience": "Trajetória",
+    "projects": "Projetos",
+    "skills": "Habilidades",
+    "contact": "Contato",
+    "now": "Agora",
+    "toolbar": "Preferências de exibição"
+  },
+  "timeline": {
+    "filters": {
+      "all": "Tudo",
+      "work": "Trabalho",
+      "study": "Estudo",
+      "event": "Eventos"
+    },
+    "present": "atual",
+    "inProgress": "em andamento",
+    "expected": "previsto"
+  },
+  "projects": {
+    "featured": "Em destaque",
+    "other": "Outros projetos",
+    "caseStudy": "Ler estudo de caso",
+    "repo": "Código",
+    "demo": "Demo",
+    "video": "Demo em vídeo",
+    "privateCode": "Código interno (sistema da escola)",
+    "team": "Equipe de {count}",
+    "status": {
+      "in-use": "Em uso diário",
+      "live": "No ar",
+      "evolving": "Em evolução contínua",
+      "in-development": "Em desenvolvimento",
+      "academic": "Projeto acadêmico"
+    },
+    "mockupAlt": "Tela de demonstração do {title}, com dados fictícios",
+    "demoNote": "dados fictícios"
+  },
+  "skills": {
+    "tiers": {
+      "daily": "Uso no dia a dia",
+      "experienced": "Tenho experiência",
+      "learning": "Estudando agora",
+      "concepts": "Conceitos"
+    }
+  },
+  "now": {
+    "title": "Agora",
+    "learning": "Estudando",
+    "building": "Construindo",
+    "updated": "Atualizado em {date}",
+    "about": "Uma página /now conta no que eu estou focado neste momento. Atualizo uma vez por mês.",
+    "back": "Voltar ao início"
+  },
+  "contact": {
+    "title": "Vamos conversar",
+    "name": "Nome",
+    "email": "Seu e-mail",
+    "message": "Mensagem",
+    "send": "Enviar",
+    "sending": "Enviando…",
+    "sent": "Mensagem enviada. Respondo em breve.",
+    "fallback": "O envio direto não está configurado. Abrindo seu app de e-mail…",
+    "rateLimited": "Muitas mensagens em pouco tempo. Tente de novo em alguns minutos.",
+    "invalid": "Confira os campos destacados.",
+    "error": "Não foi possível enviar. Use o e-mail direto: {email}",
+    "intro": "Procuro estágio em backend, DevOps/Cloud ou IA aplicada. Remoto, híbrido ou presencial, no Brasil ou no exterior. O caminho mais rápido é o e-mail.",
+    "orForm": "Ou mande uma mensagem por aqui",
+    "honeypot": "Deixe este campo em branco"
+  },
+  "footer": {
+    "builtWith": "Construído com Next.js · Código aberto no GitHub",
+    "updated": "Atualizado em {date}",
+    "repo": "Ver o código do site"
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "description": "Esse endereço não existe, ou mudou de lugar. Mas o resto do portfólio está aqui.",
+    "back": "Voltar ao início",
+    "projects": "Ver projetos"
+  },
+  "creative": {
+    "kicker": "Engenharia de Software · São Paulo",
+    "scroll": "Role para ver",
+    "marquee": ["Java", "Spring Boot", "MySQL", "DevOps", "Cloud", "IA aplicada"],
+    "statement": ["Vi um problema real.", "Construí a solução.", "Hoje ela roda todo dia."],
+    "projectsKicker": "Em destaque",
+    "setupKicker": "Stack",
+    "otherProjects": "Outros projetos",
+    "talk": "Vamos conversar",
+    "aboutKicker": "README",
+    "intro": "Portfólio 2026",
+    "buildSteps": [
+      "compilando projetos",
+      "empacotando habilidades",
+      "conectando trajetória",
+      "otimizando o portfólio"
+    ],
+    "buildDone": "pronto. bem-vindo!",
+    "skip": "Pular",
+    "editorComment": "Olá! Este sou eu, em TypeScript.",
+    "editorLabel": "Perfil em código (kevin.ts)",
+    "telemetryStrip": "Telemetria de projetos reais",
+    "project": "Projeto",
+    "experienceKicker": "git log",
+    "skillsLabel": "Níveis de habilidade",
+    "skillsHint": "Selecione um nível para ver as habilidades.",
+    "codeBy": "© Code by Kevin"
+  },
+  "menu": {
+    "open": "Abrir menu",
+    "close": "Fechar menu",
+    "navigation": "Navegação",
+    "socials": "Redes",
+    "search": "Buscar comandos",
+    "title": "Menu"
+  },
+  "caseStudy": {
+    "back": "Todos os projetos",
+    "kicker": "Estudo de caso",
+    "readingTime": "{minutes} min de leitura",
+    "role": "Papel",
+    "year": "Ano",
+    "status": "Status",
+    "stack": "Stack",
+    "team": "Equipe",
+    "solo": "Individual",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "read": "Ler estudo de caso",
+    "sections": "Mais estudos de caso"
+  }
+}

@@ -1,26 +1,236 @@
 @import "tailwindcss";
+@import "../styles/tokens.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-link: var(--link);
+  --color-positive: var(--positive);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  button,
+  [role="button"] {
+    cursor: pointer;
+    touch-action: manipulation;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Missing facts are visible on purpose, so they get filled before launch. */
+  .todo {
+    /* Full-strength text: the tinted background would drop muted text below AA. */
+    color: var(--foreground);
+    outline: 1px dashed #d97706;
+    outline-offset: 2px;
+    background-color: color-mix(in srgb, #f59e0b 14%, transparent);
+    border-radius: 3px;
+  }
+
+  /* A whole block Kevin still has to confirm (case studies). */
+  .review-box {
+    border: 1px dashed #d97706;
+    background-color: color-mix(in srgb, #f59e0b 10%, transparent);
+  }
+  .review-box ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+}
+
+/*
+ * The command palette is opened from the keyboard many times a day, so it has
+ * no open/close animation on purpose (the Raycast approach).
+ */
+
+/* Animated underline for inline links: grows from the left, retracts on leave. */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 200ms var(--ease-out-quint);
+}
+@media (hover: hover) and (pointer: fine) {
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+}
+.link-underline:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* Shared "© Code by Kevin" → "Kevin Henrique" roll on hover. */
+.roll {
+  display: inline-grid;
+  overflow: hidden;
+}
+.roll > .roll-a,
+.roll > .roll-b {
+  grid-area: 1 / 1;
+  transition: translate 450ms var(--ease-out-quint);
+}
+.roll > .roll-b {
+  translate: 0 110%;
+}
+@media (hover: hover) and (pointer: fine) {
+  .roll:hover > .roll-a {
+    translate: 0 -110%;
+  }
+  .roll:hover > .roll-b {
+    translate: 0 0;
+  }
+}
+
+/* Text masks keep headroom for uppercase accents (Ó, Ã, Ç). */
+.split-line-mask,
+.mask-line {
+  padding-top: 0.16em;
+  margin-top: -0.16em;
+}
+
+/* Site menu drawer */
+@keyframes menu-in {
+  from {
+    translate: 100% 0;
+  }
+}
+@keyframes menu-out {
+  to {
+    translate: 100% 0;
+  }
+}
+@keyframes menu-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes menu-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    translate: 2.5rem 0;
+  }
+}
+.site-menu[data-state="open"] {
+  animation: menu-in 600ms var(--ease-drawer);
+}
+.site-menu[data-state="closed"] {
+  animation: menu-out 360ms var(--ease-drawer);
+}
+.site-menu-overlay[data-state="open"] {
+  animation: menu-fade-in 400ms ease;
+}
+.site-menu-overlay[data-state="closed"] {
+  animation: menu-fade-out 300ms ease;
+}
+.site-menu[data-state="open"] .site-menu-item {
+  animation: menu-item-in 700ms var(--ease-out-quint) both;
+  animation-delay: calc(140ms + var(--i, 0) * 45ms);
+}
+
+/* Shared CTA dock */
+.dock {
+  transition:
+    opacity 300ms ease,
+    translate 400ms var(--ease-out-quint);
+}
+.dock[data-visible="false"] {
+  opacity: 0;
+  translate: 0 1.5rem;
+  pointer-events: none;
+}
+
+/* Items entering a filtered list fade in (interruptible, no JS). */
+.enter-fade {
+  transition:
+    opacity 220ms var(--ease-out-quint),
+    translate 220ms var(--ease-out-quint);
+  @starting-style {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  :root,
+  .dark {
+    --background: #ffffff;
+    --surface: #ffffff;
+    --foreground: #000000;
+    --muted: #333333;
+    --border: #cccccc;
+    --accent: #000000;
+    --link: #000000;
+  }
+
+  [data-print="hide"] {
+    display: none !important;
+  }
 }

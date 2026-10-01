@@ -1,0 +1,117 @@
+<Tldr>
+  Um sistema de banco de sangue feito **em equipe de 3 na faculdade**: o estoque por tipo sanguíneo
+  é mantido **pelo próprio banco de dados**, com uma trigger no MySQL, e as regras de
+  compatibilidade de doação ficam no modelo, em Java.
+</Tldr>
+
+## Contexto e problema
+
+Projeto da disciplina de **Programação Orientada a Objetos com JDBC** na UMC, em 2026. O desafio era
+modelar o dia a dia de um hemocentro: **cadastrar doadores, registrar doações, acompanhar o estoque
+de cada tipo sanguíneo e atender pacientes**, mantendo os números do estoque sempre corretos.
+
+O ponto delicado é a consistência: cada doação registrada muda o estoque. Se essa conta depender de
+cada tela lembrar de atualizar o estoque, um dia alguém esquece, e o número na tela deixa de
+corresponder ao sangue que existe de fato.
+
+## Meu papel
+
+Trabalho em **equipe de 3 pessoas**. Fiquei responsável pela **camada DAO** e pelas **triggers do
+MySQL** que atualizam o estoque, nos módulos de Paciente, Doador, Doação e Estoque.
+
+## Restrições
+
+- **JDBC puro**, sem ORM: o objetivo da disciplina era entender o acesso a dados por baixo.
+- **Orientação a objetos** como critério de avaliação: modelos, responsabilidades e camadas bem
+  separadas.
+- Prazo de disciplina e trabalho dividido entre três pessoas.
+
+## Decisões técnicas e trade-offs
+
+| Decisão                                                        | Alternativa                                       | Por quê                                                                                                                                   |
+| -------------------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Estoque atualizado por **trigger no MySQL**                    | Atualizar o estoque no Java depois de cada doação | A regra fica num lugar só. O estoque continua certo mesmo que outra parte do sistema grave uma doação; o `EstoqueDAO` só precisa **ler**. |
+| **Um DAO por entidade** e uma `ConnectionFactory`              | SQL espalhado pelas telas                         | Camadas separadas: as telas não conhecem SQL e a conexão é configurada num lugar só.                                                      |
+| **`PreparedStatement`** em todas as consultas                  | Montar o SQL concatenando texto                   | Parâmetros tipados e proteção contra SQL injection.                                                                                       |
+| Compatibilidade como **regra no modelo** (_switch expression_) | Uma tabela de compatibilidade no banco            | As regras de doação são fixas, cabem num método legível e são fáceis de testar.                                                           |
+
+## Arquitetura
+
+<Diagram
+  label="Camadas"
+  flow={[
+    { title: "Telas web", detail: "cadastro, doação, estoque e compatibilidade" },
+    { title: "Modelos", detail: "Doador, Doação, Paciente, Estoque, Compatibilidade" },
+    { title: "DAOs (JDBC)", detail: "um por entidade, PreparedStatement" },
+    { title: "MySQL 8", detail: "trigger mantém o estoque por tipo" },
+  ]}
+/>
+
+<Review>
+  O CV cita **Spring Boot** e o repositório público mostra páginas HTML, DAOs com JDBC e um build do
+  NetBeans, sem Spring e sem o script SQL da trigger. Explicar onde o Spring Boot entra (talvez numa
+  versão que ainda não foi enviada) e, se possível, versionar o `schema.sql` com a trigger.
+</Review>
+
+## Destaques de implementação
+
+### O banco cuida do estoque
+
+A evidência está no próprio código: o `EstoqueDAO` não tem método para inserir ou atualizar, só para
+consultar. Quem mantém a tabela `ESTOQUE` é a trigger disparada a cada doação.
+
+```java title="src/DAO/EstoqueDAO.java (resumido)"
+public List<Estoque> consultarTodos() throws ClassNotFoundException, SQLException {
+    Connection con = ConnectionFactory.getConnection();
+    PreparedStatement comando = con.prepareStatement("select * from ESTOQUE");
+    ResultSet rs = comando.executeQuery();
+    // ...monta a lista de Estoque (tipo sanguíneo e quantidade)
+}
+```
+
+### Compatibilidade sanguínea legível
+
+As regras de quem pode doar para quem viraram um único método, com _switch expressions_ do Java.
+
+```java title="src/Model/Compatibilidade.java (resumido)"
+return switch (tipoDoador) {
+    case "O-"  -> true;                        // doador universal
+    case "O+"  -> tipoPaciente.endsWith("+");  // todos Rh+
+    case "A+"  -> tipoPaciente.equals("A+")  || tipoPaciente.equals("AB+");
+    case "B+"  -> tipoPaciente.equals("B+")  || tipoPaciente.equals("AB+");
+    case "AB+" -> tipoPaciente.equals("AB+");
+    // ...e os tipos negativos
+    default    -> false;
+};
+```
+
+## Resultado e impacto
+
+- Sistema entregue na disciplina, com os módulos de **Paciente, Doador, Doação e Estoque** e a
+  tela de compatibilidade.
+- Na prática, foi onde consolidei **JDBC, o padrão DAO e a separação em camadas**, a base do que
+  estudo hoje com Spring Data JPA.
+
+## O que eu faria diferente e próximos passos
+
+<Review>
+  Rascunho a partir do código, para você confirmar (o projeto foi em equipe):
+  <ul>
+    <li>
+      usar <code>try-with-resources</code>, porque algumas consultas abrem a conexão e não a fecham;
+    </li>
+    <li>
+      atualizar a doação pelo <code>id</code> dela, e não pelo <code>id_doador</code>, que altera
+      todas as doações do mesmo doador;
+    </li>
+    <li>versionar o script do banco (tabelas e trigger) junto com o código;</li>
+    <li>
+      escrever testes para a <code>Compatibilidade</code>, que é a regra mais fácil de testar e a
+      mais cara de errar.
+    </li>
+  </ul>
+</Review>
+
+## Links
+
+- [Código no GitHub](https://github.com/kevinhsdev/blood-base-management)

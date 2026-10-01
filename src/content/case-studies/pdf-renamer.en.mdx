@@ -1,0 +1,124 @@
+<Tldr>
+  A document classifier that runs in the browser and **tripled the school office's capacity**: from
+  ~100 to ~300 documents a day. Processing a class went from 3 days to 1 at most.
+</Tldr>
+
+## Context and problem
+
+Students' digital records arrive as scanned PDFs with names like `scan_0412.pdf`. For each one the
+routine was the same: **open it, read it, figure out the type, type the standard name, pick the
+student's folder and save**. A class has about **200 documents**, so organizing a whole class took
+**3 days**.
+
+Time wasn't the only problem. Hand-typed names drift ("Ficha medica", "FICHA MÉDICA",
+"ficha_saude"), and a file saved in the wrong folder disappears from the student's record.
+
+## My role
+
+Sole author: I spotted the bottleneck while working in the office myself, designed the flow, built
+the tool and followed its adoption. The team **uses it every day**.
+
+## Constraints
+
+- **No software installs**: it had to run in the browser on the school's PCs.
+- **Local files**: records live in Windows folders, not on a server.
+- **Scanned documents**: many PDFs have no searchable text, just the image.
+- **Non-developer users**: document types and rules vary by department, so adjusting them couldn't
+  depend on me.
+
+## Technical decisions and trade-offs
+
+| Decision                                                             | Alternative                     | Why                                                                                                    |
+| -------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Weighted keyword rules** in an editable dictionary                 | A machine-learning model        | There was no labeled data to train on. Rules are explainable, and the office adjusts them from the UI. |
+| Read the **PDF's text first**, OCR only when there's none            | OCR every document              | Digital PDFs are classified instantly; slower OCR is reserved for scans.                               |
+| Read only the **first 2 pages**                                      | The whole document              | The type is almost always in the header, and in a batch every second counts.                           |
+| A **minimum confidence threshold**                                   | Always suggest some type        | When the score is low, the tool asks instead of being confidently wrong.                               |
+| **File System Access API** writes straight into the student's folder | Download and move files by hand | Removes two steps per document. Firefox falls back to a regular download.                              |
+| Remember the folder with **IndexedDB**                               | Pick the folder every time      | The folder permission survives between sessions.                                                       |
+
+## Architecture
+
+<Diagram
+  label="One document's journey"
+  flow={[
+    { title: "Batch of PDFs", detail: "drag and drop; queue with progress" },
+    { title: "PDF.js", detail: "renders and extracts the text" },
+    { title: "Classifier", detail: "rules + editable dictionary" },
+    { title: "Suggested name", detail: "type + year, standardized" },
+    { title: "Student's folder", detail: "direct write, duplicate check" },
+  ]}
+  asideLabel="Support"
+  aside={[
+    { title: "OCR (Tesseract.js)", detail: "only for PDFs without a text layer" },
+    { title: "IndexedDB and localStorage", detail: "folder, profiles and settings" },
+    { title: "CSV history", detail: "everything that was renamed" },
+  ]}
+/>
+
+## Implementation highlights
+
+### A classifier you can explain
+
+The text is normalized (accents stripped, upper case) and each document type adds up the weights of
+the keywords it finds. **Short terms must match a whole word**, so "RG" (Brazil's ID card) isn't
+found inside another word. The winning type is only suggested above the threshold.
+
+```js title="js/script.js (trimmed)"
+function scoreKeyword(text, kw) {
+  // termos curtos exigem palavra inteira (evita "RG" casar dentro de outra palavra)
+  if (kw.length <= 3) return new RegExp("\\b" + kw + "\\b").test(text);
+  return text.includes(kw);
+}
+
+function classify(text) {
+  const t = normalizeText(text);
+  let best = null,
+    bestScore = 0;
+  for (const rule of CLASSIFY_RULES) {
+    let score = 0;
+    for (const [kw, w] of rule.kw) if (scoreKeyword(t, kw)) score += w;
+    if (score > bestScore) {
+      bestScore = score;
+      best = rule.type;
+    }
+  }
+  return bestScore >= CLASSIFY_THRESHOLD ? { type: best, score: bestScore } : null;
+}
+```
+
+The built-in rules live alongside the ones the team creates in the UI: a department adds a keyword
+with a weight and it takes effect immediately, without me touching the code.
+
+### Built for daily use
+
+- **Duplicates**: if the name already exists in the folder, the tool asks what to do and suggests a
+  free numbered name.
+- **Keyboard**: shortcuts to confirm, skip and move on, so hands never leave the keyboard mid-batch.
+- **Exportable CSV history** of everything that was renamed.
+
+<Review>
+  The project also uses the **Anthropic API** for classification, but the public repository doesn't
+  show that part. Explain when it kicks in (for example, when the rules can't decide) and how
+  students' data is handled in that case.
+</Review>
+
+## Results and impact
+
+- **3× more documents a day**: from ~100 to ~300.
+- **A class of ~200 documents went from 3 days to 1 at most.**
+- Standard names and files in the right folder, which **reduced filing errors** across 545
+  students' records.
+
+## What I'd do differently and next steps
+
+<Review>
+  Draft based on the code, for you to confirm: `script.js` holds about a thousand lines in one file,
+  and I'd split it into modules (classifier, files, viewer). I'd also build a set of fictional PDFs
+  to **measure the classifier's accuracy** on every rule change instead of checking by hand.
+</Review>
+
+## Links
+
+- [Code on GitHub](https://github.com/kevinhsdev/pdf-renamer)
+- [Live demo](https://kevinhsdev.github.io/pdf-renamer/)

@@ -1,0 +1,285 @@
+/*
+ * Version B · Creative. Motion rules:
+ * - Hero text is visible on the first frame; the entrance only moves it
+ *   (transform), so it never delays LCP. CSS animation = off the main thread.
+ * - Everything decorative stops under prefers-reduced-motion.
+ */
+
+/* In the components layer, so utilities (e.g. leading-*) can still override it. */
+@layer components {
+  .font-display {
+    font-family: var(--font-display), "Arial Narrow", var(--font-sans);
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 0.9;
+    text-transform: uppercase;
+  }
+}
+
+/* Hero entrance: words rise into place. Rare, first-visit motion → delight tier. */
+@keyframes hero-rise {
+  from {
+    transform: translateY(0.35em);
+  }
+}
+.hero-rise {
+  display: inline-block;
+  animation: hero-rise 900ms var(--ease-out-quint) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+/* Same entrance for block elements (the live panel), keeping their layout. */
+.hero-rise-block {
+  animation: hero-rise 900ms var(--ease-out-quint) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* Marquee: constant motion → linear. Two identical tracks, -50% loops seamlessly. */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 28s linear infinite;
+}
+@media (hover: hover) and (pointer: fine) {
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* Grain overlay for the hero: static texture, no motion. */
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-rise-block,
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/*
+ * Intro curtain (components/creative/preloader.tsx), styled as a build log:
+ *   100–750ms   one log line printed every 130ms (instant, like a terminal)
+ *   100–800ms   the progress bar and the % counter run to 100, in step with the log
+ *   1050–1550ms the curtain lifts away (strong ease-in-out: on-screen movement)
+ * First visit per session only (data-intro-seen), skippable (data-intro-skip),
+ * never shown with reduced motion.
+ */
+@property --intro-n {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@keyframes intro-print {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes intro-bar {
+  from {
+    scale: 0 1;
+  }
+}
+@keyframes intro-count {
+  to {
+    --intro-n: 100;
+  }
+}
+@keyframes intro-lift {
+  to {
+    translate: 0 -100%;
+    visibility: hidden;
+  }
+}
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: max(1.25rem, env(safe-area-inset-top)) 1.25rem max(1.25rem, env(safe-area-inset-bottom));
+  background: var(--background);
+  animation: intro-lift 500ms var(--ease-in-out-quint) 1050ms forwards;
+}
+@media (min-width: 640px) {
+  .preloader {
+    padding: 2rem;
+  }
+}
+.build-line {
+  animation: intro-print 1ms steps(1) both;
+  animation-delay: calc(100ms + var(--i, 0) * 130ms);
+}
+.preloader-bar {
+  transform-origin: 0 50%;
+  animation: intro-bar 700ms linear 100ms both;
+}
+.preloader-count {
+  counter-reset: intro var(--intro-n);
+  animation: intro-count 700ms linear 100ms forwards;
+}
+.preloader-count::after {
+  content: counter(intro) "%";
+}
+[data-intro-seen] .preloader,
+[data-intro-skip] .preloader {
+  display: none;
+}
+/* While the curtain plays, the hero waits to make its entrance behind it. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-intro-seen]):not([data-intro-skip]) .hero-rise,
+  html:not([data-intro-seen]):not([data-intro-skip]) .hero-rise-block {
+    animation-delay: calc(1050ms + var(--i, 0) * 70ms);
+  }
+  html:not([data-intro-seen]):not([data-intro-skip]) .type-line,
+  html:not([data-intro-seen]):not([data-intro-skip]) .type-caret {
+    --intro-delay: 1050ms;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .preloader {
+    display: none;
+  }
+}
+
+/* Skills cascade in when a level is opened (the panel remounts per level). */
+.cascade-item {
+  transition:
+    opacity 400ms var(--ease-out-quint),
+    translate 400ms var(--ease-out-quint);
+  transition-delay: calc(var(--i, 0) * 40ms);
+  @starting-style {
+    opacity: 0;
+    translate: 0 0.4em;
+  }
+}
+
+/*
+ * Hero editor (components/creative/hero-editor.tsx): each line is unclipped in
+ * one step per character, after the previous line. The editor itself rises in
+ * first (~350ms). Reduced motion shows the code at once.
+ */
+@keyframes type-line {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+.type-line {
+  clip-path: inset(0 100% 0 0);
+  animation: type-line var(--dur) steps(var(--steps), jump-none) forwards;
+  animation-delay: calc(var(--intro-delay, 0ms) + 450ms + var(--at));
+}
+.type-caret {
+  animation: caret-blink 1s steps(1) 8;
+  animation-delay: calc(var(--intro-delay, 0ms) + 450ms + var(--at));
+}
+@media (prefers-reduced-motion: reduce) {
+  .type-line {
+    clip-path: none;
+    animation: none;
+  }
+  .type-caret {
+    animation: none;
+  }
+}
+
+/*
+ * Case studies. Sections are numbered by a counter, so the MDX stays plain
+ * markdown; code is highlighted at build time with both themes as variables.
+ */
+.case-study {
+  counter-reset: section;
+}
+.case-h2 {
+  counter-increment: section;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 4.5rem 0 1.25rem;
+  scroll-margin-top: 6rem;
+  font-family: var(--font-display), var(--font-sans);
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.case-h2::before {
+  content: counter(section, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  translate: 0 -0.2em;
+}
+.case-study :not(pre) > code {
+  border-radius: 0.375rem;
+  background: var(--surface);
+  padding: 0.1em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--foreground);
+}
+.case-study [data-rehype-pretty-code-figure] {
+  margin: 1.75rem 0;
+}
+.case-study [data-rehype-pretty-code-figure] pre {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+  padding: 1.25rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+.case-study [data-rehype-pretty-code-figure] [data-line] {
+  padding: 0 1.25rem;
+}
+.case-study [data-rehype-pretty-code-figure] code span {
+  color: var(--shiki-light);
+}
+.dark .case-study [data-rehype-pretty-code-figure] code span {
+  color: var(--shiki-dark);
+}
+.case-study [data-rehype-pretty-code-title] {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* Print: the home becomes a one-page résumé; other pages print their content without chrome. */
+@media print {
+  @page {
+    margin: 14mm 16mm;
+  }
+  #site-footer,
+  .grain,
+  canvas {
+    display: none !important;
+  }
+  .print-summary {
+    break-inside: avoid;
+  }
+  /* Dark-theme code colors would be light text on paper. */
+  .dark .case-study [data-rehype-pretty-code-figure] code span {
+    color: var(--shiki-light);
+  }
+  .case-study pre,
+  .case-study figure,
+  .case-study table {
+    break-inside: avoid;
+  }
+}

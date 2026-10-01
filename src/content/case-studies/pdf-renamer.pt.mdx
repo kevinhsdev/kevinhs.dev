@@ -1,0 +1,126 @@
+<Tldr>
+  Um classificador de documentos que roda no navegador e **triplicou a capacidade da secretaria**:
+  de ~100 para ~300 documentos por dia. Uma turma, que levava 3 dias, passou a levar até 1.
+</Tldr>
+
+## Contexto e problema
+
+Os prontuários digitais dos alunos chegam como PDFs escaneados com nomes como `scan_0412.pdf`. Para
+cada um, o fluxo era sempre o mesmo: **abrir, ler, descobrir o tipo, digitar o nome padronizado,
+escolher a pasta do aluno e salvar**. Uma turma tem cerca de **200 documentos**, então organizar uma
+turma inteira tomava **3 dias**.
+
+O problema não era só o tempo. Nome digitado à mão gera variações ("Ficha medica", "FICHA MÉDICA",
+"ficha_saude"), e arquivo salvo na pasta errada some do prontuário.
+
+## Meu papel
+
+Autor único: identifiquei o gargalo trabalhando na própria secretaria, desenhei o fluxo, construí a
+ferramenta e acompanhei o uso. Ela está **em uso diário** pela equipe.
+
+## Restrições
+
+- **Sem instalar programas**: tinha que rodar no navegador dos computadores da escola.
+- **Arquivos locais**: os prontuários ficam em pastas do Windows, não num servidor.
+- **Documentos escaneados**: muitos PDFs não têm texto pesquisável, só a imagem.
+- **Usuárias que não programam**: os tipos de documento e as regras mudam por setor, então ajustar
+  não podia depender de mim.
+
+## Decisões técnicas e trade-offs
+
+| Decisão                                                            | Alternativa                    | Por quê                                                                                                       |
+| ------------------------------------------------------------------ | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **Regras com pesos** por palavra-chave, num dicionário editável    | Um modelo de machine learning  | Não havia base rotulada para treinar. As regras são explicáveis e a própria secretaria ajusta pela interface. |
+| Ler o **texto do PDF primeiro** e fazer OCR só quando não há texto | OCR em todo documento          | PDFs digitais são classificados na hora; o OCR (mais lento) fica só para os escaneados.                       |
+| Ler só as **2 primeiras páginas**                                  | O documento inteiro            | O tipo quase sempre está no cabeçalho, e em lote cada segundo conta.                                          |
+| Um **limiar mínimo de confiança**                                  | Sempre sugerir algum tipo      | Quando a pontuação é baixa, a ferramenta pede confirmação em vez de errar com confiança.                      |
+| **File System Access API** grava direto na pasta do aluno          | Baixar o arquivo e mover à mão | Elimina dois passos por documento. No Firefox, cai para o download normal.                                    |
+| Lembrar a pasta com **IndexedDB**                                  | Escolher a pasta toda vez      | A permissão da pasta continua entre uma sessão e outra.                                                       |
+
+## Arquitetura
+
+<Diagram
+  label="Fluxo de um documento"
+  flow={[
+    { title: "PDFs em lote", detail: "arrastar e soltar; fila com progresso" },
+    { title: "PDF.js", detail: "visualiza e extrai o texto" },
+    { title: "Classificador", detail: "regras + dicionário editável" },
+    { title: "Nome sugerido", detail: "tipo + ano, padronizado" },
+    { title: "Pasta do aluno", detail: "gravação direta, checa duplicados" },
+  ]}
+  asideLabel="Apoio"
+  aside={[
+    { title: "OCR (Tesseract.js)", detail: "só para PDFs sem camada de texto" },
+    { title: "IndexedDB e localStorage", detail: "pasta, perfis e configurações" },
+    { title: "Histórico em CSV", detail: "tudo o que foi renomeado" },
+  ]}
+/>
+
+## Destaques de implementação
+
+### Um classificador que dá para explicar
+
+O texto é normalizado (sem acento, em maiúsculas) e cada tipo de documento soma os pesos das
+palavras-chave encontradas. **Termos curtos exigem palavra inteira**, para que "RG" não seja
+encontrado dentro de outra palavra. O tipo vencedor só é sugerido se passar do limiar.
+
+```js title="js/script.js (resumido)"
+function scoreKeyword(text, kw) {
+  // termos curtos exigem palavra inteira (evita "RG" casar dentro de outra palavra)
+  if (kw.length <= 3) return new RegExp("\\b" + kw + "\\b").test(text);
+  return text.includes(kw);
+}
+
+function classify(text) {
+  const t = normalizeText(text);
+  let best = null,
+    bestScore = 0;
+  for (const rule of CLASSIFY_RULES) {
+    let score = 0;
+    for (const [kw, w] of rule.kw) if (scoreKeyword(t, kw)) score += w;
+    if (score > bestScore) {
+      bestScore = score;
+      best = rule.type;
+    }
+  }
+  return bestScore >= CLASSIFY_THRESHOLD ? { type: best, score: bestScore } : null;
+}
+```
+
+As regras padrão convivem com as que a equipe cria na interface: um setor adiciona uma palavra-chave
+com um peso e ela passa a valer na hora, sem eu mexer no código.
+
+### Feito para o uso diário
+
+- **Duplicados**: se o nome já existe na pasta, a ferramenta pergunta o que fazer e sugere uma
+  numeração livre.
+- **Teclado**: atalhos para confirmar, pular e navegar, para não tirar a mão do teclado no meio
+  de um lote.
+- **Histórico exportável** em CSV de tudo o que foi renomeado.
+
+<Review>
+  O projeto também usa a **API da Anthropic** na classificação, mas o repositório público não mostra
+  essa parte. Explicar quando ela entra (por exemplo, quando as regras não decidem) e como os dados
+  dos alunos são tratados nesse caso.
+</Review>
+
+## Resultado e impacto
+
+- **3× mais documentos por dia**: de ~100 para ~300.
+- **Uma turma de ~200 documentos caiu de 3 dias para até 1.**
+- Nomes padronizados e arquivos na pasta certa, o que **reduziu erros de arquivamento** no
+  prontuário dos 545 alunos.
+
+## O que eu faria diferente e próximos passos
+
+<Review>
+  Rascunho a partir do código, para você confirmar: o `script.js` concentra cerca de mil linhas num
+  arquivo só, e eu dividiria em módulos (classificador, arquivos, visualizador). Também criaria um
+  conjunto de PDFs fictícios para **medir a taxa de acerto** do classificador a cada mudança de
+  regra, em vez de conferir à mão.
+</Review>
+
+## Links
+
+- [Código no GitHub](https://github.com/kevinhsdev/pdf-renamer)
+- [Demonstração](https://kevinhsdev.github.io/pdf-renamer/)

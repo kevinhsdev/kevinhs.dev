@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "title": "Kevin Henrique · Software Engineering",
+    "description": "Software Engineering student looking for an internship in backend (Java/Spring), DevOps/Cloud and applied AI. I build software a real team relies on every day."
+  },
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "todo": "Pending information"
+  },
+  "cta": {
+    "downloadCv": "Download CV",
+    "downloadCvLang": "Download CV ({lang})",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "email": "Email",
+    "copyEmail": "Copy email",
+    "emailCopied": "Email copied",
+    "emailCopyFailed": "Couldn't copy. The address is {email}"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggle": "Toggle theme"
+  },
+  "locale": {
+    "switchTo": "Ler em português",
+    "pt": "Português",
+    "en": "English"
+  },
+  "command": {
+    "open": "Open command menu",
+    "placeholder": "Type a command or search…",
+    "empty": "No results.",
+    "groups": {
+      "navigate": "Navigate",
+      "actions": "Actions",
+      "preferences": "Preferences",
+      "links": "Links"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "experience": "Journey",
+    "projects": "Projects",
+    "skills": "Skills",
+    "contact": "Contact",
+    "now": "Now",
+    "toolbar": "Display preferences"
+  },
+  "timeline": {
+    "filters": {
+      "all": "All",
+      "work": "Work",
+      "study": "Education",
+      "event": "Events"
+    },
+    "present": "present",
+    "inProgress": "in progress",
+    "expected": "expected"
+  },
+  "projects": {
+    "featured": "Featured",
+    "other": "Other projects",
+    "caseStudy": "Read the case study",
+    "repo": "Code",
+    "demo": "Demo",
+    "video": "Video demo",
+    "privateCode": "Internal code (school system)",
+    "team": "Team of {count}",
+    "status": {
+      "in-use": "In daily use",
+      "live": "Live",
+      "evolving": "Continuously evolving",
+      "in-development": "In development",
+      "academic": "Academic project"
+    },
+    "mockupAlt": "Demo screen of {title} with fictional data",
+    "demoNote": "fictional data"
+  },
+  "skills": {
+    "tiers": {
+      "daily": "Use every day",
+      "experienced": "Have experience with",
+      "learning": "Learning now",
+      "concepts": "Concepts"
+    }
+  },
+  "now": {
+    "title": "Now",
+    "learning": "Learning",
+    "building": "Building",
+    "updated": "Updated {date}",
+    "about": "A /now page says what I am focused on right now. I update it once a month.",
+    "back": "Back to home"
+  },
+  "contact": {
+    "title": "Let's talk",
+    "name": "Name",
+    "email": "Your email",
+    "message": "Message",
+    "send": "Send",
+    "sending": "Sending…",
+    "sent": "Message sent. I'll get back to you soon.",
+    "fallback": "Direct sending isn't set up. Opening your email app…",
+    "rateLimited": "Too many messages in a short time. Please try again in a few minutes.",
+    "invalid": "Please check the highlighted fields.",
+    "error": "Couldn't send. Email me directly: {email}",
+    "intro": "I'm looking for an internship in backend, DevOps/Cloud or applied AI. Remote, hybrid or on-site, in Brazil or abroad. Email is the fastest way to reach me.",
+    "orForm": "Or send a message here",
+    "honeypot": "Leave this field empty"
+  },
+  "footer": {
+    "builtWith": "Built with Next.js · Open source on GitHub",
+    "updated": "Updated {date}",
+    "repo": "View the site's source"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "This address doesn't exist, or it has moved. The rest of the portfolio is right here, though.",
+    "back": "Back to home",
+    "projects": "See projects"
+  },
+  "creative": {
+    "kicker": "Software Engineering · São Paulo",
+    "scroll": "Scroll to explore",
+    "marquee": ["Java", "Spring Boot", "MySQL", "DevOps", "Cloud", "Applied AI"],
+    "statement": ["Spotted a real problem.", "Built the fix.", "It runs every day now."],
+    "projectsKicker": "Featured",
+    "setupKicker": "Stack",
+    "otherProjects": "Other projects",
+    "talk": "Let's talk",
+    "aboutKicker": "README",
+    "intro": "Portfolio 2026",
+    "buildSteps": [
+      "compiling projects",
+      "bundling skills",
+      "linking experience",
+      "optimizing the portfolio"
+    ],
+    "buildDone": "ready. welcome!",
+    "skip": "Skip",
+    "editorComment": "Hi! This is me, in TypeScript.",
+    "editorLabel": "Profile as code (kevin.ts)",
+    "telemetryStrip": "Telemetry from real projects",
+    "project": "Project",
+    "experienceKicker": "git log",
+    "skillsLabel": "Skill levels",
+    "skillsHint": "Pick a level to see the skills.",
+    "codeBy": "© Code by Kevin"
+  },
+  "menu": {
+    "open": "Open menu",
+    "close": "Close menu",
+    "navigation": "Navigation",
+    "socials": "Socials",
+    "search": "Search commands",
+    "title": "Menu"
+  },
+  "caseStudy": {
+    "back": "All projects",
+    "kicker": "Case study",
+    "readingTime": "{minutes} min read",
+    "role": "Role",
+    "year": "Year",
+    "status": "Status",
+    "stack": "Stack",
+    "team": "Team",
+    "solo": "Solo",
+    "previous": "Previous",
+    "next": "Next",
+    "read": "Read the case study",
+    "sections": "More case studies"
+  }
+}

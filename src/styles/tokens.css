@@ -1,0 +1,33 @@
+/*
+ * Design tokens: one semantic set, two themes ("Marinho": deep navy with an
+ * electric-blue accent). The theme comes from the `.dark` class that
+ * next-themes puts on <html>. `tests/unit/contrast.test.ts` parses this file
+ * and checks WCAG AA contrast for every pair, so each block must define the
+ * full token set.
+ */
+
+:root {
+  --background: #eef2f9;
+  --surface: #ffffff;
+  --foreground: #0a1430;
+  --muted: #4f5b75;
+  --border: #d3dbea;
+  --accent: #1f4fd6;
+  --accent-contrast: #ffffff;
+  --link: #1f4fd6;
+  --positive: #166534;
+  --danger: #b91c1c;
+}
+
+.dark {
+  --background: #070d1f;
+  --surface: #0e1730;
+  --foreground: #eef2fb;
+  --muted: #8e9ab5;
+  --border: #1c2847;
+  --accent: #4d8dff;
+  --accent-contrast: #070d1f;
+  --link: #7aa8ff;
+  --positive: #4ade80;
+  --danger: #f87171;
+}
