@@ -97,11 +97,12 @@ with a weight and it takes effect immediately, without me touching the code.
 - **Keyboard**: shortcuts to confirm, skip and move on, so hands never leave the keyboard mid-batch.
 - **Exportable CSV history** of everything that was renamed.
 
-<Review>
-  The project also uses the **Anthropic API** for classification, but the public repository doesn't
-  show that part. Explain when it kicks in (for example, when the rules can't decide) and how
-  students' data is handled in that case.
-</Review>
+### Reading with AI
+
+In the version the office uses, the whole PDF is sent to the **Anthropic API (Claude)**, which reads
+the document and suggests the name. When there's no suggestion, the person picks the type from a
+ready-made list, and the file stays open in the viewer to be checked. The public repository shows
+classification with OCR and rules; the API integration isn't in it.
 
 ## Results and impact
 
@@ -112,11 +113,9 @@ with a weight and it takes effect immediately, without me touching the code.
 
 ## What I'd do differently and next steps
 
-<Review>
-  Draft based on the code, for you to confirm: `script.js` holds about a thousand lines in one file,
-  and I'd split it into modules (classifier, files, viewer). I'd also build a set of fictional PDFs
-  to **measure the classifier's accuracy** on every rule change instead of checking by hand.
-</Review>
+`script.js` holds about a thousand lines in one file; I'd split it into modules (classifier, files,
+viewer). I'd also build a set of fictional PDFs to **measure the classifier's accuracy** on every
+rule change instead of checking by hand.
 
 ## Links
 

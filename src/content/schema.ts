@@ -56,7 +56,7 @@ export const profileSchema = z.object({
       level: localized,
     }),
   ),
-  about: z.array(localized).min(1).max(3),
+  about: z.array(localized).min(1).max(4),
   education: z.object({ school: z.string(), schoolUrl: z.url() }),
 });
 export type Profile = z.infer<typeof profileSchema>;

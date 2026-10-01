@@ -1,7 +1,7 @@
 <Tldr>
   Um sistema de gestão escolar **offline, multiusuário e sem nenhuma dependência externa**, feito
-  sozinho em 4 etapas para trocar planilhas soltas por um lugar só. Hoje está **em validação**,
-  antes do piloto com a secretaria.
+  sozinho em 4 etapas para trocar planilhas soltas por um lugar só. Hoje está **em uso por toda a
+  secretaria** da escola.
 </Tldr>
 
 ## Contexto e problema
@@ -29,7 +29,7 @@ sessão continue de onde a anterior parou.
 - **Precisa funcionar sem internet**: a rede da escola não é confiável.
 - **Dados de menores**: tudo o que envolve LGPD pesa mais do que qualquer conveniência.
 - **Várias pessoas ao mesmo tempo**: um PC funciona como servidor e os outros acessam pelo
-  navegador (hoje em 1 PC, com meta de 3).
+  navegador.
 - **Integração só por exportação**: não há acesso garantido ao banco do sistema acadêmico, então os
   dados entram pelas planilhas `.xlsx` que ele já exporta.
 - **Quem mantém pode não ser programador**: instalar e atualizar precisam ser coisa de dois cliques.
@@ -122,18 +122,15 @@ function conferirVersao(atual, b, u) {
 
 ## Resultado e impacto
 
+- **Em uso por toda a secretaria.** Tarefas que levavam horas ou até dias, como emitir histórico
+  escolar, acompanhar pendências de documentos e montar planilhas de organização, hoje são
+  resolvidas em poucos minutos. Esse ganho ainda é o relato da equipe, não uma medição formal.
 - Versão **5.8.x** em evolução contínua, com cerca de **875 KB de JavaScript** escrito sem framework.
 - Medido com uma demonstração de ~530 alunos fictícios: a API responde em **menos de 30 ms** e
   nenhuma tela passa de **0,4 s**. Listas que chegavam a 30 mil pixels de altura caíram para
   cerca de 6 mil, com carregamento em partes.
 - Uma bateria de testes própria derruba o servidor de verdade, simula duas pessoas editando ao mesmo
   tempo, restaura backups e confere as 30 telas do app.
-
-<Review>
-  Números de uso real (quantas pessoas usam, quanto tempo economiza por semana) e se a direção já
-  aprovou. Hoje o sistema ainda não roda com dados reais: o texto acima foi escrito assim de
-  propósito.
-</Review>
 
 ## O que eu faria diferente e próximos passos
 
@@ -143,9 +140,8 @@ ganha a confiança de quem decide. Sem piloto, o resto é só código.
 
 Próximos passos, nesta ordem:
 
-1. Piloto real de um módulo pequeno (atendimentos, portão ou vivências).
-2. Instalação nos 3 computadores da secretaria, testada no local.
-3. Conferir o histórico escolar gerado com quem o assina hoje.
+1. **Medir o tempo** de cada tarefa antes e depois, para trocar o relato da equipe por números.
+2. Evoluir a partir do que a secretaria mais usa no dia a dia, um módulo de cada vez.
 
 E o que eu decidi **não** fazer: reescrever em React (perderia meses e ganharia build e
 dependências), levar para a nuvem (dado de menor na internet multiplica a responsabilidade) e
@@ -154,4 +150,3 @@ automatizar WhatsApp em massa (a API oficial é paga e a não oficial derruba o 
 ## Links
 
 - Código: **interno**, por ser um sistema da escola com regras e modelos dela.
-- Demo em vídeo: <span className="todo">TODO(kevin): link do vídeo no LinkedIn</span>

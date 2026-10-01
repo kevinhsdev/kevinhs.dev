@@ -24,9 +24,10 @@ Read the version-matched Next.js docs in `node_modules/next/dist/docs/` before u
    listed by `npm run todos`.
 2. **Privacy / LGPD.** Never publish a phone number, an address, or names of students, families,
    colleagues or school staff. School projects appear only with fictional data or mockups.
-   `secretaria-iel` and OASE · Lar code is **never linked** (`privateCode: true`).
-3. **Honest seniority.** Student looking for an internship. Confident, never inflated. Secretaria IEL
-   is _not_ approved or in production yet — never claim daily use for it.
+   SEK (repo `secretaria-iel`) and OASE · Lar code is **never linked** (`privateCode: true`).
+3. **Honest seniority.** Student looking for an internship. Confident, never inflated. SEK (the
+   school system, formerly "Secretaria IEL") is in use by the whole school office (confirmed by Kevin,
+   Oct 2026), but its time savings are the team's report, not a measurement: never invent numbers.
 4. **Content is separate from design.** All copy lives in `src/content/*.ts` (validated by Zod in
    `src/content/schema.ts`) and `src/content/case-studies/*.mdx`; UI strings live in
    `messages/{pt,en}.json`. Components never hard-code copy.

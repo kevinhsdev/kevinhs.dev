@@ -1,7 +1,7 @@
 <Tldr>
   An **offline, multi-user school management system with zero external dependencies**, built on my
-  own in 4 stages to replace scattered spreadsheets with a single place. It is currently **being
-  validated**, ahead of a pilot with the school office.
+  own in 4 stages to replace scattered spreadsheets with a single place. Today the **whole school
+  office uses it**.
 </Tldr>
 
 ## Context and problem
@@ -28,8 +28,8 @@ stopped.
 - **No IT staff** and regular Windows PCs, with no guarantee of being allowed to install software.
 - **It has to work offline**: the school network isn't reliable.
 - **Data about minors**: anything privacy-related (Brazil's LGPD) outweighs any convenience.
-- **Several people at once**: one PC acts as the server and the others connect through the browser
-  (one PC today, three is the goal).
+- **Several people at once**: one PC acts as the server and the others connect through the
+  browser.
 - **Integration through exports only**: there's no guaranteed access to the academic system's
   database, so data comes in through the `.xlsx` files it already exports.
 - **Whoever maintains it may not be a developer**: installing and updating must take two clicks.
@@ -125,6 +125,9 @@ office.
 
 ## Results and impact
 
+- **Used by the whole school office.** Tasks that used to take hours or even days, such as issuing
+  school transcripts, tracking missing documents and building organization spreadsheets, now take a
+  few minutes. That gain is what the team reports, not a formal measurement yet.
 - Version **5.8.x**, continuously evolving, with about **875 KB of JavaScript** written without a
   framework.
 - Measured with a demo of ~530 fictional students: the API answers in **under 30 ms** and no screen
@@ -132,12 +135,6 @@ office.
   progressive loading.
 - A home-grown test suite takes the server down for real, simulates two people editing at once,
   restores backups and checks all 30 screens of the app.
-
-<Review>
-  Real usage numbers (how many people use it, time saved per week) and whether the school's
-  leadership has approved it. The system doesn't run on real data yet, and the text above is written
-  that way on purpose.
-</Review>
 
 ## What I'd do differently and next steps
 
@@ -147,9 +144,9 @@ the trust of whoever decides. Without a pilot, the rest is just code.
 
 Next steps, in this order:
 
-1. A real pilot of one small module (front desk, school gate or visits).
-2. Installation on the office's three PCs, tested on site.
-3. Checking the generated school transcripts with the person who signs them today.
+1. **Measure the time** each task takes before and after, to replace the team's account with
+   numbers.
+2. Keep evolving from what the office uses most, one module at a time.
 
 And what I decided **not** to do: rewrite it in React (months lost, plus a build step and
 dependencies), move it to the cloud (minors' data on the internet multiplies the responsibility) and
@@ -159,4 +156,3 @@ number banned).
 ## Links
 
 - Code: **internal**, since it's the school's system, with its own rules and templates.
-- Video demo: <span className="todo">TODO(kevin): LinkedIn video link</span>

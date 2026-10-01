@@ -94,23 +94,14 @@ return switch (tipoDoador) {
 
 ## O que eu faria diferente e próximos passos
 
-<Review>
-  Rascunho a partir do código, para você confirmar (o projeto foi em equipe):
-  <ul>
-    <li>
-      usar <code>try-with-resources</code>, porque algumas consultas abrem a conexão e não a fecham;
-    </li>
-    <li>
-      atualizar a doação pelo <code>id</code> dela, e não pelo <code>id_doador</code>, que altera
-      todas as doações do mesmo doador;
-    </li>
-    <li>versionar o script do banco (tabelas e trigger) junto com o código;</li>
-    <li>
-      escrever testes para a <code>Compatibilidade</code>, que é a regra mais fácil de testar e a
-      mais cara de errar.
-    </li>
-  </ul>
-</Review>
+O projeto foi em equipe. Olhando o código hoje, eu mudaria:
+
+- usar `try-with-resources`, porque algumas consultas abrem a conexão e não a fecham;
+- atualizar a doação pelo `id` dela, e não pelo `id_doador`, que altera todas as doações do mesmo
+  doador;
+- versionar o script do banco (tabelas e trigger) junto com o código;
+- escrever testes para a `Compatibilidade`, que é a regra mais fácil de testar e a mais cara de
+  errar.
 
 ## Links
 

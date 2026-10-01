@@ -44,7 +44,7 @@ export const profile = {
   },
   cv: {
     pt: "/cv/kevin-henrique-cv-pt.pdf",
-    // TODO(kevin): review the English CV before it is published here.
+    // No English CV yet: the English site offers the Portuguese one, labelled "(PT)".
     en: null,
   },
   // TODO(kevin): add foto.jpg to /public and set it here.
@@ -68,12 +68,16 @@ export const profile = {
       en: "I study Software Engineering at UMC and have been working since I was 17. Today I'm an apprentice in a school's administrative office, and that's where I found the problem that changed how I learn: documents sorted and renamed by hand, one class at a time. I built a tool that reads each file and does it automatically. The team adopted it, and a class that took 3 days now takes 1 at most.",
     },
     {
-      pt: "Depois disso, por iniciativa própria, comecei um sistema de gestão completo para a secretaria: offline, multiusuário, sem nenhuma dependência externa e com a LGPD pensada desde o primeiro dia. Uso IA no dia a dia de engenharia, com o Claude e o Claude Code como par de programação, documentos de handoff e prompts de continuidade. É daí que vem meu interesse por Harness Engineering.",
-      en: "On my own initiative, I then started a full management system for the office: offline, multi-user, zero external dependencies, with data privacy built in from day one. AI is part of how I engineer. I pair with Claude and Claude Code, and I write handoff docs and continuation prompts, which is exactly why Harness Engineering interests me.",
+      pt: "Depois disso, por iniciativa própria, construí um sistema de gestão completo para a secretaria, que hoje a equipe inteira usa: offline, multiusuário, sem nenhuma dependência externa e com a LGPD pensada desde o primeiro dia. Uso IA no dia a dia de engenharia, com o Claude e o Claude Code como par de programação, documentos de handoff e prompts de continuidade. É daí que vem meu interesse por Harness Engineering.",
+      en: "On my own initiative, I then built a full management system for the office, which the whole team now uses: offline, multi-user, zero external dependencies, with data privacy built in from day one. AI is part of how I engineer. I pair with Claude and Claude Code, and I write handoff docs and continuation prompts, which is exactly why Harness Engineering interests me.",
     },
     {
-      pt: "Fiz intercâmbio em Malta, o que destravou meu inglês, já liderei equipes em projetos e estudo todos os dias: desafios de lógica, AWS e dois bootcamps. TODO(kevin): como começou na programação (1–2 frases) e o que gosta de fazer fora da TI.",
-      en: "I studied English in Malta, which unlocked my fluency. I've led project teams, and I study every day: coding challenges, AWS and two bootcamps. TODO(kevin): how you got into programming (1–2 sentences) and what you enjoy outside tech.",
+      pt: "Comecei a programar aos 15 anos, com os cursos da OneBitCode, e fui construindo pequenos projetos ao longo dos anos. Aos 17, quando terminei o ensino médio, mergulhei de vez na tecnologia. Fiz intercâmbio em Malta, o que destravou meu inglês, já liderei equipes em projetos e estudo todos os dias: desafios de lógica, AWS e dois bootcamps.",
+      en: "I started coding at 15 with OneBitCode's courses and kept building small projects over the years. At 17, when I finished high school, I went all in on technology. I studied English in Malta, which unlocked my fluency. I've led project teams, and I study every day: coding challenges, AWS and two bootcamps.",
+    },
+    {
+      pt: "Fora da tela, a música é um dos meus maiores hobbies: toco teclado, guitarra, bateria e violão, entre outros instrumentos. Jogo videogame desde criança, treino musculação e vôlei e quero voltar para a natação.",
+      en: "Away from the screen, music is one of my biggest hobbies: I play keyboard, electric guitar, drums and acoustic guitar, among other instruments. I've played video games since I was a kid, I lift weights, I train volleyball, and I want to get back into swimming.",
     },
   ],
   education: {

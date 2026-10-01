@@ -98,11 +98,12 @@ com um peso e ela passa a valer na hora, sem eu mexer no código.
   de um lote.
 - **Histórico exportável** em CSV de tudo o que foi renomeado.
 
-<Review>
-  O projeto também usa a **API da Anthropic** na classificação, mas o repositório público não mostra
-  essa parte. Explicar quando ela entra (por exemplo, quando as regras não decidem) e como os dados
-  dos alunos são tratados nesse caso.
-</Review>
+### Leitura com IA
+
+Na versão usada pela secretaria, o PDF é enviado inteiro para a **API da Anthropic (Claude)**, que
+lê o documento e já sugere o nome. Quando não há sugestão, a pessoa escolhe o tipo numa lista
+pronta, e o arquivo continua aberto no visualizador para conferência. O repositório público mostra
+a classificação por OCR e regras; a integração com a API não está nele.
 
 ## Resultado e impacto
 
@@ -113,12 +114,9 @@ com um peso e ela passa a valer na hora, sem eu mexer no código.
 
 ## O que eu faria diferente e próximos passos
 
-<Review>
-  Rascunho a partir do código, para você confirmar: o `script.js` concentra cerca de mil linhas num
-  arquivo só, e eu dividiria em módulos (classificador, arquivos, visualizador). Também criaria um
-  conjunto de PDFs fictícios para **medir a taxa de acerto** do classificador a cada mudança de
-  regra, em vez de conferir à mão.
-</Review>
+O `script.js` concentra cerca de mil linhas num arquivo só; eu dividiria em módulos (classificador,
+arquivos, visualizador). Também criaria um conjunto de PDFs fictícios para **medir a taxa de
+acerto** do classificador a cada mudança de regra, em vez de conferir à mão.
 
 ## Links
 

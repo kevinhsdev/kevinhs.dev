@@ -29,11 +29,7 @@ describe("content", () => {
   });
 
   it("features the three case studies in the agreed order", () => {
-    expect(featuredProjects.map((p) => p.slug)).toEqual([
-      "secretaria-iel",
-      "pdf-renamer",
-      "blood-bank",
-    ]);
+    expect(featuredProjects.map((p) => p.slug)).toEqual(["sek", "pdf-renamer", "blood-bank"]);
   });
 
   it("never links the private school systems' code", () => {
@@ -51,7 +47,7 @@ describe("content", () => {
   it("finds projects and case-study neighbours", () => {
     expect(getProject("pdf-renamer")?.title).toBe("PDF Renamer");
     const { previous, next } = getAdjacentCaseStudies("pdf-renamer");
-    expect(previous?.slug).toBe("secretaria-iel");
+    expect(previous?.slug).toBe("sek");
     expect(next?.slug).toBe("blood-bank");
   });
 

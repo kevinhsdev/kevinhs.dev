@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
         destination: "/:locale",
         permanent: true,
       },
+      // The school system was renamed from "Secretaria IEL" to "SEK".
+      {
+        source: "/:locale(pt|en)/projects/secretaria-iel",
+        destination: "/:locale/projects/sek",
+        permanent: true,
+      },
     ];
   },
 };

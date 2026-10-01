@@ -5,12 +5,7 @@ test.describe("seo and print", () => {
     const response = await request.get("/sitemap.xml");
     expect(response.ok()).toBe(true);
     const xml = await response.text();
-    for (const path of [
-      "/pt",
-      "/en/now",
-      "/pt/projects/secretaria-iel",
-      "/en/projects/blood-bank",
-    ]) {
+    for (const path of ["/pt", "/en/now", "/pt/projects/sek", "/en/projects/blood-bank"]) {
       expect(xml).toContain(`${path}</loc>`);
     }
     expect(xml).toContain('hreflang="pt-BR"');

@@ -60,8 +60,8 @@ export async function CreativeHeader() {
 const STRIP = [
   { project: "pdf-renamer", metric: 0 },
   { project: "pdf-renamer", metric: 1 },
-  { project: "secretaria-iel", metric: 0 },
-  { project: "secretaria-iel", metric: 1 },
+  { project: "sek", metric: 0 },
+  { project: "sek", metric: 1 },
 ];
 
 /**

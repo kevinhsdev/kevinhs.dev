@@ -73,7 +73,7 @@ export function SecretariaMockup(props: MockupProps) {
     ["1ª EM", 71],
   ] as const;
   return (
-    <Frame {...props} title="Secretaria IEL · v5.8" badge="offline ✓">
+    <Frame {...props} title="SEK · v5.8" badge="offline ✓">
       <div className="flex w-9 flex-col items-center gap-2 border-r border-border py-3">
         {Array.from({ length: 6 }, (_, i) => (
           <span key={i} className={cn("size-3.5 rounded", i === 1 ? "bg-accent" : "bg-border")} />
@@ -212,7 +212,7 @@ export function BloodBankMockup(props: MockupProps) {
 }
 
 export const mockups = {
-  "secretaria-iel": SecretariaMockup,
+  sek: SecretariaMockup,
   "pdf-renamer": PdfRenamerMockup,
   "blood-bank": BloodBankMockup,
 } as const;

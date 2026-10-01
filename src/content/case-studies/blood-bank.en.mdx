@@ -96,23 +96,13 @@ return switch (tipoDoador) {
 
 ## What I'd do differently and next steps
 
-<Review>
-  Draft based on the code, for you to confirm (it was a team project):
-  <ul>
-    <li>
-      use <code>try-with-resources</code>, since some queries open a connection and never close it;
-    </li>
-    <li>
-      update a donation by its own <code>id</code>, not by <code>id_doador</code>, which changes
-      every donation from the same donor;
-    </li>
-    <li>commit the database script (tables and trigger) next to the code;</li>
-    <li>
-      write tests for <code>Compatibilidade</code>, the easiest rule to test and the most expensive
-      to get wrong.
-    </li>
-  </ul>
-</Review>
+It was a team project. Looking at the code today, I'd change:
+
+- use `try-with-resources`, since some queries open a connection and never close it;
+- update a donation by its own `id`, not by `id_doador`, which changes every donation from the same
+  donor;
+- commit the database script (tables and trigger) next to the code;
+- write tests for `Compatibilidade`, the easiest rule to test and the most expensive to get wrong.
 
 ## Links
 

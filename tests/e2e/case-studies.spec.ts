@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const slugs = ["secretaria-iel", "pdf-renamer", "blood-bank"];
+const slugs = ["sek", "pdf-renamer", "blood-bank"];
 
 test.describe("case studies", () => {
   for (const slug of slugs) {
@@ -23,7 +23,7 @@ test.describe("case studies", () => {
   for (const scheme of ["light", "dark"] as const) {
     test(`has no WCAG A/AA violations (${scheme})`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
-      await page.goto("/pt/projects/secretaria-iel", { waitUntil: "networkidle" });
+      await page.goto("/pt/projects/sek", { waitUntil: "networkidle" });
       const results = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
         .analyze();
@@ -32,12 +32,12 @@ test.describe("case studies", () => {
   }
 
   test("never links the school system's repository", async ({ page }) => {
-    await page.goto("/pt/projects/secretaria-iel");
+    await page.goto("/pt/projects/sek");
     await expect(page.locator('a[href*="github.com/kevinhsdev/secretaria-iel"]')).toHaveCount(0);
   });
 
   test("links to the next case study", async ({ page }) => {
-    await page.goto("/en/projects/secretaria-iel");
+    await page.goto("/en/projects/sek");
     await page.getByRole("link", { name: /Next\s*PDF Renamer/ }).click();
     await expect(page).toHaveURL(/\/en\/projects\/pdf-renamer$/);
   });
@@ -47,9 +47,15 @@ test.describe("case studies", () => {
     // The sticky cards overlap while scrolling (by design), so check where each link goes.
     const links = page.getByRole("link", { name: /Ler estudo de caso/ });
     await expect(links).toHaveCount(3);
-    for (const [index, slug] of ["secretaria-iel", "pdf-renamer", "blood-bank"].entries()) {
+    for (const [index, slug] of ["sek", "pdf-renamer", "blood-bank"].entries()) {
       await expect(links.nth(index)).toHaveAttribute("href", `/pt/projects/${slug}`);
     }
+  });
+
+  test("the old Secretaria IEL address redirects to SEK", async ({ page }) => {
+    await page.goto("/en/projects/secretaria-iel");
+    await expect(page).toHaveURL(/\/en\/projects\/sek$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("SEK");
   });
 
   test("unknown slugs are a 404", async ({ page }) => {

@@ -6,8 +6,8 @@ export const now = {
   updatedAt: "2026-09",
   learning: [
     {
-      pt: "AWS, rumo à certificação. TODO(kevin): qual e quando.",
-      en: "AWS, working toward a certification. TODO(kevin): which one and when.",
+      pt: "AWS, rumo à certificação Cloud Practitioner, prevista para dezembro.",
+      en: "AWS, working toward the Cloud Practitioner certification, expected in December.",
     },
     {
       pt: "Bootcamps Santander (Cibersegurança) e Itaú (Java com IA).",
@@ -20,8 +20,8 @@ export const now = {
   ],
   building: [
     {
-      pt: "Secretaria IEL: evolução contínua da versão 5.8.",
-      en: "Secretaria IEL: ongoing work on version 5.8.",
+      pt: "SEK · Gestão Escolar: evolução contínua da versão 5.8, em uso pela secretaria.",
+      en: "SEK school management: ongoing work on version 5.8, in use by the school office.",
     },
     {
       pt: "OASE · Lar: sistema para um lar de idosos, em levantamento de requisitos.",

@@ -4,10 +4,10 @@ import type { projectSchema } from "./schema";
 /** Featured first, in display order. */
 export const projects = [
   {
-    slug: "secretaria-iel",
-    title: "Secretaria IEL",
+    slug: "sek",
+    title: "SEK · Gestão Escolar",
     tier: "featured",
-    status: "evolving",
+    status: "in-use",
     year: 2026,
     tagline: {
       pt: "Sistema de gestão escolar offline, multiusuário e sem dependências",
@@ -18,8 +18,8 @@ export const projects = [
       en: "The office of a school with around 535 students, from preschool to high school, ran on loose spreadsheets and documents spread across several systems. On my own initiative, I built a local web app: one PC acts as the server, the others connect through the browser, and everything works offline.",
     },
     impact: {
-      pt: "De planilhas soltas a um sistema único, offline e auditável",
-      en: "From scattered spreadsheets to one offline, auditable system",
+      pt: "De planilhas soltas a um sistema único, em uso por toda a secretaria",
+      en: "From scattered spreadsheets to one system the whole school office uses",
     },
     role: {
       pt: "Autor único: levantamento, arquitetura, código, instalação e suporte",
@@ -50,7 +50,6 @@ export const projects = [
       },
     ],
     stack: ["Node.js", "node:sqlite", "JavaScript", "HTML", "CSS", "PowerShell"],
-    links: { video: "TODO" },
     privateCode: true,
     hasCaseStudy: true,
   },
@@ -146,8 +145,8 @@ export const projects = [
       en: "Offline, zero-dependency system for an elderly care home",
     },
     summary: {
-      pt: "A pedido da gestão, um sistema para o lar de idosos mantido pela mesma instituição, onde hoje o registro é feito à mão. Reaproveita o motor da Secretaria IEL (backups cifrados, atualização por botão, auditoria) e já tem módulos de residentes, diário da equipe por turno, agenda, estoque, prescrições com folha de medicação e vacinas. Os requisitos ainda estão sendo validados, e todos os testes usam dados fictícios.",
-      en: "Requested by management: a system for the elderly care home run by the same institution, where records are still kept by hand. It reuses the Secretaria IEL engine (encrypted backups, one-button updates, audit trail) and already covers residents, a per-shift team log, scheduling, inventory, prescriptions with a medication chart, and vaccines. Requirements are still being validated, and all testing uses fictional data.",
+      pt: "A pedido da gestão, um sistema para o lar de idosos mantido pela mesma instituição, onde hoje o registro é feito à mão. Reaproveita o motor do SEK (backups cifrados, atualização por botão, auditoria) e já tem módulos de residentes, diário da equipe por turno, agenda, estoque, prescrições com folha de medicação e vacinas. Os requisitos ainda estão sendo validados, e todos os testes usam dados fictícios.",
+      en: "Requested by management: a system for the elderly care home run by the same institution, where records are still kept by hand. It reuses the SEK engine (encrypted backups, one-button updates, audit trail) and already covers residents, a per-shift team log, scheduling, inventory, prescriptions with a medication chart, and vaccines. Requirements are still being validated, and all testing uses fictional data.",
     },
     impact: {
       pt: "Medicação: cada horário só pode ser marcado uma vez, o que evita dose dupla",
@@ -201,8 +200,8 @@ export const projects = [
       en: "Student CRUD API with Spring Data JPA",
     },
     summary: {
-      pt: "Endpoints CRUD para cadastro e consulta de alunos, organizados em Controller → Service → Repository. TODO(kevin): link do repositório.",
-      en: "CRUD endpoints to register and query students, organized as Controller → Service → Repository. TODO(kevin): repository link.",
+      pt: "Endpoints CRUD para cadastro e consulta de alunos, organizados em Controller → Service → Repository. Em desenvolvimento; o código será publicado quando estiver pronto.",
+      en: "CRUD endpoints to register and query students, organized as Controller → Service → Repository. In development; the code will be published when it's ready.",
     },
     stack: ["Java", "Spring Boot", "Spring Data JPA", "H2"],
   },

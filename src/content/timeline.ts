@@ -69,8 +69,8 @@ export const timeline = [
     id: "aws-cert",
     kind: "study",
     title: {
-      pt: "TODO(kevin): qual certificação AWS (ex.: Cloud Practitioner) e data prevista",
-      en: "TODO(kevin): which AWS certification (e.g. Cloud Practitioner) and target date",
+      pt: "Certificação AWS Cloud Practitioner (prevista para dez. 2026)",
+      en: "AWS Certified Cloud Practitioner (expected Dec 2026)",
     },
     org: "AWS",
     start: null,
