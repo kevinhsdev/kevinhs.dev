@@ -201,6 +201,14 @@
   pointer-events: none;
 }
 
+/* Theme switch (theme-toggle.tsx): no default cross-fade; the new theme is revealed by a
+   circle animated from script, over the untouched old snapshot. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 /* Items entering a filtered list fade in (interruptible, no JS). */
 .enter-fade {
   transition:

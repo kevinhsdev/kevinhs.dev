@@ -56,6 +56,21 @@ test.describe("site", () => {
     expect(font).toMatch(/Anton/i);
   });
 
+  test("the theme toggle switches and remembers the theme", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "light", reducedMotion: "no-preference" });
+    await page.goto("/en");
+    const html = page.locator("html");
+    await expect(html).not.toHaveClass(/dark/);
+    // The header's toggle (the menu drawer has another one).
+    await page
+      .getByRole("toolbar")
+      .getByRole("button", { name: /theme|tema/i })
+      .click();
+    await expect(html).toHaveClass(/dark/);
+    await page.reload();
+    await expect(html).toHaveClass(/dark/);
+  });
+
   test("opens the command menu with Ctrl+K", async ({ page }) => {
     await page.goto("/en");
     await page.keyboard.press("Control+k");
