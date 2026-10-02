@@ -1,6 +1,5 @@
-import type { CSSProperties } from "react";
 import { getTranslations } from "next-intl/server";
-import { KevinMark } from "@/components/shared/logo";
+import { KEVIN_MARK_PATH } from "@/components/shared/logo";
 
 /**
  * Runs before the curtain is parsed, so returning visitors never see a flash:
@@ -9,55 +8,53 @@ import { KevinMark } from "@/components/shared/logo";
  */
 const INTRO_SCRIPT = `(function(){var d=document.documentElement;try{if(sessionStorage.getItem("intro-seen")){d.setAttribute("data-intro-seen","")}else{sessionStorage.setItem("intro-seen","1")}}catch(e){}function s(){d.setAttribute("data-intro-skip","");removeEventListener("pointerdown",s);removeEventListener("keydown",s)}addEventListener("pointerdown",s);addEventListener("keydown",s)})();`;
 
-const order = (index: number) => ({ "--i": index }) as CSSProperties;
+// The K (118×107) at a quarter size, centered in the 160×100 scene.
+const MARK = { d: KEVIN_MARK_PATH, transform: "translate(65.25 36.6) scale(0.25)" };
 
 /**
- * Intro curtain styled as a build log: the command, a few ✓ steps printed one
- * by one and a progress bar counting to 100%, then the curtain lifts away.
- * Pure CSS, so it leaves on its own even if JavaScript fails, and the page
- * underneath is already rendered. Hidden for reduced motion and from
+ * Intro curtain: the K's outline draws itself in blue, the K turns into a
+ * window onto the site, and the screen zooms through it. Pure CSS (timeline in
+ * creative.css), so it leaves on its own even if JavaScript fails, and the
+ * page underneath is already rendered. Hidden for reduced motion and from
  * assistive tech (decorative).
  */
 export async function Preloader() {
   const t = await getTranslations("creative");
-  const steps = t.raw("buildSteps") as string[];
 
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: INTRO_SCRIPT }} />
       <div aria-hidden className="preloader" data-print="hide">
-        <div className="flex items-start justify-between font-mono text-xs tracking-widest text-muted uppercase">
-          <span className="flex items-center gap-2">
-            <KevinMark className="h-3 w-auto text-accent" />
-            {t("codeBy")}
-          </span>
-          <span>{t("intro")}</span>
-        </div>
-
-        <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 font-mono text-sm sm:text-lg">
-          <ol className="flex flex-col gap-2">
-            <li className="build-line" style={order(0)}>
-              <span className="text-accent">~/kevin $</span> npm run build
-            </li>
-            {steps.map((step, index) => (
-              <li key={step} className="build-line text-muted" style={order(index + 1)}>
-                <span className="text-positive">✓</span> {step}
-              </li>
-            ))}
-            <li className="build-line font-semibold text-accent" style={order(steps.length + 1)}>
-              → {t("buildDone")}
-            </li>
-          </ol>
-
-          <div className="flex items-center gap-4">
-            <div className="h-1 flex-1 overflow-hidden rounded-full bg-border">
-              <div className="preloader-bar h-full bg-accent" />
-            </div>
-            <span className="preloader-count w-[4ch] text-right tabular-nums" />
-          </div>
-        </div>
-
-        <span className="self-end font-mono text-xs tracking-widest text-muted uppercase">
+        <svg className="preloader-scene" viewBox="0 0 160 100" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <mask
+              id="intro-window"
+              maskUnits="userSpaceOnUse"
+              x="-400"
+              y="-400"
+              width="960"
+              height="900"
+            >
+              <rect x="-400" y="-400" width="960" height="900" fill="#fff" />
+              <path {...MARK} fill="#000" />
+            </mask>
+          </defs>
+          <g className="preloader-zoom">
+            {/* The curtain, with a K-shaped window cut out of it… */}
+            <rect
+              x="-400"
+              y="-400"
+              width="960"
+              height="900"
+              className="preloader-curtain"
+              mask="url(#intro-window)"
+            />
+            {/* …covered at first, until the outline is drawn. */}
+            <path {...MARK} className="preloader-cover" />
+            <path {...MARK} className="preloader-outline" pathLength={1} />
+          </g>
+        </svg>
+        <span className="preloader-skip font-mono text-xs tracking-widest text-muted uppercase">
           {t("skip")} ↵
         </span>
       </div>

@@ -133,14 +133,6 @@
     "otherProjects": "Outros projetos",
     "talk": "Vamos conversar",
     "aboutKicker": "README",
-    "intro": "Portfólio 2026",
-    "buildSteps": [
-      "compilando projetos",
-      "empacotando habilidades",
-      "conectando trajetória",
-      "otimizando o portfólio"
-    ],
-    "buildDone": "pronto. bem-vindo!",
     "skip": "Pular",
     "editorComment": "Olá! Este sou eu, em TypeScript.",
     "editorLabel": "Perfil em código (kevin.ts)",

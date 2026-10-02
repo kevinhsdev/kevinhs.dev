@@ -133,14 +133,6 @@
     "otherProjects": "Other projects",
     "talk": "Let's talk",
     "aboutKicker": "README",
-    "intro": "Portfolio 2026",
-    "buildSteps": [
-      "compiling projects",
-      "bundling skills",
-      "linking experience",
-      "optimizing the portfolio"
-    ],
-    "buildDone": "ready. welcome!",
     "skip": "Skip",
     "editorComment": "Hi! This is me, in TypeScript.",
     "editorLabel": "Profile as code (kevin.ts)",
