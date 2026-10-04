@@ -178,7 +178,6 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
           watch={["hero", "site-footer"]}
           source="case-study-dock"
           itemClassName="bg-surface text-foreground ring-1 ring-border hover:bg-accent hover:text-accent-contrast"
-          menuClassName="bg-accent text-accent-contrast ring-0"
         />
       </CreativeMotion>
     </CreativeShell>

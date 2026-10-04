@@ -3,13 +3,12 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { LinkedInIcon } from "@/components/shared/brand-icons";
-import { MenuIcon, openSiteMenu } from "@/components/shared/site-menu";
 import { CopyEmailButton, CvButton, LinkedInButton } from "@/components/shared/ctas";
 import { cn } from "@/lib/utils";
 
 /**
  * Keeps the three primary CTAs one click away after the hero scrolls out of
- * view (the hero has its own). Hidden docks are `inert`, so they can't be
+ * view (the hero has its own). The menu lives in the fixed header only. Hidden docks are `inert`, so they can't be
  * tabbed into while invisible.
  */
 export function CtaDock({
@@ -17,14 +16,12 @@ export function CtaDock({
   source,
   className,
   itemClassName,
-  menuClassName,
 }: {
   /** ids of elements that, while visible, hide the dock (the hero, a footer with its own CTAs). */
   watch: string[];
   source: string;
   className?: string;
   itemClassName?: string;
-  menuClassName?: string;
 }) {
   const t = useTranslations();
   const [visible, setVisible] = useState(false);
@@ -73,17 +70,6 @@ export function CtaDock({
       </span>
       <span className="inline-flex">
         <CopyEmailButton source={source} compact className={item} />
-      </span>
-      <span className="inline-flex">
-        <button
-          type="button"
-          onClick={openSiteMenu}
-          aria-label={t("menu.open")}
-          title={t("menu.open")}
-          className={cn(item, "group size-16", menuClassName)}
-        >
-          <MenuIcon />
-        </button>
       </span>
     </nav>
   );

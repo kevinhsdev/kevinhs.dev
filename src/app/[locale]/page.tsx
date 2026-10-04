@@ -104,7 +104,6 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           watch={["hero", "contact", "site-footer"]}
           source="creative-dock"
           itemClassName="bg-surface text-foreground ring-1 ring-border hover:bg-accent hover:text-accent-contrast"
-          menuClassName="bg-accent text-accent-contrast ring-0"
         />
       </CreativeMotion>
     </CreativeShell>

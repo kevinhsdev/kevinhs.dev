@@ -98,7 +98,6 @@ export default async function NowPage({ params }: PageProps<"/[locale]/now">) {
           watch={["hero", "site-footer"]}
           source="now-dock"
           itemClassName="bg-surface text-foreground ring-1 ring-border hover:bg-accent hover:text-accent-contrast"
-          menuClassName="bg-accent text-accent-contrast ring-0"
         />
       </CreativeMotion>
     </CreativeShell>

@@ -16,20 +16,20 @@ export const timeline = [
     end: "present",
     highlights: [
       {
-        pt: "Criei uma ferramenta web (HTML/JS, OCR) que classifica e renomeia documentos escolares: o processamento de uma turma (~200 documentos) caiu de 3 dias para até 1, com dicionário de palavras-chave editável e perfis por setor.",
-        en: "Built a web tool (HTML/JS, OCR) that classifies and renames school documents: processing a class (~200 documents) went from 3 days to 1 at most, with an editable keyword dictionary and per-department profiles.",
+        pt: "Criei o PDF Renamer, que classifica e renomeia documentos com OCR: uma turma (~200 documentos) caiu de 3 dias para até 1.",
+        en: "Built PDF Renamer, which classifies and renames documents with OCR: a class (~200 documents) went from 3 days to 1 at most.",
       },
       {
-        pt: "Organizei e padronizei os registros de 545 alunos com fluxos de classificação documental, reduzindo erros de arquivamento.",
-        en: "Organized and standardized the records of 545 students with document-classification workflows, reducing filing errors.",
+        pt: "Por iniciativa própria, criei o SEK, o sistema de gestão que hoje toda a secretaria usa.",
+        en: "On my own initiative, built SEK, the management system the whole office now uses.",
       },
       {
-        pt: "Por iniciativa própria, criei um sistema de gestão completo para a secretaria.",
-        en: "On my own initiative, built a full management system for the office.",
+        pt: "Padronizei os registros de 545 alunos, reduzindo erros de arquivamento.",
+        en: "Standardized the records of 545 students, reducing filing errors.",
       },
       {
-        pt: "Redigi comunicações institucionais para as famílias e a equipe pedagógica.",
-        en: "Wrote official communications to families and the teaching staff.",
+        pt: "Redigi comunicados para as famílias e a equipe pedagógica.",
+        en: "Wrote official notices to families and the teaching staff.",
       },
     ],
   },

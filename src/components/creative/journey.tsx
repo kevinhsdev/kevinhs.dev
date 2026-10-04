@@ -133,14 +133,23 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
                   {entry.period}
                 </span>
                 <h3 className="font-display text-3xl leading-[1.05] text-balance uppercase">
-                  <span className={cn(entry.isTodo && "todo")}>{entry.title}</span>
+                  {/* "Role · Program" titles break at the dot, one part per line. */}
+                  {entry.title.split(" · ").map((part) => (
+                    <span key={part} className={cn("block", entry.isTodo && "todo")}>
+                      {part}
+                    </span>
+                  ))}
                 </h3>
-                <p className="text-sm font-medium">
+                <p className="flex flex-col text-sm font-medium">
                   {entry.org}
-                  {entry.location && <span className="text-muted"> · {entry.location}</span>}
+                  {entry.location && (
+                    <span className="font-mono text-xs font-normal text-muted">
+                      {entry.location}
+                    </span>
+                  )}
                 </p>
                 {entry.highlights.length > 0 && (
-                  <ul className="journey-highlights text-sm leading-relaxed text-muted">
+                  <ul className="journey-highlights mt-1 text-sm leading-relaxed text-muted">
                     {entry.highlights.map((highlight) => (
                       <li key={highlight} className="text-pretty">
                         {highlight}
