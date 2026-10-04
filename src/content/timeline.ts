@@ -87,6 +87,16 @@ export const timeline = [
     start: "2026-09",
   },
   {
+    id: "gcloud-sp-fiap",
+    kind: "event",
+    title: {
+      pt: "Google Cloud Group São Paulo na FIAP",
+      en: "Google Cloud Group São Paulo at FIAP",
+    },
+    org: "Google Cloud Group São Paulo · FIAP",
+    start: "2026-09",
+  },
+  {
     id: "soujava-oracle",
     kind: "event",
     title: { pt: "Encontro SouJava × Oracle Brasil", en: "SouJava × Oracle Brazil Meetup" },

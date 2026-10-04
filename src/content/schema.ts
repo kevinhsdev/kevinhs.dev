@@ -76,6 +76,8 @@ export const timelineItemSchema = z.object({
   endIsExpected: z.boolean().optional(),
   inProgress: z.boolean().optional(),
   highlights: z.array(localized).default([]),
+  /** Optional photo for the journey section (put the file in /public/journey). No people without consent. */
+  image: z.object({ src: sitePath, alt: localized }).optional(),
 });
 export type TimelineItem = z.infer<typeof timelineItemSchema>;
 

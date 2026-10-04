@@ -298,3 +298,148 @@
     break-inside: avoid;
   }
 }
+
+/*
+ * Journey (components/creative/journey.tsx). By default a row that scrolls
+ * sideways; with data-pinned="true" the view sticks to the screen and the
+ * script moves the track with the page scroll. The axis fill and the ticks
+ * follow the same progress (--p).
+ */
+.journey {
+  position: relative;
+}
+.journey-view {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  padding-block: 0.5rem 1rem;
+  scrollbar-width: thin;
+}
+.journey[data-pinned="true"] .journey-view {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: hidden;
+  justify-content: center;
+  scroll-snap-type: none;
+  /* Clear of the fixed header on top and the CTA dock at the bottom. */
+  padding-block: 4rem 6rem;
+}
+.journey-track {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+  padding-inline: 1rem;
+}
+.journey-card {
+  width: min(26rem, 82vw);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  scroll-snap-align: start;
+  scroll-margin-inline: 1rem;
+}
+.journey-media {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.journey-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.journey-plate {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  color: var(--muted);
+  background: radial-gradient(
+    110% 90% at 85% 0%,
+    color-mix(in srgb, var(--accent) 22%, transparent),
+    transparent 65%
+  );
+}
+.journey-plate .font-display {
+  font-size: clamp(3.5rem, 7vw, 5rem);
+  line-height: 0.9;
+  color: var(--accent);
+}
+.journey-card[data-kind="event"] .journey-plate {
+  background: radial-gradient(
+    110% 90% at 85% 0%,
+    color-mix(in srgb, var(--positive) 18%, transparent),
+    transparent 65%
+  );
+}
+.journey-axis {
+  position: relative;
+  height: 2.25rem;
+  margin-inline: 1rem;
+  flex: none;
+}
+.journey-axis-base,
+.journey-axis-fill {
+  position: absolute;
+  inset-inline: 0;
+  top: 0.45rem;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--border);
+}
+.journey-axis-fill {
+  background: var(--accent);
+  transform-origin: 0 50%;
+  transform: scaleX(var(--p, 0));
+}
+.journey-tick {
+  position: absolute;
+  top: 0;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-left: -0.425rem;
+  border-radius: 50%;
+  background: var(--background);
+  border: 2px solid var(--border);
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+.journey-tick[data-on="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.journey-tick-label {
+  position: absolute;
+  top: 1.25rem;
+  left: 50%;
+  translate: -50% 0;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+@media (min-width: 640px) {
+  .journey-track {
+    padding-inline: 2rem;
+  }
+  .journey-axis {
+    margin-inline: 2rem;
+  }
+  .journey-card {
+    scroll-margin-inline: 2rem;
+  }
+}
+/* Phones: the year plates are decorative, so they give their room to the text. */
+@media (max-width: 639px) {
+  .journey-media:not(:has(img)) {
+    display: none;
+  }
+}

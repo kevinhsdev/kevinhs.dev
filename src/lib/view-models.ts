@@ -12,12 +12,15 @@ import { formatPeriod } from "./period";
 export type TimelineEntry = {
   id: string;
   kind: TimelineKind;
+  /** "2025-08", "2026" or null when ongoing without a known start. */
+  start: string | null;
   period: string;
   title: string;
   org: string;
   location?: string;
   highlights: string[];
   isTodo: boolean;
+  image?: { src: string; alt: string };
 };
 
 export async function getTimelineEntries(locale: Locale): Promise<TimelineEntry[]> {
@@ -28,17 +31,32 @@ export async function getTimelineEntries(locale: Locale): Promise<TimelineEntry[
     return {
       id: item.id,
       kind: item.kind,
+      start: item.start,
       period: formatPeriod(item, locale, labels),
       title,
       org: item.org,
       location: item.location && pick(item.location, locale),
       highlights: item.highlights.map((highlight) => pick(highlight, locale)),
       isTodo: isTodo(title),
+      image: item.image && { src: item.image.src, alt: pick(item.image.alt, locale) },
     };
   });
 }
 
-export async function getTimelineFilterLabels(locale: Locale) {
+/**
+ * The journey reads oldest → newest (git log --reverse). Ongoing items without
+ * a start date (bootcamps, the AWS certification) close it, in content order.
+ */
+export function toJourney(entries: TimelineEntry[]): TimelineEntry[] {
+  const dated = entries.filter((entry) => entry.start !== null);
+  const open = entries.filter((entry) => entry.start === null);
+  dated.sort((a, b) => (a.start ?? "").localeCompare(b.start ?? ""));
+  const order = new Map(timeline.map((item, index) => [item.id, index]));
+  open.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+  return [...dated, ...open];
+}
+
+export async function getTimelineKindLabels(locale: Locale): Promise<Record<TimelineKind, string>> {
   const t = await getTranslations({ locale, namespace: "timeline.filters" });
-  return { all: t("all"), work: t("work"), study: t("study"), event: t("event") };
+  return { work: t("work"), study: t("study"), event: t("event") };
 }

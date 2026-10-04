@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { CreativeHeader, CreativeHero, Marquee } from "@/components/creative/hero";
-import { GitLog } from "@/components/creative/git-log";
 import { CreativeMotion } from "@/components/creative/motion";
 import { PrintSummary } from "@/components/creative/print-summary";
+import { Journey } from "@/components/creative/journey";
 import { Preloader } from "@/components/creative/preloader";
 import { SkillsExplorer } from "@/components/creative/skills-explorer";
 import { CompactProjects, StackedProjects } from "@/components/creative/projects";
@@ -19,15 +19,15 @@ import { CtaDock } from "@/components/shared/cta-dock";
 import { SiteMenu } from "@/components/shared/site-menu";
 import { featuredProjects, otherProjects, pick, skills } from "@/content";
 import { resolveLocale } from "@/i18n/locale";
-import { getTimelineEntries, getTimelineFilterLabels } from "@/lib/view-models";
+import { getTimelineEntries, getTimelineKindLabels, toJourney } from "@/lib/view-models";
 
 /** The home page. Metadata (title, canonical, hreflang) comes from the locale layout. */
 export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const locale = await resolveLocale(params);
   const t = await getTranslations();
-  const [entries, filterLabels] = await Promise.all([
+  const [entries, kindLabels] = await Promise.all([
     getTimelineEntries(locale),
-    getTimelineFilterLabels(locale),
+    getTimelineKindLabels(locale),
   ]);
 
   const nav = [
@@ -74,10 +74,13 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             kicker={t("creative.experienceKicker")}
             title={t("nav.experience")}
           >
-            <GitLog
-              entries={entries}
-              filterLabels={filterLabels}
-              filterGroupLabel={t("nav.experience")}
+            <Journey
+              entries={toJourney(entries)}
+              labels={{
+                kinds: kindLabels,
+                inProgress: t("timeline.inProgress"),
+                region: t("nav.experience"),
+              }}
             />
           </Block>
 

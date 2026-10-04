@@ -138,7 +138,7 @@
     "editorLabel": "Profile as code (kevin.ts)",
     "telemetryStrip": "Telemetry from real projects",
     "project": "Project",
-    "experienceKicker": "git log",
+    "experienceKicker": "git log --reverse",
     "skillsLabel": "Skill levels",
     "skillsHint": "Pick a level to see the skills.",
     "codeBy": "© Code by Kevin"

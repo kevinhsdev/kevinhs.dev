@@ -52,6 +52,38 @@ test.describe("version B · creative", () => {
       .toBe(true);
   });
 
+  test("the journey pins and slides sideways as the page scrolls", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/pt");
+    const journey = page.locator(".journey");
+    await expect(journey.locator(".journey-card")).toHaveCount(11);
+    await expect(journey).toContainText("Google Cloud Group São Paulo na FIAP");
+    await expect(journey).toHaveAttribute("data-pinned", "true");
+    const track = journey.locator(".journey-track");
+    // Scroll to the end of the pinned section: the track has moved and the last tick is on.
+    await journey.evaluate((el) => {
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: top + el.getBoundingClientRect().height - window.innerHeight,
+        behavior: "instant",
+      });
+    });
+    await expect
+      .poll(() => track.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform).m41))
+      .toBeLessThan(-200);
+    await expect(journey.locator("[data-tick]").last()).toHaveAttribute("data-on", "true");
+  });
+
+  test("with reduced motion the journey is a sideways-scrolling row", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/pt");
+    const journey = page.locator(".journey");
+    await expect(journey).toHaveAttribute("data-pinned", "false");
+    const view = journey.getByRole("region", { name: "Trajetória" });
+    await expect(view).toHaveCSS("overflow-x", "auto");
+  });
+
   test("skills explorer switches levels with the arrow keys", async ({ page }) => {
     await page.goto("/en");
     const first = page.getByRole("tab", { name: /use-every-day/ });

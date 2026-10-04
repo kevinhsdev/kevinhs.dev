@@ -34,10 +34,15 @@ export async function CreativeHeader() {
         href={HOME_PATH}
         className="roll h-11 rounded-full bg-background/70 px-4 text-sm font-medium backdrop-blur-md"
       >
-        <KevinMark className="h-3.5 w-auto shrink-0 text-accent" />
-        <span className="roll-text">
-          <span className="roll-a flex h-11 items-center">{t("creative.codeBy")}</span>
-          <span aria-hidden className="roll-b flex h-11 items-center">
+        <KevinMark className="h-3.5 w-auto shrink-0 text-accent max-[30rem]:h-4" />
+        <span className="roll-text max-[30rem]:sr-only">
+          <span className="roll-a flex h-11 items-center whitespace-nowrap">
+            {t("creative.codeBy")}
+          </span>
+          <span
+            aria-hidden
+            className="roll-b hidden h-11 items-center whitespace-nowrap pointer-fine:flex"
+          >
             {profile.fullName}
           </span>
         </span>
