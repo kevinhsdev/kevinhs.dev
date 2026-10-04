@@ -42,17 +42,25 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
       });
     };
 
-    const measure = () => {
-      // Pin only when the tallest card (plus the axis, the fixed header and the CTA dock) fits;
-      // otherwise the trail stays a sideways-scrolling row, so nothing is ever cut off.
+    const unpin = () => {
       rootEl.dataset.pinned = "false";
       rootEl.style.height = "";
-      const fits = viewEl.scrollHeight + 160 <= window.innerHeight;
-      const pinned = motion.matches && fits;
-      rootEl.dataset.pinned = String(pinned);
+      trackEl.style.transform = "";
+    };
+
+    const measure = () => {
+      unpin();
+      if (!motion.matches) return update();
+      // Pinned, each card is as tall as the screen allows and its photo shrinks to fit.
+      // If even the text of some card doesn't fit (a very short window), stay a sideways row.
+      rootEl.dataset.pinned = "true";
+      const cards = [...trackEl.children] as HTMLElement[];
+      if (cards.some((card) => card.scrollHeight > card.clientHeight + 1)) {
+        unpin();
+        return update();
+      }
       travel = Math.max(0, trackEl.scrollWidth - viewEl.clientWidth);
-      rootEl.style.height = pinned ? `${viewEl.clientHeight + travel}px` : "";
-      if (!pinned) trackEl.style.transform = "";
+      rootEl.style.height = `${viewEl.clientHeight + travel}px`;
       update();
     };
 
@@ -100,7 +108,12 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
       >
         <ol ref={track} className="journey-track">
           {entries.map((entry) => (
-            <li key={entry.id} className="journey-card" data-kind={entry.kind}>
+            <li
+              key={entry.id}
+              className="journey-card"
+              data-kind={entry.kind}
+              data-wide={entry.highlights.length >= 3 || undefined}
+            >
               <div className="journey-media">
                 {entry.image ? (
                   // Local files of known size; next/image is not needed for a handful of photos.
@@ -115,7 +128,7 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
                   </div>
                 )}
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="journey-text flex flex-col gap-2">
                 <span className="font-mono text-xs tracking-widest text-accent uppercase">
                   {entry.period}
                 </span>
@@ -127,7 +140,7 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
                   {entry.location && <span className="text-muted"> · {entry.location}</span>}
                 </p>
                 {entry.highlights.length > 0 && (
-                  <ul className="flex flex-col gap-1.5 text-sm leading-relaxed text-muted">
+                  <ul className="journey-highlights text-sm leading-relaxed text-muted">
                     {entry.highlights.map((highlight) => (
                       <li key={highlight} className="text-pretty">
                         {highlight}
