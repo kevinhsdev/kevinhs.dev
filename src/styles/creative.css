@@ -510,6 +510,8 @@
   flex: 1;
   min-height: 4.5rem;
   display: grid;
+  /* One row exactly as tall as the area, so a square logo can't stretch it. */
+  grid-template-rows: minmax(0, 1fr);
   place-items: center;
   padding: 1rem;
   border-bottom: 1px solid var(--border);
@@ -520,7 +522,7 @@
   );
 }
 .journey-term-brand img {
-  max-height: min(5.5rem, 70%);
+  max-height: min(5.5rem, 100%);
   max-width: 70%;
   width: auto;
   height: auto;

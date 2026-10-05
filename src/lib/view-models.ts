@@ -22,7 +22,7 @@ export type TimelineEntry = {
   isTodo: boolean;
   image?: { src: string; alt: string; focus?: string };
   topics: string[];
-  logo?: { src: string; alt: string };
+  logo?: { src: string; srcDark?: string; alt: string };
   /** Still in progress (no start date and flagged, or an open-ended item). */
   ongoing: boolean;
 };

@@ -28,9 +28,19 @@ function CourseTerminal({ entry, labels }: { entry: TimelineEntry; labels: Label
     <div className="journey-term">
       <div className="journey-term-brand">
         {entry.logo ? (
-          // Small local SVG logos; next/image adds nothing here.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={entry.logo.src} alt={entry.logo.alt} />
+          <>
+            {/* Small local SVG logos; next/image adds nothing here. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={entry.logo.src}
+              alt={entry.logo.alt}
+              className={cn(entry.logo.srcDark && "dark:hidden")}
+            />
+            {entry.logo.srcDark && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={entry.logo.srcDark} alt={entry.logo.alt} className="hidden dark:block" />
+            )}
+          </>
         ) : (
           <span className="font-display">{entry.org}</span>
         )}

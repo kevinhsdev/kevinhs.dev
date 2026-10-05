@@ -85,6 +85,9 @@ export const timeline = [
       en: "AWS Certified Cloud Practitioner (expected Dec 2026)",
     },
     org: "AWS",
+    // Wikimedia Commons (AWS 2025 logo); the dark-theme file has the lettering reversed to white,
+    // as AWS's own reversed logo does. Trademark of Amazon Web Services.
+    logo: { src: "/journey/aws.svg", srcDark: "/journey/aws-dark.svg", alt: "AWS" },
     start: null,
     inProgress: true,
     topics: [
