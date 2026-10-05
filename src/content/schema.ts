@@ -57,9 +57,21 @@ export const profileSchema = z.object({
     }),
   ),
   about: z.array(localized).min(1).max(4),
+  /** Two or three sentences for the home page, next to the polaroids. */
+  aboutShort: localized,
   education: z.object({ school: z.string(), schoolUrl: z.url() }),
 });
 export type Profile = z.infer<typeof profileSchema>;
+
+export const gallerySchema = z.object({
+  id: z.string(),
+  src: sitePath,
+  alt: localized,
+  caption: localized,
+  /** CSS object-position for cropping (default center). */
+  focus: z.string().optional(),
+});
+export type GalleryPhoto = z.infer<typeof gallerySchema>;
 
 export const timelineKinds = ["work", "study", "event"] as const;
 export type TimelineKind = (typeof timelineKinds)[number];

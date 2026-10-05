@@ -538,3 +538,231 @@
 .journey-media:has(> .journey-term) .journey-term-brand {
   min-height: 6.5rem;
 }
+
+/*
+ * Polaroids (about-teaser.tsx on the home, mural.tsx on /about). Printed
+ * photos: paper and ink come from the --paper tokens in both themes.
+ */
+.polaroid,
+.polaroid-paper {
+  margin: 0;
+  padding: 0.6rem 0.6rem 0;
+  background: var(--paper);
+  color: var(--paper-ink);
+  border-radius: 3px;
+  box-shadow: 0 1.25rem 2.5rem -1.25rem color-mix(in srgb, black 75%, transparent);
+}
+.polaroid img,
+.polaroid-paper img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 2px;
+}
+.polaroid figcaption,
+.polaroid-paper figcaption {
+  padding: 0.7rem 0.15rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Home: three stacked, fanning out on hover (fine pointers only). */
+.polaroid-stack {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  height: 20rem;
+  margin-inline: auto;
+}
+.polaroid-stack .polaroid {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(13.5rem, 58%);
+  transition: transform 500ms var(--ease-out-quint);
+}
+.polaroid-stack [data-i="0"] {
+  transform: translate(-50%, -50%) translateX(-2rem) rotate(-8deg);
+}
+.polaroid-stack [data-i="1"] {
+  transform: translate(-50%, -50%) translateX(2rem) rotate(6deg);
+}
+.polaroid-stack [data-i="2"] {
+  transform: translate(-50%, -50%) rotate(-1deg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .about-teaser:hover [data-i="0"] {
+    transform: translate(-50%, -50%) translateX(-5rem) rotate(-12deg);
+  }
+  .about-teaser:hover [data-i="1"] {
+    transform: translate(-50%, -50%) translateX(5rem) rotate(10deg);
+  }
+}
+
+/* /about: the wall. A grid, so it never overlaps; the tilt makes it a wall. */
+.mural {
+  list-style: none;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr));
+  gap: 2.75rem 2rem;
+  padding: clamp(1rem, 4vw, 3rem);
+  border-radius: 1.5rem;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(
+      circle at 15% 10%,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 45%
+    ),
+    var(--surface);
+}
+/* Phones: two photos per row; the note spans the row. */
+@media (max-width: 639px) {
+  .mural {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.25rem;
+  }
+  .mural-note {
+    grid-column: 1 / -1;
+  }
+}
+.mural > li {
+  position: relative;
+  rotate: var(--r, 0deg);
+}
+.mural-note {
+  padding: 1.5rem 1.25rem;
+  background: var(--paper);
+  color: var(--paper-ink);
+  border-radius: 3px;
+  box-shadow: 0 1.25rem 2.5rem -1.25rem color-mix(in srgb, black 75%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.mural-pin {
+  position: absolute;
+  top: -0.4rem;
+  left: 50%;
+  z-index: 1;
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-left: -0.4rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 4px color-mix(in srgb, black 50%, transparent);
+}
+.mural-photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  text-align: left;
+  border-radius: 3px;
+  transition:
+    transform 250ms var(--ease-out-quint),
+    rotate 250ms var(--ease-out-quint);
+}
+.mural-photo:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .mural-photo:hover {
+    transform: translateY(-0.4rem) scale(1.02);
+  }
+}
+
+/* The enlarged photo. */
+@keyframes zoom-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes zoom-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+@keyframes zoom-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+.zoom-overlay[data-state="open"] {
+  animation: zoom-fade-in 200ms ease;
+}
+.zoom-overlay[data-state="closed"] {
+  animation: zoom-fade-out 160ms ease;
+}
+.zoom-content[data-state="open"] .zoom-paper {
+  animation: zoom-in 260ms var(--ease-out-quint);
+}
+.zoom-content[data-state="closed"] .zoom-paper {
+  animation: zoom-out 160ms ease;
+}
+.zoom-paper {
+  width: auto;
+  max-width: 100%;
+  padding: 0.75rem 0.75rem 0;
+}
+.zoom-paper img {
+  width: auto;
+  max-width: min(100%, 56rem);
+  max-height: 72dvh;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+.zoom-paper figcaption {
+  font-size: 0.9rem;
+  white-space: normal;
+}
+.zoom-button {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, white 30%, transparent);
+  background: color-mix(in srgb, black 30%, transparent);
+  color: white;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+.zoom-button:hover {
+  background: color-mix(in srgb, white 15%, transparent);
+}
+.zoom-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .polaroid-stack .polaroid,
+  .mural-photo {
+    transition: none;
+  }
+  .zoom-content .zoom-paper,
+  .zoom-overlay {
+    animation: none !important;
+  }
+}

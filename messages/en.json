@@ -166,5 +166,21 @@
     "next": "Next",
     "read": "Read the case study",
     "sections": "More case studies"
+  },
+  "aboutPage": {
+    "title": "About me",
+    "description": "Who Kevin Henrique is: how he started coding, what he does today and what he enjoys away from the screen.",
+    "kicker": "README",
+    "lead": "How I started, what I do today and what I enjoy away from the screen.",
+    "back": "Back to home",
+    "more": "More about me",
+    "muralKicker": "photos",
+    "muralTitle": "Away from the screen",
+    "muralHint": "Click a photo to enlarge it.",
+    "noteTitle": "Hobbies",
+    "zoom": "Enlarge: {caption}",
+    "close": "Close",
+    "previous": "Previous photo",
+    "next": "Next photo"
   }
 }

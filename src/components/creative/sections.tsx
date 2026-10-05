@@ -4,8 +4,7 @@ import type { ReactNode } from "react";
 import { LinkedInIcon } from "@/components/shared/brand-icons";
 import { ContactForm } from "@/components/shared/contact-form";
 import { CopyEmailButton, CvButton, LinkedInButton } from "@/components/shared/ctas";
-import { Text } from "@/components/shared/text";
-import { pick, profile } from "@/content";
+import { profile } from "@/content";
 import type { Locale } from "@/i18n/routing";
 import { creativeButton } from "./hero";
 
@@ -34,18 +33,6 @@ export function Block({
       </div>
       {children}
     </section>
-  );
-}
-
-export async function CreativeAbout({ locale }: { locale: Locale }) {
-  return (
-    <div className="grid gap-6 text-lg leading-relaxed text-muted lg:grid-cols-3 lg:gap-10">
-      {profile.about.map((paragraph) => (
-        <Text key={paragraph.en} as="p" className="text-pretty">
-          {pick(paragraph, locale)}
-        </Text>
-      ))}
-    </div>
   );
 }
 

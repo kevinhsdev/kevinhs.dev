@@ -2,16 +2,12 @@ import { getTranslations } from "next-intl/server";
 import { CreativeHeader, CreativeHero, Marquee } from "@/components/creative/hero";
 import { CreativeMotion } from "@/components/creative/motion";
 import { PrintSummary } from "@/components/creative/print-summary";
+import { AboutTeaser } from "@/components/creative/about-teaser";
 import { Journey } from "@/components/creative/journey";
 import { Preloader } from "@/components/creative/preloader";
 import { SkillsExplorer } from "@/components/creative/skills-explorer";
 import { CompactProjects, StackedProjects } from "@/components/creative/projects";
-import {
-  Block,
-  CreativeAbout,
-  CreativeContact,
-  CreativeFooter,
-} from "@/components/creative/sections";
+import { Block, CreativeContact, CreativeFooter } from "@/components/creative/sections";
 import { CreativeShell } from "@/components/creative/shell";
 import { Statement } from "@/components/creative/statement";
 import { RegisterCommandNavigation } from "@/components/shared/command-menu";
@@ -36,6 +32,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     { label: t("nav.about"), href: "#about" },
     { label: t("nav.skills"), href: "#skills" },
     { label: t("nav.contact"), href: "#contact" },
+    { label: t("aboutPage.title"), href: "/about" },
     { label: t("nav.now"), href: "/now" },
   ];
 
@@ -86,7 +83,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           </Block>
 
           <Block id="about" kicker={t("creative.aboutKicker")} title={t("nav.about")}>
-            <CreativeAbout locale={locale} />
+            <AboutTeaser locale={locale} />
           </Block>
 
           <Block id="skills" kicker={t("creative.setupKicker")} title={t("nav.skills")}>

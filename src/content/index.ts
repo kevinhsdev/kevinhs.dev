@@ -1,9 +1,11 @@
 import { z } from "zod";
 import type { Locale } from "@/i18n/routing";
+import { gallery as rawGallery } from "./gallery";
 import { now as rawNow } from "./now";
 import { profile as rawProfile } from "./profile";
 import { projects as rawProjects } from "./projects";
 import {
+  gallerySchema,
   nowSchema,
   profileSchema,
   projectSchema,
@@ -27,6 +29,7 @@ export const projects = z
   .parse(rawProjects);
 export const skills = z.array(skillGroupSchema).parse(rawSkills);
 export const now = nowSchema.parse(rawNow);
+export const gallery = z.array(gallerySchema).min(3).parse(rawGallery);
 export const timeline = sortTimeline(z.array(timelineItemSchema).parse(rawTimeline));
 
 export const featuredProjects = projects.filter((p) => p.tier === "featured");

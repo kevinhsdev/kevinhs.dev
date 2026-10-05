@@ -42,6 +42,7 @@ const pairs: [fg: string, bg: string, min: number][] = [
   ["positive", "background", TEXT],
   ["positive", "surface", TEXT],
   ["danger", "surface", TEXT],
+  ["paper-ink", "paper", TEXT],
 ];
 
 const blocks = parseBlocks(readFileSync("src/styles/tokens.css", "utf8"));

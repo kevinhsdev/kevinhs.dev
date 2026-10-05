@@ -7,7 +7,7 @@ const hreflang = { pt: "pt-BR", en: "en" } as const;
 
 /** Every page in both languages, each entry pointing at its translation. */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const paths = ["", "/now", ...caseStudySlugs.map((slug) => `/projects/${slug}`)];
+  const paths = ["", "/about", "/now", ...caseStudySlugs.map((slug) => `/projects/${slug}`)];
 
   return paths.flatMap((path) =>
     routing.locales.map((locale) => ({

@@ -166,5 +166,21 @@
     "next": "Próximo",
     "read": "Ler estudo de caso",
     "sections": "Mais estudos de caso"
+  },
+  "aboutPage": {
+    "title": "Sobre mim",
+    "description": "Quem é Kevin Henrique: como começou a programar, o que faz hoje e o que gosta fora da tela.",
+    "kicker": "README",
+    "lead": "Como comecei, o que faço hoje e o que gosto de fazer fora da tela.",
+    "back": "Voltar ao início",
+    "more": "Mais sobre mim",
+    "muralKicker": "fotos",
+    "muralTitle": "Fora da tela",
+    "muralHint": "Clique numa foto para ampliar.",
+    "noteTitle": "Hobbies",
+    "zoom": "Ampliar: {caption}",
+    "close": "Fechar",
+    "previous": "Foto anterior",
+    "next": "Próxima foto"
   }
 }

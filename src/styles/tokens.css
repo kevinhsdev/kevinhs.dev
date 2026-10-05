@@ -17,6 +17,9 @@
   --link: #1f4fd6;
   --positive: #166534;
   --danger: #b91c1c;
+  /* Printed photos (polaroids): paper and caption ink. */
+  --paper: #ffffff;
+  --paper-ink: #0a1430;
 }
 
 .dark {
@@ -30,4 +33,6 @@
   --link: #7aa8ff;
   --positive: #4ade80;
   --danger: #f87171;
+  --paper: #eef2fb;
+  --paper-ink: #0a1430;
 }

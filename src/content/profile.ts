@@ -62,6 +62,10 @@ export const profile = {
     },
     { code: "es", name: { pt: "Espanhol", en: "Spanish" }, level: { pt: "Básico", en: "Basic" } },
   ],
+  aboutShort: {
+    pt: "Estudo Engenharia de Software na UMC e sou Jovem Aprendiz na secretaria de uma escola, onde criei o PDF Renamer e o SEK. Comecei a programar aos 15. Fora da tela: música (teclado, guitarra, bateria e violão), vôlei, musculação e videogame.",
+    en: "I study Software Engineering at UMC and I'm an apprentice in a school's office, where I built PDF Renamer and SEK. I started coding at 15. Away from the screen: music (keyboard, electric guitar, drums and acoustic guitar), volleyball, weight training and video games.",
+  },
   about: [
     {
       pt: "Curso Engenharia de Software na UMC e trabalho desde os 17 anos. Hoje sou Jovem Aprendiz na secretaria de uma escola, e foi lá que encontrei o problema que mudou meu jeito de estudar: documentos classificados e renomeados à mão, turma por turma. Construí uma ferramenta que lê o conteúdo de cada arquivo e faz isso sozinha. Ela entrou na rotina da equipe, e uma turma que levava 3 dias passou a levar até 1.",
