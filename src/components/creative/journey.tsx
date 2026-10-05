@@ -163,12 +163,7 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
       >
         <ol ref={track} className="journey-track">
           {entries.map((entry) => (
-            <li
-              key={entry.id}
-              className="journey-card"
-              data-kind={entry.kind}
-              data-wide={entry.highlights.length >= 3 || undefined}
-            >
+            <li key={entry.id} className="journey-card" data-kind={entry.kind}>
               <div className="journey-media">
                 {entry.image ? (
                   // Local files of known size; next/image is not needed for a handful of photos.
@@ -211,15 +206,6 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
                     </span>
                   )}
                 </p>
-                {entry.highlights.length > 0 && (
-                  <ul className="journey-highlights mt-1 text-sm leading-relaxed text-muted">
-                    {entry.highlights.map((highlight) => (
-                      <li key={highlight} className="text-pretty">
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
             </li>
           ))}

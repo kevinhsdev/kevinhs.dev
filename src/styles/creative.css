@@ -360,48 +360,6 @@
   scroll-snap-align: start;
   scroll-margin-inline: 1rem;
 }
-/* The card with the most to say is laid out sideways: photo left, text right. */
-.journey-card[data-wide] {
-  width: min(46rem, 88vw);
-}
-@media (min-width: 900px) {
-  .journey-card[data-wide] {
-    display: grid;
-    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
-  }
-  /* With a real photo, the picture gets almost half the card so it isn't cropped to a sliver. */
-  .journey-card[data-wide]:has(.journey-media img) {
-    width: min(52rem, 88vw);
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
-  }
-  .journey-card[data-wide] {
-    gap: 1.75rem;
-    align-items: start;
-  }
-  .journey-card[data-wide] .journey-media,
-  .journey[data-pinned="true"] .journey-card[data-wide] .journey-media {
-    align-self: stretch;
-    height: auto;
-    max-height: none;
-    min-height: 12rem;
-    aspect-ratio: auto;
-  }
-}
-.journey-highlights {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-.journey-highlights li {
-  position: relative;
-  padding-left: 1.4rem;
-}
-.journey-highlights li::before {
-  content: "→";
-  position: absolute;
-  left: 0;
-  color: var(--accent);
-}
 .journey-media {
   aspect-ratio: 16 / 9;
   overflow: hidden;
@@ -579,13 +537,4 @@
 }
 .journey-media:has(> .journey-term) .journey-term-brand {
   min-height: 6.5rem;
-}
-/* A real photo in the wide card keeps a 4:3 frame instead of stretching to the card's height. */
-@media (min-width: 900px) {
-  .journey-card[data-wide] .journey-media:has(img),
-  .journey[data-pinned="true"] .journey-card[data-wide] .journey-media:has(img) {
-    align-self: start;
-    aspect-ratio: 4 / 3;
-    min-height: 0;
-  }
 }
