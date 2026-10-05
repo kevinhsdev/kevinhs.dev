@@ -368,6 +368,13 @@
   .journey-card[data-wide] {
     display: grid;
     grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+  }
+  /* With a real photo, the picture gets almost half the card so it isn't cropped to a sliver. */
+  .journey-card[data-wide]:has(.journey-media img) {
+    width: min(52rem, 88vw);
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  }
+  .journey-card[data-wide] {
     gap: 1.75rem;
     align-items: start;
   }
@@ -572,4 +579,13 @@
 }
 .journey-media:has(> .journey-term) .journey-term-brand {
   min-height: 6.5rem;
+}
+/* A real photo in the wide card keeps a 4:3 frame instead of stretching to the card's height. */
+@media (min-width: 900px) {
+  .journey-card[data-wide] .journey-media:has(img),
+  .journey[data-pinned="true"] .journey-card[data-wide] .journey-media:has(img) {
+    align-self: start;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+  }
 }

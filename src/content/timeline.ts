@@ -12,6 +12,15 @@ export const timeline = [
     },
     org: "OASE · Instituto Educacional Luterano",
     location: { pt: "Ferraz de Vasconcelos, SP", en: "Ferraz de Vasconcelos, Brazil" },
+    // The banner (a student's photo and name) and the street number are blurred in the file.
+    image: {
+      src: "/journey/luterano.jpg",
+      alt: {
+        pt: "Fachada do Instituto Educacional Luterano, com o nome no prédio",
+        en: "The front of the Instituto Educacional Luterano building, with its name on the wall",
+      },
+      focus: "38% 45%",
+    },
     start: "2025-08",
     end: "present",
     highlights: [
