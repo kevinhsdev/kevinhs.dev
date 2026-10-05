@@ -53,6 +53,10 @@ export const timeline = [
     org: "Santander",
     start: null,
     inProgress: true,
+    topics: [
+      { pt: "Cibersegurança", en: "Cybersecurity" },
+      { pt: "Do zero à prática", en: "From zero to practice" },
+    ],
   },
   {
     id: "bootcamp-itau",
@@ -64,6 +68,10 @@ export const timeline = [
     org: "Itaú",
     start: null,
     inProgress: true,
+    topics: [
+      { pt: "Java", en: "Java" },
+      { pt: "Inteligência artificial", en: "Artificial intelligence" },
+    ],
   },
   {
     id: "aws-cert",
@@ -75,6 +83,10 @@ export const timeline = [
     org: "AWS",
     start: null,
     inProgress: true,
+    topics: [
+      { pt: "Cloud Practitioner", en: "Cloud Practitioner" },
+      { pt: "Fundamentos de nuvem", en: "Cloud fundamentals" },
+    ],
   },
   {
     id: "dio-ai",
@@ -85,15 +97,21 @@ export const timeline = [
     },
     org: "DIO",
     start: "2026-09",
+    topics: [
+      { pt: "Machine learning", en: "Machine learning" },
+      { pt: "LLMs", en: "LLMs" },
+      { pt: "IA generativa", en: "Generative AI" },
+      { pt: "Agentes", en: "Agents" },
+    ],
   },
   {
     id: "gcloud-sp-fiap",
     kind: "event",
     title: {
-      pt: "Google Cloud Group São Paulo na FIAP",
-      en: "Google Cloud Group São Paulo at FIAP",
+      pt: "GDG Cloud São Paulo na FIAP",
+      en: "GDG Cloud São Paulo at FIAP",
     },
-    org: "Google Cloud Group São Paulo · FIAP",
+    org: "Google Developer Groups Cloud São Paulo · FIAP",
     start: "2026-09",
     image: {
       src: "/journey/gdg-cloud-sp.jpg",
@@ -128,6 +146,13 @@ export const timeline = [
     },
     org: "Alura",
     start: "2026",
+    topics: [
+      { pt: "Lógica I e II", en: "Logic I & II" },
+      { pt: "Java", en: "Java" },
+      { pt: "OO com Java", en: "OOP in Java" },
+      { pt: "Listas e coleções", en: "Lists & collections" },
+      { pt: "Git e GitHub", en: "Git & GitHub" },
+    ],
   },
   {
     id: "ef-malta",

@@ -58,7 +58,7 @@ test.describe("version B · creative", () => {
     await page.goto("/pt");
     const journey = page.locator(".journey");
     await expect(journey.locator(".journey-card")).toHaveCount(11);
-    await expect(journey).toContainText("Google Cloud Group São Paulo na FIAP");
+    await expect(journey).toContainText("GDG Cloud São Paulo na FIAP");
     await expect(journey).toHaveAttribute("data-pinned", "true");
     const track = journey.locator(".journey-track");
     // Scroll to the end of the pinned section: the track has moved and the last tick is on.

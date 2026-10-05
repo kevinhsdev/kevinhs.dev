@@ -76,6 +76,10 @@ export const timelineItemSchema = z.object({
   endIsExpected: z.boolean().optional(),
   inProgress: z.boolean().optional(),
   highlights: z.array(localized).default([]),
+  /** Course topics, shown as a terminal in the journey card when there is no photo. */
+  topics: z.array(localized).optional(),
+  /** Issuer logo (single color, transparent) for that terminal's title bar. */
+  logo: z.object({ src: sitePath, alt: z.string() }).optional(),
   /** Optional photo for the journey section (put the file in /public/journey). No people without consent. */
   image: z
     .object({

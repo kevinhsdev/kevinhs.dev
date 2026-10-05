@@ -21,6 +21,10 @@ export type TimelineEntry = {
   highlights: string[];
   isTodo: boolean;
   image?: { src: string; alt: string; focus?: string };
+  topics: string[];
+  logo?: { src: string; alt: string };
+  /** Still in progress (no start date and flagged, or an open-ended item). */
+  ongoing: boolean;
 };
 
 export async function getTimelineEntries(locale: Locale): Promise<TimelineEntry[]> {
@@ -43,6 +47,9 @@ export async function getTimelineEntries(locale: Locale): Promise<TimelineEntry[
         alt: pick(item.image.alt, locale),
         focus: item.image.focus,
       },
+      topics: (item.topics ?? []).map((topic) => pick(topic, locale)),
+      logo: item.logo,
+      ongoing: Boolean(item.inProgress) || item.end === "present",
     };
   });
 }

@@ -79,6 +79,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               labels={{
                 kinds: kindLabels,
                 inProgress: t("timeline.inProgress"),
+                done: t("timeline.done"),
                 region: t("nav.experience"),
               }}
             />

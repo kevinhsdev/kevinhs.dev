@@ -7,11 +7,57 @@ import type { TimelineEntry } from "@/lib/view-models";
 type Labels = {
   kinds: Record<TimelineEntry["kind"], string>;
   inProgress: string;
+  done: string;
   /** Accessible name of the trail when it scrolls sideways. */
   region: string;
 };
 
 const year = (entry: TimelineEntry) => entry.start?.slice(0, 4) ?? null;
+
+/** "Itaú" → "itau": the issuer as a command name. */
+const command = (org: string) =>
+  (org.split(/[ ·]/)[0] ?? org).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+/** A course without a photo: a terminal "running" it, one line per topic. */
+function CourseTerminal({ entry, labels }: { entry: TimelineEntry; labels: Labels }) {
+  const cli = command(entry.org);
+  return (
+    <div className="journey-term">
+      <div className="journey-term-bar">
+        <span aria-hidden className="journey-term-dots">
+          <i />
+          <i />
+          <i />
+        </span>
+        {entry.logo && (
+          // Small local SVG/PNG logos; next/image adds nothing here.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img className="journey-term-logo" src={entry.logo.src} alt={entry.logo.alt} />
+        )}
+        <span aria-hidden>{cli}</span>
+      </div>
+      <div className="journey-term-body">
+        <p aria-hidden>
+          <span className="text-accent">$</span> {cli} --status
+        </p>
+        <ul>
+          {entry.topics.map((topic) => (
+            <li key={topic}>
+              <span aria-hidden className={entry.ongoing ? "text-accent" : "text-positive"}>
+                {entry.ongoing ? "›" : "✓"}
+              </span>{" "}
+              {topic}
+            </li>
+          ))}
+        </ul>
+        <p className={entry.ongoing ? "text-accent" : "text-positive"}>
+          {entry.ongoing ? labels.inProgress : labels.done}
+          {entry.ongoing && <span aria-hidden className="journey-term-caret" />}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 /**
  * The journey (oldest → newest) as a horizontal trail. Server-rendered as a
@@ -125,6 +171,8 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
                     decoding="async"
                     style={{ objectPosition: entry.image.focus }}
                   />
+                ) : entry.topics.length > 0 ? (
+                  <CourseTerminal entry={entry} labels={labels} />
                 ) : (
                   <div aria-hidden className="journey-plate">
                     <span className="font-display">{year(entry) ?? "→"}</span>

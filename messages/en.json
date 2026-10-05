@@ -58,6 +58,7 @@
       "event": "Events"
     },
     "present": "present",
+    "done": "completed",
     "inProgress": "in progress",
     "expected": "expected"
   },
