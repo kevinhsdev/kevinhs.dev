@@ -103,6 +103,8 @@ export const timeline = [
       en: "Foundations of Modern AI: ML, LLMs, Generative AI and Agents",
     },
     org: "DIO",
+    // Official logo from dio.me (single color: white on the dark theme, navy on the light one).
+    logo: { src: "/journey/dio.svg", srcDark: "/journey/dio-dark.svg", alt: "DIO" },
     start: "2026-09",
     topics: [
       { pt: "Machine learning", en: "Machine learning" },
@@ -152,6 +154,8 @@ export const timeline = [
       en: "Programming Logic I & II, Java, OOP in Java, Lists & Collections, Git and GitHub",
     },
     org: "Alura",
+    // Official logo from alura.com.br (single color: gray, or white on the dark theme).
+    logo: { src: "/journey/alura.svg", srcDark: "/journey/alura-dark.svg", alt: "Alura" },
     start: "2026",
     topics: [
       { pt: "Lógica I e II", en: "Logic I & II" },
