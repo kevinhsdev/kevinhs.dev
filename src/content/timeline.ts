@@ -95,6 +95,14 @@ export const timeline = [
     },
     org: "Google Cloud Group São Paulo · FIAP",
     start: "2026-09",
+    image: {
+      src: "/journey/gdg-cloud-sp.jpg",
+      alt: {
+        pt: "Telão com “GDG Cloud São Paulo” numa sala de eventos",
+        en: "A screen reading “GDG Cloud São Paulo” in an event room",
+      },
+      focus: "72% 55%",
+    },
   },
   {
     id: "soujava-oracle",
@@ -102,6 +110,14 @@ export const timeline = [
     title: { pt: "Encontro SouJava × Oracle Brasil", en: "SouJava × Oracle Brazil Meetup" },
     org: "SouJava · Oracle",
     start: "2026-09",
+    image: {
+      src: "/journey/soujava-oracle.jpg",
+      alt: {
+        pt: "Escultura do logotipo da Oracle no saguão do escritório, à noite",
+        en: "The Oracle logo sculpture in the office lobby at night",
+      },
+      focus: "50% 58%",
+    },
   },
   {
     id: "alura",
@@ -119,6 +135,14 @@ export const timeline = [
     title: { pt: "Intercâmbio de inglês em Malta", en: "English study abroad in Malta" },
     org: "EF International Language Campuses",
     start: "2025-07",
+    image: {
+      src: "/journey/malta.jpg",
+      alt: {
+        pt: "Bandeira da EF ao vento diante de uma baía com barcos em Malta",
+        en: "An EF flag flying over a bay full of boats in Malta",
+      },
+      focus: "40% 62%",
+    },
   },
   {
     id: "cna-c1",

@@ -118,7 +118,13 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
                 {entry.image ? (
                   // Local files of known size; next/image is not needed for a handful of photos.
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={entry.image.src} alt={entry.image.alt} loading="lazy" />
+                  <img
+                    src={entry.image.src}
+                    alt={entry.image.alt}
+                    loading="lazy"
+                    decoding="async"
+                    style={{ objectPosition: entry.image.focus }}
+                  />
                 ) : (
                   <div aria-hidden className="journey-plate">
                     <span className="font-display">{year(entry) ?? "→"}</span>

@@ -20,7 +20,7 @@ export type TimelineEntry = {
   location?: string;
   highlights: string[];
   isTodo: boolean;
-  image?: { src: string; alt: string };
+  image?: { src: string; alt: string; focus?: string };
 };
 
 export async function getTimelineEntries(locale: Locale): Promise<TimelineEntry[]> {
@@ -38,7 +38,11 @@ export async function getTimelineEntries(locale: Locale): Promise<TimelineEntry[
       location: item.location && pick(item.location, locale),
       highlights: item.highlights.map((highlight) => pick(highlight, locale)),
       isTodo: isTodo(title),
-      image: item.image && { src: item.image.src, alt: pick(item.image.alt, locale) },
+      image: item.image && {
+        src: item.image.src,
+        alt: pick(item.image.alt, locale),
+        focus: item.image.focus,
+      },
     };
   });
 }
