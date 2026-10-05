@@ -1,4 +1,4 @@
-# Kevin Henrique — Portfolio
+# kevinhs.dev — Portfolio
 
 Personal portfolio of **Kevin Henrique da Silva**, a Software Engineering student in São Paulo,
 Brazil, looking for an internship in backend (Java/Spring), DevOps/Cloud and applied AI.
