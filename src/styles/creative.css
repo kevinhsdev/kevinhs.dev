@@ -497,52 +497,55 @@
   }
 }
 
-/* A course "running" in a terminal (no photo). */
+/* A course without a photo: issuer logo (or name) on top, a compact terminal below. */
 .journey-term {
   height: 100%;
   display: flex;
   flex-direction: column;
   font-family: var(--font-mono);
   font-size: 0.78rem;
-  line-height: 1.7;
-  background: var(--background);
+  line-height: 1.6;
 }
-.journey-term-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.45rem 0.85rem;
+.journey-term-brand {
+  flex: 1;
+  min-height: 4.5rem;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
   border-bottom: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 0.7rem;
+  background: radial-gradient(
+    110% 100% at 50% 0%,
+    color-mix(in srgb, var(--accent) 16%, transparent),
+    transparent 70%
+  );
 }
-.journey-term-dots {
-  display: flex;
-  gap: 0.3rem;
-}
-.journey-term-dots i {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background: var(--border);
-}
-.journey-term-logo {
-  height: 1rem;
+.journey-term-brand img {
+  max-height: min(5.5rem, 70%);
+  max-width: 70%;
   width: auto;
-  max-width: 5rem;
+  height: auto;
   object-fit: contain;
 }
-.journey-term-body {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  padding: 0.6rem 0.9rem;
-  color: var(--muted);
+.journey-term-brand .font-display {
+  font-size: clamp(2.25rem, 4.5vw, 3.25rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--accent);
 }
+.journey-term-body {
+  flex: none;
+  padding: 0.7rem 0.9rem 0.8rem;
+  color: var(--muted);
+  background: var(--background);
+}
+/* Topics run on one line and wrap, so the terminal stays as short as its content. */
 .journey-term-body ul {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1rem;
 }
 .journey-term-caret {
   display: inline-block;
@@ -554,10 +557,17 @@
   animation: caret-blink 1s steps(1) infinite;
 }
 .journey[data-pinned="true"] .journey-media:has(> .journey-term) {
-  min-height: 10.5rem;
+  min-height: 11rem;
 }
 @media (prefers-reduced-motion: reduce) {
   .journey-term-caret {
     animation: none;
   }
+}
+/* Unpinned, course cards take their content's height instead of a fixed 16:9. */
+.journey-media:has(> .journey-term) {
+  aspect-ratio: auto;
+}
+.journey-media:has(> .journey-term) .journey-term-brand {
+  min-height: 6.5rem;
 }

@@ -18,23 +18,22 @@ const year = (entry: TimelineEntry) => entry.start?.slice(0, 4) ?? null;
 const command = (org: string) =>
   (org.split(/[ ·]/)[0] ?? org).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
-/** A course without a photo: a terminal "running" it, one line per topic. */
+/**
+ * A course without a photo: the issuer's logo (or name) on top, and below it a
+ * compact terminal "running" the course, one entry per topic.
+ */
 function CourseTerminal({ entry, labels }: { entry: TimelineEntry; labels: Labels }) {
   const cli = command(entry.org);
   return (
     <div className="journey-term">
-      <div className="journey-term-bar">
-        <span aria-hidden className="journey-term-dots">
-          <i />
-          <i />
-          <i />
-        </span>
-        {entry.logo && (
-          // Small local SVG/PNG logos; next/image adds nothing here.
+      <div className="journey-term-brand">
+        {entry.logo ? (
+          // Small local SVG logos; next/image adds nothing here.
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="journey-term-logo" src={entry.logo.src} alt={entry.logo.alt} />
+          <img src={entry.logo.src} alt={entry.logo.alt} />
+        ) : (
+          <span className="font-display">{entry.org}</span>
         )}
-        <span aria-hidden>{cli}</span>
       </div>
       <div className="journey-term-body">
         <p aria-hidden>

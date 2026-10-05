@@ -51,6 +51,8 @@ export const timeline = [
       en: "Santander Bootcamp: Cybersecurity from Zero to Practice",
     },
     org: "Santander",
+    // Wikimedia Commons, public domain (trademark of Banco Santander).
+    logo: { src: "/journey/santander.svg", alt: "Santander" },
     start: null,
     inProgress: true,
     topics: [
@@ -66,6 +68,8 @@ export const timeline = [
       en: "Itaú Bootcamp: Java with Artificial Intelligence",
     },
     org: "Itaú",
+    // Wikimedia Commons, public domain (trademark of Itaú Unibanco).
+    logo: { src: "/journey/itau.svg", alt: "Itaú" },
     start: null,
     inProgress: true,
     topics: [
