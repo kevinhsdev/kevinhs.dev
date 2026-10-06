@@ -329,19 +329,23 @@
   /* Clear of the fixed header on top and the CTA dock at the bottom. */
   padding-block: 4.5rem 5.5rem;
 }
-/* Pinned: cards fill the height left over, and the photo gives way to the text. */
+/*
+ * Pinned: the cards scale with the screen and the trail sits centered. Photos
+ * keep a 4:3 frame; on short screens the track shrinks and the photo gives
+ * way to the text.
+ */
 .journey[data-pinned="true"] .journey-track {
-  flex: 1;
+  flex: 0 1 auto;
   min-height: 0;
 }
 .journey[data-pinned="true"] .journey-card {
+  width: min(clamp(22rem, 28vw, 34rem), 82vw);
   min-height: 0;
 }
 .journey[data-pinned="true"] .journey-media {
-  flex: 1 1 0;
+  flex: 0 1 auto;
   min-height: 4.5rem;
-  max-height: 22rem;
-  aspect-ratio: auto;
+  aspect-ratio: 4 / 3;
 }
 .journey[data-pinned="true"] .journey-text {
   flex: none;

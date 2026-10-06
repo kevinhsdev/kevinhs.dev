@@ -106,11 +106,14 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
     const measure = () => {
       unpin();
       if (!motion.matches) return update();
-      // Pinned, each card is as tall as the screen allows and its photo shrinks to fit.
+      // Pinned, the cards scale with the screen and the photos shrink on short ones.
       // If even the text of some card doesn't fit (a very short window), stay a sideways row.
       rootEl.dataset.pinned = "true";
       const cards = [...trackEl.children] as HTMLElement[];
-      if (cards.some((card) => card.scrollHeight > card.clientHeight + 1)) {
+      const overflows =
+        viewEl.scrollHeight > viewEl.clientHeight + 1 ||
+        cards.some((card) => card.scrollHeight > card.clientHeight + 1);
+      if (overflows) {
         unpin();
         return update();
       }
