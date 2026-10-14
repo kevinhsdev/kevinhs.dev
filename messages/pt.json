@@ -79,7 +79,8 @@
       "academic": "Projeto acadêmico"
     },
     "mockupAlt": "Tela de demonstração do {title}, com dados fictícios",
-    "demoNote": "dados fictícios"
+    "demoNote": "dados fictícios",
+    "private": "Privado"
   },
   "skills": {
     "tiers": {
@@ -129,20 +130,16 @@
     "scroll": "Role para ver",
     "marquee": ["Java", "Spring Boot", "MySQL", "DevOps", "Cloud", "IA aplicada"],
     "statement": ["Vi um problema real.", "Construí a solução.", "Hoje ela roda todo dia."],
-    "projectsKicker": "Em destaque",
-    "setupKicker": "Stack",
     "otherProjects": "Outros projetos",
     "talk": "Vamos conversar",
-    "aboutKicker": "README",
     "skip": "Pular",
     "editorComment": "Olá! Este sou eu, em TypeScript.",
     "editorLabel": "Perfil em código (kevin.ts)",
     "telemetryStrip": "Telemetria de projetos reais",
-    "project": "Projeto",
-    "experienceKicker": "git log --reverse",
     "skillsLabel": "Níveis de habilidade",
     "skillsHint": "Selecione um nível para ver as habilidades.",
-    "codeBy": "© Code by Kevin"
+    "codeBy": "© Code by Kevin",
+    "formFile": "mensagem.md"
   },
   "menu": {
     "open": "Abrir menu",
@@ -155,7 +152,7 @@
   "caseStudy": {
     "back": "Todos os projetos",
     "kicker": "Estudo de caso",
-    "readingTime": "{minutes} min de leitura",
+    "readingTime": "{minutes} min",
     "role": "Papel",
     "year": "Ano",
     "status": "Status",
@@ -165,22 +162,32 @@
     "previous": "Anterior",
     "next": "Próximo",
     "read": "Ler estudo de caso",
-    "sections": "Mais estudos de caso"
+    "sections": "Mais estudos de caso",
+    "outline": "Nesta página",
+    "reading": "Leitura"
   },
   "aboutPage": {
     "title": "Sobre mim",
     "description": "Quem é Kevin Henrique: como começou a programar, o que faz hoje e o que gosta fora da tela.",
-    "kicker": "README",
-    "lead": "Como comecei, o que faço hoje e o que gosto de fazer fora da tela.",
     "back": "Voltar ao início",
     "more": "Mais sobre mim",
-    "muralKicker": "fotos",
-    "muralTitle": "Fora da tela",
-    "muralHint": "Clique numa foto para ampliar.",
-    "noteTitle": "Hobbies",
     "zoom": "Ampliar: {caption}",
     "close": "Fechar",
     "previous": "Foto anterior",
-    "next": "Próxima foto"
+    "next": "Próxima foto",
+    "facts": {
+      "started": "Comecei a programar",
+      "startedValue": "aos {age} anos",
+      "study": "Estudo",
+      "location": "Moro em",
+      "languages": "Idiomas"
+    }
+  },
+  "aboutTeaser": {
+    "startedLabel": "anos quando comecei a programar",
+    "languages": "Idiomas",
+    "offScreen": "Fora da tela",
+    "learning": "Estudando agora",
+    "nowLink": "O que estou fazendo agora"
   }
 }

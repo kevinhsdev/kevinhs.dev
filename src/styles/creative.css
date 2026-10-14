@@ -178,6 +178,81 @@
 }
 
 /*
+ * Skills (components/creative/skills-explorer.tsx): the open file, one skill
+ * per numbered line in display type. Two columns from lg, filled top to
+ * bottom. The panel reserves the longest file's height so tabs never jump.
+ */
+.skills-file {
+  --line: 3.25rem;
+  min-height: calc(var(--rows) * var(--line) + 2rem);
+}
+.skills-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.skills-lines > li {
+  display: grid;
+  grid-template-columns: 2.75rem 2.75rem minmax(0, 1fr);
+  align-items: center;
+  min-height: var(--line);
+  padding: 0.55rem 1rem 0.45rem 0;
+}
+.skills-lines .font-display {
+  font-size: clamp(1.75rem, 2.6vw, 2.6rem);
+  line-height: 1;
+  text-wrap: balance;
+}
+/* Marks: a technology's full-color logo, or a concept's stroke icon in a neutral tone. */
+.skills-mark {
+  display: block;
+  width: 1.75rem;
+  height: 1.75rem;
+  transition: scale 200ms var(--ease-out-quint);
+}
+.skills-icon {
+  padding: 0.1rem;
+  color: var(--muted);
+  stroke-width: 1.75;
+}
+.skills-ln {
+  justify-self: end;
+  padding-right: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: color-mix(in srgb, var(--muted) 70%, transparent);
+  font-variant-numeric: tabular-nums;
+  transition: color 150ms ease;
+}
+/* The line under the pointer reads as the editor's current line. */
+@media (hover: hover) and (pointer: fine) {
+  .skills-lines > li:hover {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  .skills-lines > li:hover .skills-ln {
+    color: var(--accent);
+  }
+  .skills-lines > li:hover .skills-mark {
+    scale: 1.12;
+  }
+  .skills-lines > li:hover .skills-icon {
+    color: var(--accent);
+  }
+}
+@media (min-width: 1024px) {
+  .skills-file {
+    --line: 3.75rem;
+    min-height: calc(var(--rows-2) * var(--line) + 3rem);
+  }
+  .skills-lines {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(var(--lines-2), auto);
+    grid-auto-flow: column;
+  }
+}
+
+/*
  * Hero editor (components/creative/hero-editor.tsx): each line is unclipped in
  * one step per character, after the previous line. The editor itself rises in
  * first (~350ms). Reduced motion shows the code at once.
@@ -224,11 +299,11 @@
   align-items: baseline;
   gap: 1rem;
   margin: 4.5rem 0 1.25rem;
-  scroll-margin-top: 6rem;
   font-family: var(--font-display), var(--font-sans);
   font-size: clamp(2.25rem, 5vw, 3.75rem);
   line-height: 1;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 .case-h2::before {
   content: counter(section, decimal-leading-zero);
@@ -376,30 +451,49 @@
   height: 100%;
   object-fit: cover;
 }
+/* No photo: a commit on a git graph. A rail runs down the left with a node at the hash. */
 .journey-plate {
+  position: relative;
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
+  gap: 0.35rem;
+  padding: 1.25rem 1.5rem 1.25rem 3rem;
   color: var(--muted);
   background: radial-gradient(
     110% 90% at 85% 0%,
-    color-mix(in srgb, var(--accent) 22%, transparent),
+    color-mix(in srgb, var(--accent) 16%, transparent),
     transparent 65%
   );
 }
-.journey-plate .font-display {
-  font-size: clamp(3.5rem, 7vw, 5rem);
-  line-height: 0.9;
-  color: var(--accent);
+.journey-plate::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 1.5rem;
+  width: 2px;
+  background: linear-gradient(var(--border), var(--accent) 40%, var(--border));
 }
-.journey-card[data-kind="event"] .journey-plate {
-  background: radial-gradient(
-    110% 90% at 85% 0%,
-    color-mix(in srgb, var(--positive) 18%, transparent),
-    transparent 65%
-  );
+.journey-plate::after {
+  content: "";
+  position: absolute;
+  top: 1.45rem;
+  left: calc(1.5rem + 1px);
+  width: 0.7rem;
+  height: 0.7rem;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+}
+.journey-plate-year {
+  margin-top: auto;
+  font-size: clamp(4rem, 8vw, 6rem);
+  line-height: 0.85;
+  color: color-mix(in srgb, var(--foreground) 14%, transparent);
+}
+.journey-card[data-kind="event"] .journey-plate::after {
+  border-color: var(--positive);
 }
 .journey-axis {
   position: relative;
@@ -457,12 +551,6 @@
   }
   .journey-card {
     scroll-margin-inline: 2rem;
-  }
-}
-/* Phones: the year plates are decorative, so they give their room to the text. */
-@media (max-width: 639px) {
-  .journey-media:has(> .journey-plate) {
-    display: none;
   }
 }
 
@@ -543,149 +631,78 @@
   min-height: 6.5rem;
 }
 
-/*
- * Polaroids (about-teaser.tsx on the home, mural.tsx on /about). Printed
- * photos: paper and ink come from the --paper tokens in both themes.
- */
-.polaroid,
-.polaroid-paper {
-  margin: 0;
-  padding: 0.6rem 0.6rem 0;
-  background: var(--paper);
-  color: var(--paper-ink);
-  border-radius: 3px;
-  box-shadow: 0 1.25rem 2.5rem -1.25rem color-mix(in srgb, black 75%, transparent);
-}
-.polaroid img,
-.polaroid-paper img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 2px;
-}
-.polaroid figcaption,
-.polaroid-paper figcaption {
-  padding: 0.7rem 0.15rem 0.85rem;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Home: three stacked, fanning out on hover (fine pointers only). */
-.polaroid-stack {
-  position: relative;
-  width: 100%;
-  max-width: 26rem;
-  height: 20rem;
-  margin-inline: auto;
-}
-.polaroid-stack .polaroid {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(13.5rem, 58%);
-  transition: transform 500ms var(--ease-out-quint);
-}
-.polaroid-stack [data-i="0"] {
-  transform: translate(-50%, -50%) translateX(-2rem) rotate(-8deg);
-}
-.polaroid-stack [data-i="1"] {
-  transform: translate(-50%, -50%) translateX(2rem) rotate(6deg);
-}
-.polaroid-stack [data-i="2"] {
-  transform: translate(-50%, -50%) rotate(-1deg);
+/* Photos on the home's About tiles: they ease in a little under the pointer. */
+.about-photo img {
+  transition: scale 700ms var(--ease-out-quint);
 }
 @media (hover: hover) and (pointer: fine) {
-  .about-teaser:hover [data-i="0"] {
-    transform: translate(-50%, -50%) translateX(-5rem) rotate(-12deg);
-  }
-  .about-teaser:hover [data-i="1"] {
-    transform: translate(-50%, -50%) translateX(5rem) rotate(10deg);
+  .about-photo:hover img {
+    scale: 1.04;
   }
 }
 
-/* /about: the wall. A grid, so it never overlaps; the tilt makes it a wall. */
-.mural {
+/*
+ * About me: a theme's mosaic (mosaic.tsx). A wrapping row of photos at one
+ * height and their natural shapes, sized like the rest of the page's cards;
+ * width/height on the <img> reserve the space before it loads.
+ */
+.mosaic {
+  --mosaic-h: 14rem;
   list-style: none;
   margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(13rem, 100%), 1fr));
-  gap: 2.75rem 2rem;
-  padding: clamp(1rem, 4vw, 3rem);
-  border-radius: 1.5rem;
-  border: 1px solid var(--border);
-  background:
-    radial-gradient(
-      circle at 15% 10%,
-      color-mix(in srgb, var(--accent) 10%, transparent),
-      transparent 45%
-    ),
-    var(--surface);
-}
-/* Phones: two photos per row; the note spans the row. */
-@media (max-width: 639px) {
-  .mural {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2rem 1.25rem;
-  }
-  .mural-note {
-    grid-column: 1 / -1;
-  }
-}
-.mural > li {
-  position: relative;
-  rotate: var(--r, 0deg);
-}
-.mural-note {
-  padding: 1.5rem 1.25rem;
-  background: var(--paper);
-  color: var(--paper-ink);
-  border-radius: 3px;
-  box-shadow: 0 1.25rem 2.5rem -1.25rem color-mix(in srgb, black 75%, transparent);
+  padding: 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  font-size: 0.95rem;
-  line-height: 1.55;
+  flex-wrap: wrap;
+  gap: 1rem 0.75rem;
 }
-.mural-pin {
-  position: absolute;
-  top: -0.4rem;
-  left: 50%;
-  z-index: 1;
-  width: 0.8rem;
-  height: 0.8rem;
-  margin-left: -0.4rem;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 2px 4px color-mix(in srgb, black 50%, transparent);
+@media (min-width: 640px) {
+  .mosaic {
+    --mosaic-h: 20rem;
+  }
 }
-.mural-photo {
-  position: relative;
+@media (min-width: 1024px) {
+  .mosaic {
+    --mosaic-h: 26rem;
+  }
+}
+/* Width from the photo's shape (--ratio, set inline), so the space is right before it loads. */
+.mosaic > li {
+  flex: none;
+  /* Capped at 1.6× the height so a panoramic photo does not take a whole row. */
+  width: min(100%, calc(var(--mosaic-h) * var(--ratio)), calc(var(--mosaic-h) * 1.6));
+}
+.mosaic-photo {
   display: block;
   width: 100%;
   padding: 0;
   border: 0;
-  background: none;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: var(--surface);
   cursor: zoom-in;
-  text-align: left;
-  border-radius: 3px;
-  transition:
-    transform 250ms var(--ease-out-quint),
-    rotate 250ms var(--ease-out-quint);
 }
-.mural-photo:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
+.mosaic-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: scale 600ms var(--ease-out-quint);
 }
 @media (hover: hover) and (pointer: fine) {
-  .mural-photo:hover {
-    transform: translateY(-0.4rem) scale(1.02);
+  .mosaic-photo:hover img {
+    scale: 1.03;
   }
+}
+.mosaic-photo:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.mosaic-caption {
+  /* Wraps to the photo's width instead of widening it. */
+  contain: inline-size;
+  margin: 0.5rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 /* The enlarged photo. */
@@ -702,12 +719,6 @@
 @keyframes zoom-in {
   from {
     opacity: 0;
-    transform: scale(0.94);
-  }
-}
-@keyframes zoom-out {
-  to {
-    opacity: 0;
     transform: scale(0.96);
   }
 }
@@ -717,27 +728,27 @@
 .zoom-overlay[data-state="closed"] {
   animation: zoom-fade-out 160ms ease;
 }
-.zoom-content[data-state="open"] .zoom-paper {
+.zoom-content[data-state="open"] .zoom-figure {
   animation: zoom-in 260ms var(--ease-out-quint);
 }
-.zoom-content[data-state="closed"] .zoom-paper {
-  animation: zoom-out 160ms ease;
+.zoom-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
 }
-.zoom-paper {
+.zoom-figure img {
   width: auto;
-  max-width: 100%;
-  padding: 0.75rem 0.75rem 0;
-}
-.zoom-paper img {
-  width: auto;
-  max-width: min(100%, 56rem);
-  max-height: 72dvh;
-  aspect-ratio: auto;
+  max-width: min(100%, 64rem);
+  max-height: 78dvh;
+  border-radius: 0.75rem;
   object-fit: contain;
 }
-.zoom-paper figcaption {
-  font-size: 0.9rem;
-  white-space: normal;
+.zoom-figure figcaption {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: color-mix(in srgb, white 85%, transparent);
 }
 .zoom-button {
   display: inline-flex;
@@ -761,11 +772,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .polaroid-stack .polaroid,
-  .mural-photo {
+  .about-photo img,
+  .mosaic-photo img {
     transition: none;
   }
-  .zoom-content .zoom-paper,
+  .zoom-content .zoom-figure,
   .zoom-overlay {
     animation: none !important;
   }

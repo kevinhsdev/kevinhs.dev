@@ -1,19 +1,16 @@
-import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { CreativeHeader } from "@/components/creative/hero";
-import { CreativeMotion } from "@/components/creative/motion";
-import { Mural } from "@/components/creative/mural";
-import { CreativeFooter } from "@/components/creative/sections";
-import { CreativeShell } from "@/components/creative/shell";
-import { RegisterCommandNavigation } from "@/components/shared/command-menu";
-import { CtaDock } from "@/components/shared/cta-dock";
-import { SiteMenu } from "@/components/shared/site-menu";
+import {
+  AboutFrame,
+  CtaButtons,
+  FactSheet,
+  Portrait,
+  ProjectLinks,
+} from "@/components/creative/about-parts";
+import { Mosaic } from "@/components/creative/mosaic";
 import { Text } from "@/components/shared/text";
-import { gallery, pick, profile } from "@/content";
+import { about, gallery, pick, profile } from "@/content";
 import { resolveLocale } from "@/i18n/locale";
-import { Link } from "@/i18n/navigation";
-import { HOME_PATH } from "@/lib/site";
 
 export async function generateMetadata({
   params,
@@ -40,90 +37,114 @@ export async function generateMetadata({
   };
 }
 
-/** About me: the full story, then a wall of polaroids that enlarge on click. */
+/**
+ * About me, led by photos: Kevin's portrait beside who he is, the fact sheet,
+ * then the themes of his life (src/content/about.ts), each a big title, a few
+ * lines in his words and a mosaic of photos that enlarge on click.
+ */
 export default async function AboutPage({ params }: PageProps<"/[locale]/about">) {
   const locale = await resolveLocale(params);
-  const t = await getTranslations();
-  // The last "about" paragraph is the one about life away from the screen: it goes on the note.
-  const story = profile.about.slice(0, -1);
-  const offScreen = profile.about.at(-1);
+  const t = await getTranslations("aboutPage");
+  const labels = {
+    zoom: t.raw("zoom") as string,
+    close: t("close"),
+    previous: t("previous"),
+    next: t("next"),
+  };
 
   return (
-    <CreativeShell>
-      <CreativeMotion>
-        <RegisterCommandNavigation
-          items={[
-            { label: t("nav.projects"), href: `${HOME_PATH}#projects` },
-            { label: t("nav.experience"), href: `${HOME_PATH}#experience` },
-            { label: t("nav.contact"), href: `${HOME_PATH}#contact` },
-          ]}
-        />
-        <CreativeHeader />
-        <main id="main" className="flex flex-col gap-20 px-4 pt-28 pb-24 sm:px-8 sm:pt-32">
-          <header id="hero" className="flex flex-col gap-6">
-            <Link
-              href={HOME_PATH}
-              className="inline-flex min-h-11 items-center gap-2 self-start font-mono text-xs tracking-widest text-muted uppercase transition-colors duration-150 hover:text-foreground"
-            >
-              <ArrowLeft aria-hidden className="size-4" />
-              {t("aboutPage.back")}
-            </Link>
-            <p className="font-mono text-xs tracking-widest text-accent uppercase">
-              {t("aboutPage.kicker")}
-            </p>
-            <h1 className="font-display text-[clamp(4.5rem,17vw,16rem)] leading-[0.9]">
-              {t("aboutPage.title")}
+    <AboutFrame
+      locale={locale}
+      hero={
+        <div className="grid gap-8 px-4 sm:px-8 lg:grid-cols-12 lg:gap-12">
+          {/* On wide screens the portrait runs the full height of the text beside it. */}
+          <Portrait
+            locale={locale}
+            className="aspect-[4/5] w-full max-w-sm lg:col-span-4 lg:aspect-auto lg:max-w-none"
+          />
+          <div className="flex flex-col gap-6 lg:col-span-8">
+            <h1 className="font-display text-[clamp(4.5rem,13vw,11rem)] leading-[0.85]">
+              {t("title")}
             </h1>
-            <p className="max-w-xl text-lg text-pretty text-muted">{t("aboutPage.lead")}</p>
-          </header>
-
-          <div className="grid gap-6 text-lg leading-relaxed text-muted lg:grid-cols-3 lg:gap-10">
-            {story.map((paragraph) => (
-              <Text key={paragraph.en} as="p" className="text-pretty">
-                {pick(paragraph, locale)}
-              </Text>
-            ))}
-          </div>
-
-          <section aria-labelledby="mural-title" className="flex flex-col gap-8">
-            <div className="flex flex-col gap-3">
-              <p className="font-mono text-xs tracking-widest text-accent uppercase">
-                {t("aboutPage.muralKicker")}
-              </p>
-              <h2 id="mural-title" className="font-display text-6xl sm:text-8xl">
-                {t("aboutPage.muralTitle")}
-              </h2>
-              <p className="text-muted">{t("aboutPage.muralHint")}</p>
+            <Text as="p" className="text-2xl leading-snug font-medium text-pretty sm:text-3xl">
+              {pick(about.lede, locale)}
+            </Text>
+            <div className="flex max-w-2xl flex-col gap-4 text-lg leading-relaxed text-pretty">
+              {about.intro.map((paragraph) => (
+                <Text key={paragraph.en} as="p">
+                  {pick(paragraph, locale)}
+                </Text>
+              ))}
             </div>
-            <Mural
-              photos={gallery.map((photo) => ({
-                id: photo.id,
-                src: photo.src,
-                alt: pick(photo.alt, locale),
-                caption: pick(photo.caption, locale),
-                focus: photo.focus,
-              }))}
-              note={{
-                title: t("aboutPage.noteTitle"),
-                text: offScreen ? pick(offScreen, locale) : "",
-              }}
-              labels={{
-                zoom: t.raw("aboutPage.zoom") as string,
-                close: t("aboutPage.close"),
-                previous: t("aboutPage.previous"),
-                next: t("aboutPage.next"),
-              }}
-            />
+          </div>
+        </div>
+      }
+    >
+      <FactSheet locale={locale} className="mx-4 sm:mx-8" />
+
+      {about.themes.map((theme) => {
+        const photos = theme.photos.flatMap((id) => {
+          const photo = gallery.find((item) => item.id === id);
+          return photo
+            ? [
+                {
+                  id: photo.id,
+                  src: photo.src,
+                  alt: pick(photo.alt, locale),
+                  caption: pick(photo.caption, locale),
+                  width: photo.width,
+                  height: photo.height,
+                },
+              ]
+            : [];
+        });
+        return (
+          <section
+            key={theme.id}
+            id={theme.id}
+            aria-labelledby={`theme-${theme.id}`}
+            className="flex scroll-mt-24 flex-col gap-8 border-t border-border px-4 pt-12 sm:px-8 sm:pt-16"
+          >
+            <div data-reveal className="flex flex-col gap-5">
+              <h2
+                id={`theme-${theme.id}`}
+                className="font-display text-[clamp(3.5rem,9vw,8rem)] leading-[0.9] text-balance"
+              >
+                {pick(theme.title, locale)}
+              </h2>
+              <div className="flex max-w-3xl flex-col gap-4 text-lg leading-relaxed text-pretty sm:text-xl">
+                {theme.text.map((paragraph) => (
+                  <Text key={paragraph.en} as="p">
+                    {pick(paragraph, locale)}
+                  </Text>
+                ))}
+              </div>
+              {theme.projects.length > 0 && (
+                <div className="max-w-3xl">
+                  <ProjectLinks slugs={theme.projects} locale={locale} />
+                </div>
+              )}
+            </div>
+            <Mosaic photos={photos} labels={labels} />
           </section>
-        </main>
-        <CreativeFooter locale={locale} updatedAt={new Date()} />
-        <SiteMenu linkClassName="font-display text-5xl sm:text-6xl" />
-        <CtaDock
-          watch={["hero", "site-footer"]}
-          source="about-dock"
-          itemClassName="bg-surface text-foreground ring-1 ring-border hover:bg-accent hover:text-accent-contrast"
-        />
-      </CreativeMotion>
-    </CreativeShell>
+        );
+      })}
+
+      <section
+        aria-labelledby="next-title"
+        className="flex flex-col gap-6 border-t border-border px-4 pt-12 sm:px-8 sm:pt-16"
+      >
+        <h2
+          id="next-title"
+          className="font-display text-[clamp(3.5rem,9vw,8rem)] leading-[0.9] text-balance"
+        >
+          {pick(about.next.heading, locale)}
+        </h2>
+        <p className="max-w-3xl text-lg leading-relaxed text-pretty sm:text-xl">
+          {pick(about.next.text, locale)}
+        </p>
+        <CtaButtons />
+      </section>
+    </AboutFrame>
   );
 }

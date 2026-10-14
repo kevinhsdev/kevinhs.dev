@@ -6,7 +6,7 @@ import { AboutTeaser } from "@/components/creative/about-teaser";
 import { Journey } from "@/components/creative/journey";
 import { Preloader } from "@/components/creative/preloader";
 import { SkillsExplorer } from "@/components/creative/skills-explorer";
-import { CompactProjects, StackedProjects } from "@/components/creative/projects";
+import { RepoCards, StackedProjects } from "@/components/creative/projects";
 import { Block, CreativeContact, CreativeFooter } from "@/components/creative/sections";
 import { CreativeShell } from "@/components/creative/shell";
 import { Statement } from "@/components/creative/statement";
@@ -39,7 +39,10 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
   const levels = skills.map((group) => ({
     id: group.tier,
     label: t(`skills.tiers.${group.tier}`),
-    items: group.items.map((item) => pick(item, locale)),
+    items: group.items.map((item) => ({
+      key: typeof item === "string" ? item : item.en,
+      label: pick(item, locale),
+    })),
   }));
 
   return (
@@ -54,23 +57,19 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <Marquee />
           <Statement />
 
-          <Block id="projects" kicker={t("creative.projectsKicker")} title={t("nav.projects")}>
+          <Block id="projects" title={t("nav.projects")}>
             <div className="flex flex-col gap-24">
               <StackedProjects projects={featuredProjects} locale={locale} />
               <div className="flex flex-col gap-6">
                 <h3 className="font-mono text-xs tracking-widest text-muted uppercase">
                   {t("creative.otherProjects")}
                 </h3>
-                <CompactProjects projects={otherProjects} locale={locale} />
+                <RepoCards projects={otherProjects} locale={locale} />
               </div>
             </div>
           </Block>
 
-          <Block
-            id="experience"
-            kicker={t("creative.experienceKicker")}
-            title={t("nav.experience")}
-          >
+          <Block id="experience" title={t("nav.experience")}>
             <Journey
               entries={toJourney(entries)}
               labels={{
@@ -82,11 +81,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
             />
           </Block>
 
-          <Block id="about" kicker={t("creative.aboutKicker")} title={t("nav.about")}>
+          <Block id="about" title={t("nav.about")}>
             <AboutTeaser locale={locale} />
           </Block>
 
-          <Block id="skills" kicker={t("creative.setupKicker")} title={t("nav.skills")}>
+          <Block id="skills" title={t("nav.skills")}>
             <SkillsExplorer
               levels={levels}
               label={t("creative.skillsLabel")}

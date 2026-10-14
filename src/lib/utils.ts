@@ -5,6 +5,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** "Decisões técnicas e trade-offs" → "decisoes-tecnicas-e-trade-offs": an anchor id. */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
 /** "3× more documents: a tool…" → ["3× more documents", ": a tool…"], for a bold lead. */
 export function splitLead(text: string): [lead: string, rest: string] {
   const index = text.indexOf(":");

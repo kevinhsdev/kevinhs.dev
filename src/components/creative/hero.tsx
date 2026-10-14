@@ -99,12 +99,7 @@ export async function CreativeHero({ locale }: { locale: Locale }) {
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <StatusBadge className="border-foreground/15 bg-background/60 backdrop-blur" />
-        <span className="font-mono text-xs tracking-widest text-muted uppercase">
-          {t("creative.kicker")}
-        </span>
-      </div>
+      <StatusBadge className="self-start border-foreground/15 bg-background/60 backdrop-blur" />
 
       <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
         <div className="flex flex-col gap-6 lg:col-span-6 xl:col-span-7">
@@ -181,8 +176,8 @@ export async function Marquee() {
       {items.map((item) => (
         <li key={item} className="font-display flex items-center text-5xl sm:text-7xl">
           <span className="px-6">{item}</span>
-          <span aria-hidden className="text-accent-contrast/50">
-            ✦
+          <span aria-hidden className="text-accent-contrast/40">
+            /
           </span>
         </li>
       ))}

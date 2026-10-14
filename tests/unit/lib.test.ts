@@ -22,11 +22,11 @@ describe("formatPeriod", () => {
 
   it("covers every shape of period", () => {
     expect(formatPeriod({ start: "2025-08", end: "present" }, "en", labels)).toBe(
-      "Aug 2025 — present",
+      "Aug 2025 - present",
     );
     expect(
       formatPeriod({ start: "2024-01", end: "2028-12", endIsExpected: true }, "en", labels),
-    ).toBe("Jan 2024 — Dec 2028 (expected)");
+    ).toBe("Jan 2024 - Dec 2028 (expected)");
     expect(formatPeriod({ start: null, inProgress: true }, "en", labels)).toBe("in progress");
     expect(formatPeriod({ start: "2026-09" }, "en", labels)).toBe("Sep 2026");
   });
@@ -57,6 +57,23 @@ describe("contact", () => {
   });
 });
 
+describe("skill marks", () => {
+  it("give every skill a mark, and every logo a file", async () => {
+    const { existsSync } = await import("node:fs");
+    const { skillMarks } = await import("@/components/creative/skill-marks");
+    const { skills } = await import("@/content/skills");
+    const names = skills.flatMap((group) =>
+      group.items.map((item) => (typeof item === "string" ? item : item.en)),
+    );
+    expect(Object.keys(skillMarks).sort()).toEqual([...names].sort());
+    for (const mark of Object.values(skillMarks)) {
+      if (!("logo" in mark)) continue;
+      expect(existsSync(`public/skills/${mark.logo}.svg`)).toBe(true);
+      if (mark.dark) expect(existsSync(`public/skills/${mark.logo}-dark.svg`)).toBe(true);
+    }
+  });
+});
+
 describe("case studies", () => {
   it("estimates reading time from prose, ignoring code and JSX", async () => {
     const { estimateMinutes } = await import("@/lib/case-studies");
@@ -65,5 +82,19 @@ describe("case studies", () => {
     expect(estimateMinutes(prose)).toBe(2);
     expect(estimateMinutes(`${prose}\n${code}\n<Diagram label="a b c" />`)).toBe(2);
     expect(estimateMinutes("curto")).toBe(1);
+  });
+
+  it("builds the outline from h2s, with ids that match the rendered headings", async () => {
+    const { outlineOf } = await import("@/lib/case-studies");
+    const source = [
+      "## Decisões técnicas e trade-offs",
+      "### Not a section",
+      "```md\n## Inside code\n```",
+      "## What I'd do **differently**",
+    ].join("\n\n");
+    expect(outlineOf(source)).toEqual([
+      { id: "decisoes-tecnicas-e-trade-offs", title: "Decisões técnicas e trade-offs" },
+      { id: "what-i-d-do-differently", title: "What I'd do differently" },
+    ]);
   });
 });

@@ -56,12 +56,44 @@ export const profileSchema = z.object({
       level: localized,
     }),
   ),
-  about: z.array(localized).min(1).max(4),
-  /** Two or three sentences for the home page, next to the polaroids. */
+
+  /** One or two sentences that open the home page's About section. */
   aboutShort: localized,
+  /** When and how Kevin started coding (a tile of the home page's About section). */
+  startedCoding: z.object({ age: z.number().int().positive(), how: localized }),
+  /** Away from the screen; `icon` picks the glyph shown beside each one. */
+  hobbies: z
+    .array(
+      z.object({ icon: z.enum(["music", "volleyball", "dumbbell", "gamepad"]), label: localized }),
+    )
+    .min(1),
   education: z.object({ school: z.string(), schoolUrl: z.url() }),
 });
 export type Profile = z.infer<typeof profileSchema>;
+
+/**
+ * The About me page (src/content/about.ts): an opening next to Kevin's
+ * portrait, then themes of his life, each a few lines of his own and a mosaic
+ * of photos, then where he's heading. `photos` are gallery ids, `projects`
+ * project slugs.
+ */
+export const aboutSchema = z.object({
+  lede: localized,
+  intro: z.array(localized).default([]),
+  themes: z
+    .array(
+      z.object({
+        id: z.string(),
+        title: localized,
+        text: z.array(localized).min(1),
+        photos: z.array(z.string()).min(1),
+        projects: z.array(z.string()).default([]),
+      }),
+    )
+    .min(1),
+  next: z.object({ heading: localized, text: localized }),
+});
+export type About = z.infer<typeof aboutSchema>;
 
 export const gallerySchema = z.object({
   id: z.string(),
@@ -70,6 +102,9 @@ export const gallerySchema = z.object({
   caption: localized,
   /** CSS object-position for cropping (default center). */
   focus: z.string().optional(),
+  /** The file's pixel size, so layouts reserve the right space before it loads. */
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
 });
 export type GalleryPhoto = z.infer<typeof gallerySchema>;
 

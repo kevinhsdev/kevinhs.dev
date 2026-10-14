@@ -50,6 +50,14 @@ export const timeline = [
     start: "2024-01",
     end: "2028-12",
     endIsExpected: true,
+    image: {
+      src: "/about/umc.jpg",
+      alt: {
+        pt: "Prédio azul e branco do campus da UMC entre árvores, sob céu azul",
+        en: "UMC's blue and white campus building among trees under a blue sky",
+      },
+      focus: "60% 62%",
+    },
     highlights: [{ pt: "4º período.", en: "4th semester." }],
   },
   {
@@ -195,5 +203,13 @@ export const timeline = [
     title: { pt: "Inglês Avançado (C1)", en: "Advanced English (C1)" },
     org: "CNA",
     start: "2024",
+    image: {
+      src: "/about/cna.jpg",
+      alt: {
+        pt: "Fachada de uma unidade da escola de idiomas CNA, sob céu azul",
+        en: "The front of a CNA language school, under a blue sky",
+      },
+      focus: "40% 62%",
+    },
   },
 ] satisfies z.input<typeof timelineItemSchema>[];

@@ -2,31 +2,34 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test.describe("about me", () => {
-  test("the home's polaroids lead to the About me page", async ({ page }) => {
+  test("the home's About tiles show real facts and lead to the About me page", async ({ page }) => {
     await page.goto("/pt");
-    await expect(page.locator(".polaroid-stack .polaroid")).toHaveCount(3);
+    const about = page.locator("#about");
+    await expect(about.locator(".about-photo img")).toHaveCount(2);
+    await expect(
+      about.getByText("anos quando comecei a programar", { exact: false }),
+    ).toBeVisible();
+    await expect(about.getByRole("heading", { name: "Idiomas" })).toBeVisible();
     await page.getByRole("link", { name: "Mais sobre mim" }).click();
     await expect(page).toHaveURL(/\/pt\/about$/);
     await expect(page.getByRole("heading", { level: 1, name: "Sobre mim" })).toBeVisible();
   });
 
-  test("a photo on the wall enlarges, steps with the arrows and closes with Esc", async ({
-    page,
-  }) => {
+  test("a theme's photo enlarges, steps with the arrows and closes with Esc", async ({ page }) => {
     await page.goto("/en/about");
-    const photos = page.locator(".mural-photo");
-    await expect(photos).toHaveCount(4);
-    await photos.first().click();
+    const photos = page.locator("#malta .mosaic-photo");
+    await expect(photos).toHaveCount(7);
+    await photos.nth(1).click();
     const dialog = page.getByRole("dialog");
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole("img")).toHaveAttribute("alt", /Malta/);
-    await expect(dialog).toContainText("1 / 4");
+    await expect(dialog).toContainText("2 / 7");
     await page.keyboard.press("ArrowRight");
-    await expect(dialog).toContainText("2 / 4");
+    await expect(dialog).toContainText("3 / 7");
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
-    // Focus returns to the wall, on the photo that was last on screen.
-    await expect(photos.nth(1)).toBeFocused();
+    // Focus returns to the mosaic, on the photo that was last on screen.
+    await expect(photos.nth(2)).toBeFocused();
   });
 
   for (const scheme of ["light", "dark"] as const) {

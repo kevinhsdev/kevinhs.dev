@@ -8,12 +8,18 @@ import { CreativeFooter } from "@/components/creative/sections";
 import { CreativeShell } from "@/components/creative/shell";
 import { RegisterCommandNavigation } from "@/components/shared/command-menu";
 import { CtaDock } from "@/components/shared/cta-dock";
+import { CaseOutline } from "@/components/case-study/outline";
 import { hasMockup, mockups } from "@/components/shared/mockups";
 import { SiteMenu } from "@/components/shared/site-menu";
 import { getAdjacentCaseStudies, getProject, pick, profile } from "@/content";
 import { resolveLocale } from "@/i18n/locale";
 import { Link } from "@/i18n/navigation";
-import { caseStudySlugs, loadCaseStudy, readingMinutes } from "@/lib/case-studies";
+import {
+  caseStudyOutline,
+  caseStudySlugs,
+  loadCaseStudy,
+  readingMinutes,
+} from "@/lib/case-studies";
 import { HOME_PATH } from "@/lib/site";
 
 export const dynamicParams = false;
@@ -60,12 +66,12 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
   const t = await getTranslations();
   const Content = await loadCaseStudy(slug, locale);
   const minutes = readingMinutes(slug, locale);
+  const outline = caseStudyOutline(slug, locale);
   const { previous, next } = getAdjacentCaseStudies(slug);
-  const index = caseStudySlugs.indexOf(slug) + 1;
   const Mockup = hasMockup(slug) ? mockups[slug] : null;
 
   const meta = [
-    { label: t("caseStudy.role"), value: project.role ? pick(project.role, locale) : "—" },
+    { label: t("caseStudy.role"), value: project.role ? pick(project.role, locale) : "-" },
     {
       label: t("caseStudy.team"),
       value: project.teamSize
@@ -74,6 +80,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
     },
     { label: t("caseStudy.year"), value: String(project.year) },
     { label: t("caseStudy.status"), value: t(`projects.status.${project.status}`) },
+    { label: t("caseStudy.reading"), value: t("caseStudy.readingTime", { minutes }) },
   ];
 
   return (
@@ -97,20 +104,13 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
             </Link>
 
             <div className="flex flex-col gap-4">
-              <p className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs tracking-widest uppercase">
-                <span className="text-accent">
-                  {t("caseStudy.kicker")} · {String(index).padStart(2, "0")} /{" "}
-                  {String(caseStudySlugs.length).padStart(2, "0")}
-                </span>
-                <span className="text-muted">{t("caseStudy.readingTime", { minutes })}</span>
-              </p>
               <h1 className="font-display text-[clamp(3.5rem,11vw,10rem)]">{project.title}</h1>
               <p className="max-w-3xl text-xl text-pretty text-muted sm:text-2xl">
                 {pick(project.tagline, locale)}
               </p>
             </div>
 
-            <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:grid-cols-5">
+            <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:grid-cols-3">
               {meta.map((item) => (
                 <div key={item.label} className="flex flex-col gap-1 bg-background p-4">
                   <dt className="font-mono text-[11px] tracking-widest text-muted uppercase">
@@ -119,7 +119,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
                   <dd className="text-sm font-medium">{item.value}</dd>
                 </div>
               ))}
-              <div className="col-span-2 flex flex-col gap-1 bg-background p-4 lg:col-span-1">
+              <div className="flex flex-col gap-1 bg-background p-4 lg:col-span-1">
                 <dt className="font-mono text-[11px] tracking-widest text-muted uppercase">
                   {t("caseStudy.stack")}
                 </dt>
@@ -139,9 +139,16 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
             </div>
           )}
 
-          <article className="case-study mx-auto max-w-3xl px-4 py-16 sm:py-24">
-            <Content />
-          </article>
+          {/* Wide screens: the outline beside the article, like a docs page. */}
+          <div className="mx-auto max-w-3xl px-4 py-16 sm:py-24 xl:grid xl:max-w-[66rem] xl:grid-cols-[14rem_minmax(0,48rem)] xl:gap-16 xl:px-8">
+            <aside className="hidden xl:sticky xl:top-28 xl:block xl:self-start">
+              <CaseOutline items={outline} label={t("caseStudy.outline")} />
+            </aside>
+            <article className="case-study">
+              <Content />
+              <div aria-hidden data-outline-end />
+            </article>
+          </div>
 
           <nav
             aria-label={t("caseStudy.sections")}

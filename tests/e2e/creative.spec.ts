@@ -108,6 +108,22 @@ test.describe("version B · creative", () => {
     await expect(page.locator("#skills-title")).toBeInViewport({ timeout: 5000 });
   });
 
+  test("the open site menu scrolls itself, not the page, under smooth scroll", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 480 });
+    await page.goto("/en", { waitUntil: "networkidle" });
+    await page.mouse.wheel(0, 10); // wakes the lazy motion layer (Lenis)
+    await expect(page.locator("html.lenis")).toHaveCount(1);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.getByRole("button", { name: "Menu", exact: true }).click();
+    const drawer = page.getByRole("dialog", { name: "Navigation" });
+    await expect(drawer).toBeVisible();
+    const pageY = await page.evaluate(() => window.scrollY);
+    await drawer.hover();
+    await page.mouse.wheel(0, 800);
+    await expect.poll(() => drawer.evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
+    expect(await page.evaluate(() => window.scrollY)).toBe(pageY);
+  });
+
   test("the CTA dock hides over the hero and appears after it", async ({ page }) => {
     await page.goto("/pt");
     const dock = page.locator("nav.dock");

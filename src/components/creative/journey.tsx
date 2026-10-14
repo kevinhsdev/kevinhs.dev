@@ -14,6 +14,13 @@ type Labels = {
 
 const year = (entry: TimelineEntry) => entry.start?.slice(0, 4) ?? null;
 
+/** A stable 7-char "commit hash" for an entry (FNV-1a of its id). Decorative only. */
+const shortHash = (id: string) => {
+  let h = 0x811c9dc5;
+  for (const char of id) h = Math.imul(h ^ char.charCodeAt(0), 0x01000193);
+  return (h >>> 0).toString(16).padStart(8, "0").slice(0, 7);
+};
+
 /** "Itaú" → "itau": the issuer as a command name. */
 const command = (org: string) =>
   (org.split(/[ ·]/)[0] ?? org).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
@@ -181,11 +188,13 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
                 ) : entry.topics.length > 0 ? (
                   <CourseTerminal entry={entry} labels={labels} />
                 ) : (
+                  // No photo: the entry drawn as a commit on the trail's git graph.
                   <div aria-hidden className="journey-plate">
-                    <span className="font-display">{year(entry) ?? "→"}</span>
-                    <span className="font-mono text-xs tracking-widest uppercase">
-                      {labels.kinds[entry.kind]}
-                    </span>
+                    <p className="font-mono text-xs">
+                      <span className="text-accent">commit</span> {shortHash(entry.id)}
+                    </p>
+                    <p className="font-mono text-xs">{labels.kinds[entry.kind].toLowerCase()}</p>
+                    <span className="font-display journey-plate-year">{year(entry) ?? "→"}</span>
                   </div>
                 )}
               </div>

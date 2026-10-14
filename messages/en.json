@@ -79,7 +79,8 @@
       "academic": "Academic project"
     },
     "mockupAlt": "Demo screen of {title} with fictional data",
-    "demoNote": "fictional data"
+    "demoNote": "fictional data",
+    "private": "Private"
   },
   "skills": {
     "tiers": {
@@ -129,20 +130,16 @@
     "scroll": "Scroll to explore",
     "marquee": ["Java", "Spring Boot", "MySQL", "DevOps", "Cloud", "Applied AI"],
     "statement": ["Spotted a real problem.", "Built the fix.", "It runs every day now."],
-    "projectsKicker": "Featured",
-    "setupKicker": "Stack",
     "otherProjects": "Other projects",
     "talk": "Let's talk",
-    "aboutKicker": "README",
     "skip": "Skip",
     "editorComment": "Hi! This is me, in TypeScript.",
     "editorLabel": "Profile as code (kevin.ts)",
     "telemetryStrip": "Telemetry from real projects",
-    "project": "Project",
-    "experienceKicker": "git log --reverse",
     "skillsLabel": "Skill levels",
     "skillsHint": "Pick a level to see the skills.",
-    "codeBy": "© Code by Kevin"
+    "codeBy": "© Code by Kevin",
+    "formFile": "message.md"
   },
   "menu": {
     "open": "Open menu",
@@ -155,7 +152,7 @@
   "caseStudy": {
     "back": "All projects",
     "kicker": "Case study",
-    "readingTime": "{minutes} min read",
+    "readingTime": "{minutes} min",
     "role": "Role",
     "year": "Year",
     "status": "Status",
@@ -165,22 +162,32 @@
     "previous": "Previous",
     "next": "Next",
     "read": "Read the case study",
-    "sections": "More case studies"
+    "sections": "More case studies",
+    "outline": "On this page",
+    "reading": "Reading"
   },
   "aboutPage": {
     "title": "About me",
     "description": "Who Kevin Henrique is: how he started coding, what he does today and what he enjoys away from the screen.",
-    "kicker": "README",
-    "lead": "How I started, what I do today and what I enjoy away from the screen.",
     "back": "Back to home",
     "more": "More about me",
-    "muralKicker": "photos",
-    "muralTitle": "Away from the screen",
-    "muralHint": "Click a photo to enlarge it.",
-    "noteTitle": "Hobbies",
     "zoom": "Enlarge: {caption}",
     "close": "Close",
     "previous": "Previous photo",
-    "next": "Next photo"
+    "next": "Next photo",
+    "facts": {
+      "started": "Started coding",
+      "startedValue": "at {age}",
+      "study": "Studying",
+      "location": "Based in",
+      "languages": "Languages"
+    }
+  },
+  "aboutTeaser": {
+    "startedLabel": "years old when I started coding",
+    "languages": "Languages",
+    "offScreen": "Away from the screen",
+    "learning": "Learning right now",
+    "nowLink": "What I'm up to now"
   }
 }

@@ -1,10 +1,12 @@
 import { z } from "zod";
 import type { Locale } from "@/i18n/routing";
+import { about as rawAbout } from "./about";
 import { gallery as rawGallery } from "./gallery";
 import { now as rawNow } from "./now";
 import { profile as rawProfile } from "./profile";
 import { projects as rawProjects } from "./projects";
 import {
+  aboutSchema,
   gallerySchema,
   nowSchema,
   profileSchema,
@@ -31,6 +33,22 @@ export const skills = z.array(skillGroupSchema).parse(rawSkills);
 export const now = nowSchema.parse(rawNow);
 export const gallery = z.array(gallerySchema).min(3).parse(rawGallery);
 export const timeline = sortTimeline(z.array(timelineItemSchema).parse(rawTimeline));
+/** Every photo id and project slug the About page names must exist, or the build fails. */
+export const about = aboutSchema
+  .superRefine((page, ctx) => {
+    for (const theme of page.themes) {
+      for (const id of theme.photos)
+        if (!gallery.some((photo) => photo.id === id))
+          ctx.addIssue({ code: "custom", message: `About "${theme.id}": unknown photo "${id}"` });
+      for (const slug of theme.projects)
+        if (!projects.some((project) => project.slug === slug))
+          ctx.addIssue({
+            code: "custom",
+            message: `About "${theme.id}": unknown project "${slug}"`,
+          });
+    }
+  })
+  .parse(rawAbout);
 
 export const featuredProjects = projects.filter((p) => p.tier === "featured");
 export const otherProjects = projects.filter((p) => p.tier === "other");

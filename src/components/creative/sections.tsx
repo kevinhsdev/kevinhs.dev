@@ -8,29 +8,20 @@ import { profile } from "@/content";
 import type { Locale } from "@/i18n/routing";
 import { creativeButton } from "./hero";
 
-export function Block({
-  id,
-  kicker,
-  title,
-  children,
-}: {
-  id: string;
-  kicker: string;
-  title: string;
-  children: ReactNode;
-}) {
+export function Block({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section
       id={id}
       aria-labelledby={`${id}-title`}
       className="scroll-mt-20 px-4 py-20 sm:px-8 sm:py-28"
     >
-      <div className="mb-12 flex flex-col gap-3">
-        <p className="font-mono text-xs tracking-widest text-accent uppercase">{kicker}</p>
-        <h2 id={`${id}-title`} data-split className="font-display text-6xl sm:text-8xl">
-          {title}
-        </h2>
-      </div>
+      <h2
+        id={`${id}-title`}
+        data-split
+        className="font-display mb-12 text-6xl sm:mb-16 sm:text-8xl"
+      >
+        {title}
+      </h2>
       {children}
     </section>
   );
@@ -47,7 +38,7 @@ export async function CreativeContact() {
       <h2 id="contact-title" data-split className="font-display text-[clamp(4rem,16vw,14rem)]">
         {t("creative.talk")}
       </h2>
-      <div className="mt-12 grid gap-12 lg:grid-cols-2">
+      <div className="mt-12 grid gap-12 lg:grid-cols-2 lg:items-start lg:gap-16">
         <div className="flex flex-col gap-6">
           <p className="max-w-lg text-lg leading-relaxed text-pretty text-muted">
             {t("contact.intro")}
@@ -67,11 +58,28 @@ export async function CreativeContact() {
             </LinkedInButton>
           </div>
         </div>
-        <div className="flex flex-col gap-4" data-print="hide">
-          <h3 className="font-mono text-xs tracking-widest text-muted uppercase">
-            {t("contact.orForm")}
-          </h3>
-          <ContactForm />
+        {/* The form as a file being written, in the same editor chrome as the hero. */}
+        <div
+          className="overflow-hidden rounded-2xl border border-border bg-surface shadow-[0_30px_80px_-40px_color-mix(in_srgb,var(--accent)_40%,transparent)]"
+          data-print="hide"
+        >
+          <div
+            aria-hidden
+            className="flex items-center gap-4 border-b border-border px-4 font-mono text-xs text-muted"
+          >
+            <span className="flex gap-1.5">
+              <span className="size-2.5 rounded-full bg-border" />
+              <span className="size-2.5 rounded-full bg-border" />
+              <span className="size-2.5 rounded-full bg-border" />
+            </span>
+            <span className="-mb-px border-b-2 border-accent py-3 text-foreground">
+              {t("creative.formFile")}
+            </span>
+          </div>
+          <div className="flex flex-col gap-5 p-5 sm:p-8">
+            <h3 className="text-lg font-semibold">{t("contact.orForm")}</h3>
+            <ContactForm />
+          </div>
         </div>
       </div>
     </section>

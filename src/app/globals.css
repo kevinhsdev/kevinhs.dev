@@ -29,6 +29,9 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     scroll-padding-top: 5rem;
+    /* Browser chrome in the palette too: scrollbars and the text caret. */
+    scrollbar-color: color-mix(in srgb, var(--muted) 55%, transparent) var(--background);
+    caret-color: var(--accent);
   }
 
   html.dark {

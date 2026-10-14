@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition, type FormEvent } from "react";
 import { profile } from "@/content/profile";
@@ -8,7 +9,7 @@ import { notify } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 const fieldClass =
-  "w-full rounded-lg border border-border bg-surface px-3 py-2.5 text-base text-foreground placeholder:text-muted transition-colors duration-150 hover:border-muted focus-visible:border-accent aria-invalid:border-danger sm:text-sm";
+  "w-full rounded-lg border border-border bg-background px-3 py-2.5 text-base text-foreground placeholder:text-muted transition-colors duration-150 hover:border-muted focus-visible:border-accent aria-invalid:border-danger sm:text-sm";
 
 export function ContactForm({ className }: { className?: string }) {
   const t = useTranslations("contact");
@@ -96,9 +97,10 @@ export function ContactForm({ className }: { className?: string }) {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-11 items-center justify-center self-start rounded-full border border-border px-5 text-sm font-medium transition-[border-color,scale,opacity] duration-150 hover:border-foreground active:scale-[0.97] disabled:opacity-60"
+        className="inline-flex h-12 items-center justify-center gap-2 self-start rounded-full bg-accent px-6 text-sm font-semibold tracking-wide text-accent-contrast uppercase transition-[scale,opacity] duration-150 ease-out hover:opacity-90 active:scale-[0.97] disabled:opacity-60"
       >
         {pending ? t("sending") : t("send")}
+        <ArrowRight aria-hidden className="size-4" />
       </button>
     </form>
   );

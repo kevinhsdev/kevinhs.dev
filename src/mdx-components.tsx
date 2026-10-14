@@ -2,13 +2,21 @@ import type { MDXComponents } from "mdx/types";
 import type { ComponentProps } from "react";
 import { Review, Tldr } from "@/components/case-study/callouts";
 import { Diagram } from "@/components/case-study/diagram";
+import { slugify } from "@/lib/utils";
 
 /*
  * Case-study typography. Sections (h2) are numbered automatically with a CSS
  * counter (see .case-study in creative.css), so the MDX stays plain markdown.
  */
 const components: MDXComponents = {
-  h2: (props: ComponentProps<"h2">) => <h2 className="case-h2" {...props} />,
+  // The id matches caseStudyOutline(), so the outline can link and track each section.
+  h2: (props: ComponentProps<"h2">) => (
+    <h2
+      id={typeof props.children === "string" ? slugify(props.children) : undefined}
+      className="case-h2"
+      {...props}
+    />
+  ),
   h3: (props: ComponentProps<"h3">) => (
     <h3 className="mt-10 mb-3 text-xl font-semibold tracking-tight" {...props} />
   ),

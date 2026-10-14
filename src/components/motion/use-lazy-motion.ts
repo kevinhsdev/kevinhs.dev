@@ -65,8 +65,10 @@ export function useLazyMotion(setup: (kit: MotionKit) => void | (() => void)) {
       const lenis = new Lenis({
         anchors: true,
         autoRaf: false,
-        // Let the command palette scroll natively.
-        prevent: (node) => Boolean(node.closest("[cmdk-dialog], [cmdk-overlay]")),
+        // While any dialog is open (site menu, command palette, photo zoom), hand
+        // scrolling back to the browser: the dialog scrolls natively and Radix's
+        // scroll lock keeps the page behind it still.
+        prevent: () => document.querySelector('[role="dialog"][data-state="open"]') !== null,
       });
       lenis.on("scroll", ScrollTrigger.update);
       const tick = (time: number) => lenis.raf(time * 1000);

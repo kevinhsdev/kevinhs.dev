@@ -20,7 +20,8 @@ export function Diagram({
   asideLabel?: string;
 }) {
   return (
-    <figure className="my-10 flex flex-col gap-6 rounded-3xl border border-border bg-surface p-5 sm:p-8 lg:-mx-24 xl:-mx-40">
+    // Breaks out of the text column; beside the outline (xl+) it only grows to the right.
+    <figure className="my-10 flex flex-col gap-6 rounded-3xl border border-border bg-surface p-5 sm:p-8 lg:-mx-24 xl:mx-0 xl:-mr-16 2xl:-mr-40">
       <figcaption className="font-mono text-xs tracking-widest text-muted uppercase">
         {label}
       </figcaption>
