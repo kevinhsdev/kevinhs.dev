@@ -396,7 +396,8 @@
 .journey[data-pinned="true"] .journey-view {
   position: sticky;
   top: 0;
-  height: 100dvh;
+  /* svh, not dvh: the height must not change as the mobile address bar toggles. */
+  height: 100svh;
   overflow: hidden;
   justify-content: center;
   scroll-snap-type: none;

@@ -145,11 +145,20 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(update);
     };
+    // Mobile browsers fire resize whenever the address bar shows or hides while
+    // scrolling. Re-measuring then unpins and re-pins the section, the page
+    // height jumps and the scroll position snaps back up. Only width matters.
+    let width = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === width) return;
+      width = window.innerWidth;
+      measure();
+    };
 
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
     viewEl.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", measure);
+    window.addEventListener("resize", onResize);
     motion.addEventListener("change", measure);
     const fonts = document.fonts;
     void fonts?.ready.then(measure);
@@ -157,7 +166,7 @@ export function Journey({ entries, labels }: { entries: TimelineEntry[]; labels:
       cancelAnimationFrame(frame);
       window.removeEventListener("scroll", onScroll);
       viewEl.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", onResize);
       motion.removeEventListener("change", measure);
     };
   }, [entries.length]);
