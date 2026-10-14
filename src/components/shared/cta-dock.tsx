@@ -2,8 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { LinkedInIcon } from "@/components/shared/brand-icons";
-import { CopyEmailButton, CvButton, LinkedInButton } from "@/components/shared/ctas";
+import { InstagramIcon, LinkedInIcon } from "@/components/shared/brand-icons";
+import {
+  CopyEmailButton,
+  CvButton,
+  InstagramButton,
+  LinkedInButton,
+} from "@/components/shared/ctas";
 import { cn } from "@/lib/utils";
 
 /**
@@ -67,6 +72,12 @@ export function CtaDock({
           <LinkedInIcon className="size-4" />
           <span className="sr-only">{t("cta.linkedin")}</span>
         </LinkedInButton>
+      </span>
+      <span className="inline-flex">
+        <InstagramButton source={source} className={item}>
+          <InstagramIcon className="size-4" />
+          <span className="sr-only">{t("cta.instagram")}</span>
+        </InstagramButton>
       </span>
       <span className="inline-flex">
         <CopyEmailButton source={source} compact className={item} />

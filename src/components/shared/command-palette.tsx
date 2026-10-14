@@ -5,7 +5,7 @@ import { ArrowRight, Copy, Download, Languages, Monitor, Moon, Sun } from "lucid
 import { useLocale, useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useState, type ReactNode } from "react";
-import { GitHubIcon, LinkedInIcon } from "@/components/shared/brand-icons";
+import { GitHubIcon, InstagramIcon, LinkedInIcon } from "@/components/shared/brand-icons";
 import {
   OPEN_EVENT,
   markPaletteReady,
@@ -154,6 +154,17 @@ export function CommandPalette() {
             }
           >
             {t("cta.linkedin")}
+          </Item>
+          <Item
+            icon={<InstagramIcon />}
+            onSelect={() =>
+              run(() => {
+                trackCta("instagram_click", { locale, source: "command-menu" });
+                window.open(profile.links.instagram, "_blank", "noopener");
+              })
+            }
+          >
+            {t("cta.instagram")}
           </Item>
           <Item
             icon={<GitHubIcon />}

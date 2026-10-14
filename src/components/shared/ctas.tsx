@@ -50,6 +50,22 @@ export function LinkedInButton({ source, className, children }: CtaProps & Compo
   );
 }
 
+export function InstagramButton({ source, className, children }: CtaProps & ComponentProps<"a">) {
+  const t = useTranslations("cta");
+  const locale = useLocale();
+  return (
+    <a
+      href={profile.links.instagram}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => trackCta("instagram_click", { locale, source })}
+      className={className}
+    >
+      {children ?? t("instagram")}
+    </a>
+  );
+}
+
 export function GitHubButton({ source, className, children }: CtaProps & ComponentProps<"a">) {
   const t = useTranslations("cta");
   const locale = useLocale();

@@ -24,7 +24,7 @@ export function PersonJsonLd({ locale }: { locale: "pt" | "en" }) {
       url: profile.education.schoolUrl,
     },
     knowsLanguage: profile.languages.map((language) => language.code),
-    sameAs: [profile.links.github, profile.links.linkedin],
+    sameAs: [profile.links.github, profile.links.linkedin, profile.links.instagram],
     ...(profile.photo ? { image: `${siteUrl}${profile.photo.src}` } : {}),
   };
 

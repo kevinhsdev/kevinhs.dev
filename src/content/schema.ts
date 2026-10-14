@@ -42,6 +42,7 @@ export const profileSchema = z.object({
   links: z.object({
     github: z.url(),
     linkedin: z.url(),
+    instagram: z.url(),
     siteRepo: z.url(),
   }),
   cv: z.object({

@@ -1,9 +1,14 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { LinkedInIcon } from "@/components/shared/brand-icons";
+import { InstagramIcon, LinkedInIcon } from "@/components/shared/brand-icons";
 import { RegisterCommandNavigation } from "@/components/shared/command-menu";
-import { CopyEmailButton, CvButton, LinkedInButton } from "@/components/shared/ctas";
+import {
+  CopyEmailButton,
+  CvButton,
+  InstagramButton,
+  LinkedInButton,
+} from "@/components/shared/ctas";
 import { CtaDock } from "@/components/shared/cta-dock";
 import { SiteMenu } from "@/components/shared/site-menu";
 import { Text } from "@/components/shared/text";
@@ -99,6 +104,10 @@ export async function CtaButtons() {
         <LinkedInIcon className="size-4" />
         {t("linkedin")}
       </LinkedInButton>
+      <InstagramButton source="about-next" className={creativeButton.secondary}>
+        <InstagramIcon className="size-4" />
+        {t("instagram")}
+      </InstagramButton>
       <CopyEmailButton source="about-next" className={creativeButton.secondary} />
     </div>
   );

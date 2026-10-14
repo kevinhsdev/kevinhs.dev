@@ -4,13 +4,19 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { ArrowUpRight, Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { GitHubIcon, LinkedInIcon } from "@/components/shared/brand-icons";
+import { GitHubIcon, InstagramIcon, LinkedInIcon } from "@/components/shared/brand-icons";
 import {
   openCommandMenu,
   scrollToAnchor,
   useRegisteredNavigation,
 } from "@/components/shared/command-menu";
-import { CopyEmailButton, CvButton, GitHubButton, LinkedInButton } from "@/components/shared/ctas";
+import {
+  CopyEmailButton,
+  CvButton,
+  GitHubButton,
+  InstagramButton,
+  LinkedInButton,
+} from "@/components/shared/ctas";
 import { LocaleToggle } from "@/components/shared/locale-toggle";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { useRouter } from "@/i18n/navigation";
@@ -138,6 +144,9 @@ export function SiteMenu({ linkClassName }: { linkClassName?: string }) {
               <LinkedInButton source="site-menu" className={chip}>
                 <LinkedInIcon className="size-4" /> LinkedIn
               </LinkedInButton>
+              <InstagramButton source="site-menu" className={chip}>
+                <InstagramIcon className="size-4" /> Instagram
+              </InstagramButton>
               <GitHubButton source="site-menu" className={chip}>
                 <GitHubIcon className="size-4" /> GitHub
                 <ArrowUpRight aria-hidden className="size-3.5" />

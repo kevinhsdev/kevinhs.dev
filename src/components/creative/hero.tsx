@@ -1,7 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { LinkedInIcon } from "@/components/shared/brand-icons";
+import { InstagramIcon, LinkedInIcon } from "@/components/shared/brand-icons";
 import { CommandMenuButton } from "@/components/shared/command-menu-button";
-import { CopyEmailButton, CvButton, LinkedInButton } from "@/components/shared/ctas";
+import {
+  CopyEmailButton,
+  CvButton,
+  InstagramButton,
+  LinkedInButton,
+} from "@/components/shared/ctas";
 import { LocaleToggle } from "@/components/shared/locale-toggle";
 import { KevinMark } from "@/components/shared/logo";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -130,6 +135,10 @@ export async function CreativeHero({ locale }: { locale: Locale }) {
               <LinkedInIcon className="size-4" />
               {t("cta.linkedin")}
             </LinkedInButton>
+            <InstagramButton source="creative-hero" className={creativeButton.secondary}>
+              <InstagramIcon className="size-4" />
+              {t("cta.instagram")}
+            </InstagramButton>
             <CopyEmailButton source="creative-hero" className={creativeButton.secondary} />
           </div>
         </div>

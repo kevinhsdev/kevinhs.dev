@@ -1,9 +1,14 @@
 import { ArrowUpRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
-import { LinkedInIcon } from "@/components/shared/brand-icons";
+import { InstagramIcon, LinkedInIcon } from "@/components/shared/brand-icons";
 import { ContactForm } from "@/components/shared/contact-form";
-import { CopyEmailButton, CvButton, LinkedInButton } from "@/components/shared/ctas";
+import {
+  CopyEmailButton,
+  CvButton,
+  InstagramButton,
+  LinkedInButton,
+} from "@/components/shared/ctas";
 import { profile } from "@/content";
 import type { Locale } from "@/i18n/routing";
 import { creativeButton } from "./hero";
@@ -56,6 +61,10 @@ export async function CreativeContact() {
               <LinkedInIcon className="size-4" />
               {t("cta.linkedin")}
             </LinkedInButton>
+            <InstagramButton source="creative-contact" className={creativeButton.secondary}>
+              <InstagramIcon className="size-4" />
+              {t("cta.instagram")}
+            </InstagramButton>
           </div>
         </div>
         {/* The form as a file being written, in the same editor chrome as the hero. */}
