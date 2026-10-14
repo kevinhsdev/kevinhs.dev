@@ -1,4 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { InstagramIcon, LinkedInIcon } from "@/components/shared/brand-icons";
@@ -11,6 +10,7 @@ import {
 } from "@/components/shared/ctas";
 import { profile } from "@/content";
 import type { Locale } from "@/i18n/routing";
+import { BuildFooter } from "./build-footer";
 import { creativeButton } from "./hero";
 
 export function Block({ id, title, children }: { id: string; title: string; children: ReactNode }) {
@@ -95,35 +95,10 @@ export async function CreativeContact() {
   );
 }
 
-export async function CreativeFooter({ locale, updatedAt }: { locale: Locale; updatedAt: Date }) {
-  const t = await getTranslations("footer");
-  const date = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "pt-BR", {
+/** Server wrapper: formats the "Finished at" date in the page's language. */
+export function CreativeFooter({ locale, updatedAt }: { locale: Locale; updatedAt: Date }) {
+  const finishedAt = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "pt-BR", {
     dateStyle: "long",
   }).format(updatedAt);
-  return (
-    <footer
-      id="site-footer"
-      className="flex flex-col gap-4 border-t border-border px-4 pt-8 pb-[max(2rem,env(safe-area-inset-bottom))] text-sm text-muted sm:flex-row sm:items-end sm:justify-between sm:px-8"
-    >
-      {/* Decorative: drawn as generated content so it is not text for screen readers or axe. */}
-      <span
-        aria-hidden
-        data-text={profile.name}
-        className="font-display text-7xl text-foreground/10 after:content-[attr(data-text)] sm:text-9xl"
-      />
-      <div className="flex flex-col gap-1 sm:items-end">
-        <a
-          href={profile.links.siteRepo}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center gap-1 transition-colors duration-150 hover:text-foreground"
-        >
-          {t("builtWith")} <ArrowUpRight aria-hidden className="size-3.5" />
-        </a>
-        <p>
-          © {updatedAt.getFullYear()} {profile.fullName} · {t("updated", { date })}
-        </p>
-      </div>
-    </footer>
-  );
+  return <BuildFooter finishedAt={finishedAt} year={updatedAt.getFullYear()} />;
 }

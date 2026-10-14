@@ -116,8 +116,10 @@
     "honeypot": "Leave this field empty"
   },
   "footer": {
-    "builtWith": "Built with Next.js · Open source on GitHub",
-    "updated": "Updated {date}",
+    "waiting": "WAITING FOR YOU",
+    "thanks": "thanks for scrolling this far",
+    "next": "Next step? Pick a command:",
+    "cvFile": "resume.pdf",
     "repo": "View the site's source"
   },
   "notFound": {
@@ -134,8 +136,8 @@
     "otherProjects": "Other projects",
     "talk": "Let's talk",
     "skip": "Skip",
-    "editorComment": "Hi! This is me, in TypeScript.",
-    "editorLabel": "Profile as code (kevin.ts)",
+    "editorComment": "Hi! This is me, in Java.",
+    "editorLabel": "Profile as code (Kevin.java)",
     "telemetryStrip": "Telemetry from real projects",
     "skillsLabel": "Skill levels",
     "skillsHint": "Pick a level to see the skills.",

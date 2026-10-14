@@ -23,26 +23,31 @@ const LINE_GAP_MS = 40;
 
 const str = (value: string): Segment => ["string", `"${value}"`];
 
-function array(values: string[]): Segment[] {
+function list(values: string[]): Segment[] {
   return [
-    ["punct", "["],
+    ["name", "List"],
+    ["punct", "."],
+    ["key", "of"],
+    ["punct", "("],
     ...values.flatMap((value, index): Segment[] =>
       index === 0 ? [str(value)] : [["punct", ", "], str(value)],
     ),
-    ["punct", "]"],
+    ["punct", ")"],
   ];
 }
 
+/** One builder call: `    .key(value)`. */
 const property = (key: string, value: Segment[]): Segment[] => [
-  ["plain", "  "],
+  ["plain", "    "],
+  ["punct", "."],
   ["key", key],
-  ["punct", ": "],
+  ["punct", "("],
   ...value,
-  ["punct", ","],
+  ["punct", ")"],
 ];
 
 /**
- * The hero's code editor: Kevin's profile written as a TypeScript object, typed
+ * The hero's code editor: Kevin's profile written as a Java builder, typed
  * out line by line with CSS only (each line is unclipped in steps, one per
  * character). The text is real and readable by assistive tech; the window
  * chrome and line numbers are decorative.
@@ -53,26 +58,35 @@ export async function HeroEditor({ locale }: { locale: Locale }) {
   const lines: Segment[][] = [
     [["comment", `// ${t("editorComment")}`]],
     [
-      ["keyword", "const "],
-      ["name", "kevin"],
-      ["punct", " = {"],
+      ["keyword", "var "],
+      ["plain", "kevin"],
+      ["punct", " = "],
+      ["name", "Engineer"],
+      ["punct", "."],
+      ["key", "builder"],
+      ["punct", "()"],
     ],
     property("role", [str(pick(profile.role, locale))]),
     property("location", [str(pick(profile.location, locale))]),
-    property("stack", array(profile.stackLine.split(" · "))),
-    property("exploring", array(profile.exploring.map((item) => pick(item, locale)))),
+    property("stack", list(profile.stackLine.split(" · "))),
+    property("exploring", list(profile.exploring.map((item) => pick(item, locale)))),
     property("status", [str(pick(profile.status, locale))]),
     [
-      ["punct", "} "],
-      ["keyword", "satisfies "],
-      ["name", "Engineer"],
-      ["punct", ";"],
+      ["plain", "    "],
+      ["punct", "."],
+      ["key", "build"],
+      ["punct", "();"],
     ],
     [],
     [
-      ["keyword", "export default "],
-      ["name", "kevin"],
-      ["punct", ";"],
+      ["name", "System"],
+      ["punct", "."],
+      ["plain", "out"],
+      ["punct", "."],
+      ["key", "println"],
+      ["punct", "("],
+      ["plain", "kevin"],
+      ["punct", ");"],
     ],
   ];
 
@@ -100,8 +114,8 @@ export async function HeroEditor({ locale }: { locale: Locale }) {
           <span className="size-2.5 rounded-full bg-border" />
           <span className="size-2.5 rounded-full bg-border" />
         </span>
-        <span className="-mb-px border-b-2 border-accent py-3 text-foreground">kevin.ts</span>
-        <span className="py-3">projects.ts</span>
+        <span className="-mb-px border-b-2 border-accent py-3 text-foreground">Kevin.java</span>
+        <span className="py-3">Projects.java</span>
       </div>
 
       <pre className="py-4 font-mono text-[11.5px] leading-[1.75] break-words whitespace-pre-wrap sm:text-[13px]">
@@ -145,7 +159,7 @@ export async function HeroEditor({ locale }: { locale: Locale }) {
         className="flex justify-between border-t border-border px-4 py-2 font-mono text-[10px] tracking-wider text-muted uppercase"
       >
         <span>main ✓</span>
-        <span>TypeScript · UTF-8</span>
+        <span>Java · UTF-8</span>
       </div>
     </figure>
   );

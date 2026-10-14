@@ -76,7 +76,7 @@ const STRIP = [
 
 /**
  * Hero: the name in giant type with the CTAs on one side, and a code editor
- * that types Kevin's profile out as a TypeScript object on the other. The name,
+ * that types Kevin's profile out as a Java builder on the other. The name,
  * role and CTAs are in the HTML and visible on the first frame; the editor is
  * the show. The telemetry strip below carries the proof.
  */

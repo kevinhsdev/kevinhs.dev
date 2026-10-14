@@ -32,9 +32,9 @@ test.describe("version B · creative", () => {
   test("the hero editor types the profile out and ends fully visible", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "no-preference" });
     await page.goto("/en");
-    const editor = page.getByRole("figure", { name: "Profile as code (kevin.ts)" });
-    await expect(editor).toContainText('role: "Software Engineering Student"');
-    await expect(editor).toContainText("satisfies Engineer");
+    const editor = page.getByRole("figure", { name: "Profile as code (Kevin.java)" });
+    await expect(editor).toContainText('.role("Software Engineering Student")');
+    await expect(editor).toContainText("Engineer.builder()");
     // Every line ends unclipped once the typing is done.
     await expect
       .poll(
