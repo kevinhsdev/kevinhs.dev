@@ -40,7 +40,7 @@ export const profile = {
   links: {
     github: "https://github.com/kevinhsdev",
     linkedin: "https://www.linkedin.com/in/kevinhs07",
-    siteRepo: "https://github.com/kevinhsdev/portfolio",
+    siteRepo: "https://github.com/kevinhsdev/kevinhs.dev",
   },
   cv: {
     pt: "/cv/kevin-henrique-cv-pt.pdf",
