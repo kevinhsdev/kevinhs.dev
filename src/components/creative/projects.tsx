@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { stackLogo } from "./skill-marks";
+import { StackFit } from "./stack-fit";
 import { TechLogo } from "./tech-logo";
 
 const link =
@@ -65,14 +66,18 @@ export async function StackedProjects({
 
   return (
     <ol className="flex flex-col gap-6">
+      <StackFit />
       {projects.map((project, index) => {
         const Mockup = hasMockup(project.slug) ? mockups[project.slug] : null;
+        // 5rem under the header, each card peeking 1.25rem below the previous one.
+        const top = 80 + index * 20;
         return (
           <li
             key={project.slug}
             data-stack-card
+            data-stack-top={top}
             className="sticky rounded-3xl border border-border bg-surface p-5 shadow-[0_-20px_60px_-30px_rgb(0_0_0/0.6)] sm:p-8 lg:flex lg:min-h-[80vh] lg:flex-col lg:justify-center lg:p-12"
-            style={{ top: `calc(5rem + ${index * 1.25}rem)` }}
+            style={{ top }}
           >
             <article className="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-12">
               <div className="flex flex-col gap-5">
