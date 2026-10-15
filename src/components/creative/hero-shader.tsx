@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
  * contour lines in the accent color. It is purely decorative, so it:
  *   - starts only after the page is idle (never competes with LCP),
  *   - skips small screens, Save-Data, reduced motion and missing WebGL,
- *   - renders at half resolution and pauses when off-screen or hidden.
+ *   - renders at device resolution (capped) and pauses when off-screen or hidden.
  * A static CSS gradient sits underneath as the fallback.
  */
 
@@ -91,7 +91,9 @@ export function HeroShader() {
       themeObserver.observe(document.documentElement, { attributeFilter: ["class"] });
 
       const resize = () => {
-        const scale = 0.5; // half resolution: the effect is soft, the GPU cost is not.
+        // Device pixels, capped: the thin contour lines alias below 1:1, while
+        // past 1.5x the extra GPU cost buys no visible sharpness.
+        const scale = Math.min(window.devicePixelRatio || 1, 1.5);
         canvas.width = Math.max(1, Math.floor(canvas.clientWidth * scale));
         canvas.height = Math.max(1, Math.floor(canvas.clientHeight * scale));
         gl.viewport(0, 0, canvas.width, canvas.height);
