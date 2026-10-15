@@ -10,7 +10,7 @@ import {
 } from "@/components/shared/ctas";
 import { profile } from "@/content";
 import type { Locale } from "@/i18n/routing";
-import { BuildFooter } from "./build-footer";
+import { ZipFooter } from "./zip-footer";
 import { creativeButton } from "./hero";
 
 export function Block({ id, title, children }: { id: string; title: string; children: ReactNode }) {
@@ -95,10 +95,7 @@ export async function CreativeContact() {
   );
 }
 
-/** Server wrapper: formats the "Finished at" date in the page's language. */
-export function CreativeFooter({ locale, updatedAt }: { locale: Locale; updatedAt: Date }) {
-  const finishedAt = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "pt-BR", {
-    dateStyle: "long",
-  }).format(updatedAt);
-  return <BuildFooter finishedAt={finishedAt} year={updatedAt.getFullYear()} />;
+/** The kevin.zip terminal; the year comes from the server so the client never disagrees with it. */
+export function CreativeFooter({ updatedAt }: { locale: Locale; updatedAt: Date }) {
+  return <ZipFooter year={updatedAt.getFullYear()} />;
 }

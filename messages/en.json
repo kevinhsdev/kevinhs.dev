@@ -116,9 +116,12 @@
     "honeypot": "Leave this field empty"
   },
   "footer": {
-    "waiting": "WAITING FOR YOU",
-    "thanks": "thanks for scrolling this far",
-    "next": "Next step? Pick a command:",
+    "saved": "kevin.zip saved (2026 KB)",
+    "remaining": "~{count, plural, one {# scroll} other {# scrolls}} to go",
+    "waitingDownload": "waiting for download",
+    "cvNote": "everything, summed up",
+    "emailNote": "empty, you write it",
+    "backToTop": "back to top",
     "cvFile": "resume.pdf",
     "repo": "View the site's source"
   },

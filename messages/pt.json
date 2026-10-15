@@ -116,9 +116,12 @@
     "honeypot": "Deixe este campo em branco"
   },
   "footer": {
-    "waiting": "AGUARDANDO VOCÊ",
-    "thanks": "obrigado por rolar até aqui",
-    "next": "Próximo passo? Escolha um comando:",
+    "saved": "kevin.zip salvo (2026 KB)",
+    "remaining": "faltam ~{count, plural, one {# rolagem} other {# rolagens}}",
+    "waitingDownload": "aguardando download",
+    "cvNote": "o resumo de tudo",
+    "emailNote": "vazio, escreve você",
+    "backToTop": "voltar ao início",
     "cvFile": "curriculo.pdf",
     "repo": "Ver o código do site"
   },

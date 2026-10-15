@@ -632,19 +632,11 @@
   min-height: 6.5rem;
 }
 
-/* Footer terminal (components/creative/build-footer.tsx): lines wait hidden until the build reaches them. */
-.build-terminal[data-armed] [data-line] {
-  transition: opacity 120ms ease-out;
-}
-.build-terminal[data-armed] [data-line]:not([data-on]) {
-  opacity: 0;
-}
-.build-waiting,
+/* Blinking prompt cursor in the footer terminal (components/creative/zip-footer.tsx). */
 .build-caret {
   animation: caret-blink 1s steps(1) infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .build-waiting,
   .build-caret {
     animation: none;
   }
