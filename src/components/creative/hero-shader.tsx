@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
  * A few-KB WebGL fragment shader instead of three.js: flowing "telemetry"
  * contour lines in the accent color. It is purely decorative, so it:
  *   - starts only after the page is idle (never competes with LCP),
- *   - skips small screens, Save-Data, reduced motion and missing WebGL,
+ *   - skips Save-Data, reduced motion and missing WebGL,
  *   - renders at device resolution (capped) and pauses when off-screen or hidden.
  * A static CSS gradient sits underneath as the fallback.
  */
@@ -35,7 +35,7 @@ function hexToRgb(value: string): [number, number, number] {
 function canRun(): boolean {
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
   return (
-    window.matchMedia("(min-width: 768px) and (prefers-reduced-motion: no-preference)").matches &&
+    window.matchMedia("(prefers-reduced-motion: no-preference)").matches &&
     !connection?.saveData
   );
 }
