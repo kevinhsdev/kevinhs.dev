@@ -49,7 +49,8 @@
     "skills": "Skills",
     "contact": "Contact",
     "now": "Now",
-    "toolbar": "Display preferences"
+    "toolbar": "Display preferences",
+    "achievements": "Achievements"
   },
   "timeline": {
     "filters": {
@@ -123,7 +124,20 @@
     "emailNote": "empty, you write it",
     "backToTop": "back to top",
     "cvFile": "resume.pdf",
-    "repo": "View the site's source"
+    "repo": "View the site's source",
+    "snake": {
+      "score": "score",
+      "best": "best",
+      "label": "Snake game. Use the arrow keys or WASD to move; Enter to start.",
+      "start": "▶ ENTER or tap to play",
+      "hint": "arrows / WASD · on a phone, swipe or use the d-pad",
+      "record": "NEW HIGH SCORE!",
+      "pad": "D-pad",
+      "up": "Up",
+      "down": "Down",
+      "left": "Left",
+      "right": "Right"
+    }
   },
   "notFound": {
     "title": "Page not found",
@@ -134,7 +148,6 @@
   "creative": {
     "kicker": "Software Engineering · São Paulo",
     "scroll": "Scroll to explore",
-    "marquee": ["Java", "Spring Boot", "MySQL", "DevOps", "Cloud", "Applied AI"],
     "statement": ["Spotted a real problem.", "Built the fix.", "It runs every day now."],
     "otherProjects": "Other projects",
     "talk": "Let's talk",
@@ -195,5 +208,82 @@
     "offScreen": "Away from the screen",
     "learning": "Learning right now",
     "nowLink": "What I'm up to now"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "player": "P1",
+    "score": "Score",
+    "unlocked": "Unlocked",
+    "statusUnlocked": "Unlocked",
+    "statusProgress": "In progress",
+    "statusLocked": "Locked",
+    "goal": "Goal",
+    "credential": "View certificate",
+    "loading": "Loading",
+    "continue": "Continue?",
+    "continueCta": "Call me for my first internship",
+    "legend": "Achievements scoreboard: {unlocked} of {total} unlocked, {score} points"
+  },
+  "visitorAchievements": {
+    "unlocked": "Achievement unlocked",
+    "dismiss": "Dismiss notification",
+    "case": {
+      "title": "Your trophies",
+      "note": "Explore the site to unlock them. Every locked trophy holds a hint.",
+      "done": "Platinum! You've seen it all. Thanks for visiting.",
+      "left": "{left} to go",
+      "complete": "complete",
+      "locked": "Locked"
+    },
+    "items": {
+      "explorer": {
+        "title": "Explorer",
+        "desc": "Opened my projects.",
+        "hint": "Take a look at the projects."
+      },
+      "traveler": {
+        "title": "Time traveler",
+        "desc": "Went through my journey.",
+        "hint": "Get to know my journey."
+      },
+      "curious": {
+        "title": "Curious",
+        "desc": "Wanted to know who I am.",
+        "hint": "Find out who I am."
+      },
+      "endgame": {
+        "title": "Endgame",
+        "desc": "Made it to the contact.",
+        "hint": "Reach the end of the page."
+      },
+      "present": {
+        "title": "Right now",
+        "desc": "Saw what I'm working on now.",
+        "hint": "See what I'm doing now."
+      },
+      "theme": {
+        "title": "Master of light",
+        "desc": "Switched the site theme.",
+        "hint": "Try the other side."
+      },
+      "polyglot": {
+        "title": "Polyglot",
+        "desc": "Read the site in two languages.",
+        "hint": "Read the site in another language."
+      }
+    },
+    "platinum": {
+      "kicker": "Platinum trophy",
+      "title": "Platinum!",
+      "desc": "You unlocked every achievement.",
+      "cta": "See your reward"
+    },
+    "reward": {
+      "title": "Your reward",
+      "note": "A secret theme: the whole site turns into an arcade. Switch it on and off anytime.",
+      "theme": "Arcade theme",
+      "on": "On",
+      "off": "Off"
+    }
   }
 }

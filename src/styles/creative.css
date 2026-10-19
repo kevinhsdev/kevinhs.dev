@@ -40,11 +40,39 @@
   }
 }
 .marquee-track {
-  animation: marquee 28s linear infinite;
+  animation: marquee 70s linear infinite;
+}
+.marquee-track-reverse {
+  animation-direction: reverse;
+  animation-duration: 85s;
+}
+/* The fade lives on the still frame (not the moving track), so both ends always dissolve. */
+.marquee-row {
+  mask-image: linear-gradient(90deg, transparent, #000 14%, #000 86%, transparent);
+  padding-block: 4px; /* room for the chip's lift on hover */
+}
+.marquee-chip {
+  transition:
+    transform 300ms var(--ease-out-quint),
+    border-color 200ms ease,
+    color 200ms ease,
+    background-color 200ms ease;
+}
+.marquee-logo {
+  transition: transform 300ms var(--ease-out-quint);
 }
 @media (hover: hover) and (pointer: fine) {
-  .marquee:hover .marquee-track {
+  .marquee-row:hover .marquee-track {
     animation-play-state: paused;
+  }
+  .marquee-chip:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in oklab, var(--foreground) 28%, transparent);
+    background-color: var(--surface);
+    color: var(--foreground);
+  }
+  .marquee-chip:hover .marquee-logo {
+    transform: scale(1.15) rotate(-4deg);
   }
 }
 
@@ -790,5 +818,693 @@
   .zoom-content .zoom-figure,
   .zoom-overlay {
     animation: none !important;
+  }
+}
+
+/*
+ * Achievements (components/creative/achievements.tsx): an arcade cabinet.
+ * The screen stays dark in both themes, like a CRT; neon colors mark the state:
+ * gold = unlocked, cyan = in progress, dim = locked goal.
+ */
+.arcade {
+  --arcade-bg: #070a18;
+  --arcade-ink: #e9ecff;
+  --arcade-dim: #6d7398;
+  --arcade-gold: #ffd23f;
+  --arcade-cyan: #3ef0ff;
+  --arcade-pink: #ff4fd8;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: clamp(20px, 3vw, 40px);
+  background: radial-gradient(120% 80% at 50% 0%, #16204a 0%, transparent 60%), var(--arcade-bg);
+  color: var(--arcade-ink);
+  box-shadow:
+    inset 0 0 0 2px #1d2550,
+    inset 0 0 80px rgba(62, 240, 255, 0.08),
+    0 30px 60px -30px rgba(7, 10, 24, 0.6);
+}
+/* scanlines + vignette, like glass in front of a tube */
+.arcade::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px),
+    radial-gradient(130% 100% at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.55));
+}
+.font-pixel {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.arcade-hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 28px;
+  margin-bottom: clamp(20px, 3vw, 32px);
+  padding-bottom: 20px;
+  border-bottom: 2px dashed #222a58;
+  font-size: clamp(20px, 2vw, 26px);
+  color: var(--arcade-dim);
+}
+.arcade-hud b {
+  color: var(--arcade-ink);
+  font-weight: 400;
+}
+.arcade-player {
+  color: var(--arcade-pink);
+  text-shadow: 0 0 12px rgba(255, 79, 216, 0.6);
+}
+.arcade-score {
+  color: var(--arcade-gold) !important;
+  text-shadow: 0 0 12px rgba(255, 210, 63, 0.55);
+  font-variant-numeric: tabular-nums;
+}
+.arcade-bar {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+.arcade-bar i {
+  width: 14px;
+  height: 18px;
+  background: #1a2048;
+}
+.arcade-bar i.is-unlocked {
+  background: var(--arcade-gold);
+  box-shadow: 0 0 10px rgba(255, 210, 63, 0.6);
+}
+.arcade-bar i.is-progress {
+  background: var(--arcade-cyan);
+  animation: arcade-blink 1.2s steps(1) infinite;
+}
+
+.arcade-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+.arcade-card {
+  --c: var(--arcade-gold);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 230px;
+  padding: 18px;
+  background: #0d1230;
+  border: 2px solid color-mix(in srgb, var(--c) 55%, transparent);
+  /* stepped pixel shadow: the arcade world earns a hard offset */
+  box-shadow: 6px 6px 0 color-mix(in srgb, var(--c) 22%, transparent);
+  transition:
+    transform 240ms steps(3),
+    box-shadow 240ms steps(3);
+}
+.arcade-card.is-progress {
+  --c: var(--arcade-cyan);
+}
+.arcade-card.is-locked {
+  --c: #3a4170;
+  background: repeating-linear-gradient(135deg, #0b0f28 0 10px, #0d1230 10px 20px);
+}
+.arcade-sprite {
+  display: block;
+  width: 56px;
+  height: 56px;
+  padding: 8px;
+  color: var(--c);
+  background: #070a1c;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--c) 35%, transparent);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--c) 60%, transparent));
+}
+.arcade-card.is-locked .arcade-sprite {
+  color: #5a6196;
+  filter: none;
+}
+.arcade-xp {
+  font-size: 20px;
+  color: var(--c);
+}
+.arcade-card.is-locked .arcade-xp {
+  color: var(--arcade-dim);
+}
+.arcade-status {
+  font-size: 18px;
+  color: var(--c);
+  margin-top: 4px;
+}
+.arcade-card.is-locked .arcade-status {
+  color: var(--arcade-dim);
+}
+.arcade-card h3 {
+  color: var(--arcade-ink);
+}
+.arcade-card.is-locked h3 {
+  color: #aab0d6;
+}
+.arcade-meta {
+  font-size: 18px;
+  color: var(--arcade-dim);
+}
+.arcade-hint {
+  margin-top: auto;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #9aa1cc;
+}
+.arcade-hint .font-pixel {
+  font-size: 17px;
+  color: var(--arcade-pink);
+}
+.arcade-loading {
+  margin-top: auto;
+  display: grid;
+  gap: 6px;
+  font-size: 17px;
+  color: var(--arcade-cyan);
+}
+.arcade-segments {
+  display: flex;
+  gap: 3px;
+}
+.arcade-segments i {
+  flex: 1;
+  height: 10px;
+  background: #13204a;
+  animation: arcade-fill 2.4s steps(1) infinite;
+  animation-delay: calc(var(--i) * 0.2s);
+}
+.arcade-link {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 19px;
+  color: var(--arcade-gold);
+  text-decoration: none;
+}
+.arcade-continue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 14px;
+  margin-top: clamp(24px, 3vw, 36px);
+  padding: 16px;
+  font-size: clamp(22px, 2.4vw, 30px);
+  color: var(--arcade-ink);
+  text-decoration: none;
+  border: 2px dashed #2a3368;
+  transition:
+    border-color 200ms ease,
+    color 200ms ease;
+}
+.arcade-blink {
+  color: var(--arcade-pink);
+  animation: arcade-blink 1.1s steps(1) infinite;
+}
+@keyframes arcade-blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes arcade-fill {
+  0%,
+  100% {
+    background: #13204a;
+  }
+  30%,
+  80% {
+    background: var(--arcade-cyan);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .arcade-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 9px 9px 0 color-mix(in srgb, var(--c) 32%, transparent);
+  }
+  .arcade-link:hover,
+  .arcade-continue:hover {
+    color: var(--arcade-gold);
+  }
+  .arcade-continue:hover {
+    border-color: var(--arcade-gold);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arcade-blink,
+  .arcade-bar i.is-progress,
+  .arcade-segments i {
+    animation: none;
+  }
+  .arcade-segments i:nth-child(-n + 5) {
+    background: var(--arcade-cyan);
+  }
+  .arcade-card {
+    transition: none;
+  }
+}
+
+/* ---------- Achievements, alternative looks (PROTOTYPE: keep only the chosen one) ---------- */
+
+/* Rarity colors, used by the trophy list and the holographic cards */
+.arcade-card[data-rarity="bronze"] {
+  --r: #e0874a;
+}
+.arcade-card[data-rarity="silver"] {
+  --r: #8fb4ff;
+}
+.arcade-card[data-rarity="gold"] {
+  --r: #ffc94a;
+}
+.arcade-card[data-rarity="platinum"] {
+  --r: #7ff0e0;
+}
+
+/* 2. Game Boy: four greens on an LCD, inside the grey console bezel. No glow. */
+.arcade[data-variant="gameboy"] {
+  --gb-0: #0f380f;
+  --gb-1: #306230;
+  --gb-2: #8bac0f;
+  --gb-3: #9bbc0f;
+  --arcade-ink: var(--gb-0);
+  --arcade-dim: var(--gb-1);
+  --arcade-gold: var(--gb-0);
+  --arcade-cyan: var(--gb-1);
+  --arcade-pink: var(--gb-0);
+  margin: 22px;
+  border-radius: 10px 10px 40px 10px;
+  background: var(--gb-3);
+  color: var(--gb-0);
+  box-shadow:
+    0 0 0 14px #55566a,
+    0 0 0 24px #c6c6cc,
+    0 30px 60px -20px rgba(0, 0, 0, 0.35);
+}
+.arcade[data-variant="gameboy"]::after {
+  background:
+    linear-gradient(rgba(15, 56, 15, 0.07) 1px, transparent 1px) 0 0 / 3px 3px,
+    linear-gradient(90deg, rgba(15, 56, 15, 0.07) 1px, transparent 1px) 0 0 / 3px 3px;
+}
+.arcade[data-variant="gameboy"] * {
+  text-shadow: none !important;
+}
+.arcade[data-variant="gameboy"] .arcade-hud {
+  border-bottom-color: var(--gb-1);
+}
+.arcade[data-variant="gameboy"] .arcade-bar i {
+  background: var(--gb-2);
+  box-shadow: none;
+}
+.arcade[data-variant="gameboy"] .arcade-bar i.is-unlocked {
+  background: var(--gb-0);
+}
+.arcade[data-variant="gameboy"] .arcade-bar i.is-progress {
+  background: var(--gb-1);
+}
+.arcade[data-variant="gameboy"] .arcade-card {
+  --c: var(--gb-0);
+  background: var(--gb-2);
+  border: 3px solid var(--gb-0);
+  box-shadow: 4px 4px 0 var(--gb-1);
+}
+.arcade[data-variant="gameboy"] .arcade-card.is-locked {
+  --c: var(--gb-1);
+  /* 2x2 dither, the way the handheld faked a lighter tone */
+  background: repeating-conic-gradient(var(--gb-2) 0 25%, var(--gb-3) 0 50%) 0 0 / 4px 4px;
+  border-color: var(--gb-1);
+}
+.arcade[data-variant="gameboy"] .arcade-sprite {
+  background: var(--gb-3);
+  box-shadow: inset 0 0 0 2px var(--gb-0);
+  filter: none;
+  color: var(--gb-0);
+}
+.arcade[data-variant="gameboy"] .arcade-card h3,
+.arcade[data-variant="gameboy"] .arcade-card.is-locked h3,
+.arcade[data-variant="gameboy"] .arcade-xp,
+.arcade[data-variant="gameboy"] .arcade-status {
+  color: var(--gb-0);
+}
+.arcade[data-variant="gameboy"] .arcade-meta,
+.arcade[data-variant="gameboy"] .arcade-hint {
+  color: var(--gb-1);
+}
+.arcade[data-variant="gameboy"] .arcade-segments i {
+  background: var(--gb-3);
+  animation-name: gb-fill;
+}
+@keyframes gb-fill {
+  30%,
+  80% {
+    background: var(--gb-0);
+  }
+}
+.arcade[data-variant="gameboy"] .arcade-continue {
+  border-color: var(--gb-1);
+  color: var(--gb-0);
+}
+@media (hover: hover) and (pointer: fine) {
+  /* hover inverts the card, like a selected menu item on the handheld */
+  .arcade[data-variant="gameboy"] .arcade-card:hover {
+    background: var(--gb-0);
+    box-shadow: 6px 6px 0 var(--gb-1);
+  }
+  .arcade[data-variant="gameboy"] .arcade-card:hover :is(h3, p, span, a) {
+    color: var(--gb-3) !important;
+  }
+  .arcade[data-variant="gameboy"] .arcade-card:hover .arcade-sprite {
+    background: var(--gb-0);
+    box-shadow: inset 0 0 0 2px var(--gb-3);
+  }
+}
+
+/* 3. Trophy list, like a modern console trophy screen. Follows the site theme. */
+.arcade[data-variant="trophies"] {
+  --arcade-ink: var(--foreground);
+  --arcade-dim: var(--muted);
+  --arcade-gold: #c9971f;
+  --arcade-cyan: var(--accent);
+  --arcade-pink: var(--accent);
+  border-radius: 24px;
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.arcade[data-variant="trophies"]::after {
+  display: none;
+}
+.arcade[data-variant="trophies"] .font-pixel {
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+.arcade[data-variant="trophies"] * {
+  text-shadow: none !important;
+}
+.arcade[data-variant="trophies"] .arcade-hud {
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.arcade[data-variant="trophies"] .arcade-player {
+  color: var(--foreground);
+}
+.arcade[data-variant="trophies"] .arcade-score {
+  color: var(--accent) !important;
+}
+.arcade[data-variant="trophies"] .arcade-bar {
+  gap: 0;
+  width: min(260px, 100%);
+  height: 8px;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--border);
+}
+.arcade[data-variant="trophies"] .arcade-bar i {
+  flex: 1;
+  width: auto;
+  height: 100%;
+  background: transparent;
+  box-shadow: none;
+  animation: none;
+}
+.arcade[data-variant="trophies"] .arcade-bar i.is-unlocked {
+  background: var(--accent);
+}
+.arcade[data-variant="trophies"] .arcade-bar i.is-progress {
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.arcade[data-variant="trophies"] .arcade-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr));
+  gap: 10px;
+}
+.arcade[data-variant="trophies"] .arcade-card {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  grid-template-areas:
+    "icon status xp"
+    "icon title xp"
+    "icon meta meta"
+    "icon extra extra";
+  align-items: center;
+  column-gap: 16px;
+  row-gap: 2px;
+  min-height: 0;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  box-shadow: none;
+  transition:
+    transform 300ms var(--ease-out-quint),
+    border-color 200ms ease;
+}
+.arcade[data-variant="trophies"] .arcade-card > div:first-of-type {
+  display: contents;
+}
+.arcade[data-variant="trophies"] .arcade-sprite {
+  grid-area: icon;
+  align-self: start;
+  width: 52px;
+  height: 52px;
+  padding: 11px;
+  border-radius: 50%;
+  color: var(--r);
+  background: color-mix(in srgb, var(--r) 16%, transparent);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--r) 55%, transparent);
+  filter: none;
+}
+.arcade[data-variant="trophies"] .arcade-card.is-locked .arcade-sprite {
+  color: var(--muted);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+.arcade[data-variant="trophies"] .arcade-status {
+  grid-area: status;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--r);
+}
+.arcade[data-variant="trophies"] .arcade-card.is-progress .arcade-status {
+  color: var(--accent);
+}
+.arcade[data-variant="trophies"] .arcade-card.is-locked .arcade-status {
+  color: var(--muted);
+}
+.arcade[data-variant="trophies"] .arcade-card h3 {
+  grid-area: title;
+  color: var(--foreground);
+  font-size: 16px;
+}
+.arcade[data-variant="trophies"] .arcade-card.is-locked h3 {
+  color: var(--muted);
+}
+.arcade[data-variant="trophies"] .arcade-xp {
+  grid-area: xp;
+  align-self: start;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--r) 22%, transparent);
+}
+.arcade[data-variant="trophies"] .arcade-meta {
+  grid-area: meta;
+  font-size: 13px;
+  text-transform: none;
+  color: var(--muted);
+}
+.arcade[data-variant="trophies"] :is(.arcade-hint, .arcade-loading, .arcade-link) {
+  grid-area: extra;
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.arcade[data-variant="trophies"] .arcade-hint .font-pixel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.arcade[data-variant="trophies"] .arcade-loading {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.arcade[data-variant="trophies"] .arcade-segments {
+  gap: 2px;
+}
+.arcade[data-variant="trophies"] .arcade-segments i {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--border);
+  animation-name: trophy-fill;
+}
+@keyframes trophy-fill {
+  30%,
+  80% {
+    background: var(--accent);
+  }
+}
+.arcade[data-variant="trophies"] .arcade-continue {
+  font-size: 16px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  color: var(--foreground);
+}
+.arcade[data-variant="trophies"] .arcade-blink {
+  color: var(--accent);
+  animation: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .arcade[data-variant="trophies"] .arcade-card:hover {
+    transform: translateY(-2px);
+    box-shadow: none;
+    border-color: color-mix(in srgb, var(--r) 60%, var(--border));
+  }
+}
+
+/* 4. Holographic collectible cards: rarity-colored frames, a foil sheen, locked ones face down. */
+.arcade[data-variant="holo"] {
+  --arcade-ink: #f4ecff;
+  --arcade-dim: #a597c4;
+  --arcade-gold: #ffd76a;
+  --arcade-cyan: #8fe9ff;
+  --arcade-pink: #ff7ad9;
+  background:
+    radial-gradient(90% 70% at 50% 0%, #2c1450 0%, transparent 65%),
+    radial-gradient(60% 50% at 100% 100%, #0f2b45 0%, transparent 70%), #0b0716;
+  box-shadow:
+    inset 0 0 0 1px #2d1f4d,
+    0 30px 60px -30px rgba(11, 7, 22, 0.7);
+}
+.arcade[data-variant="holo"]::after {
+  display: none;
+}
+.arcade[data-variant="holo"] .arcade-player {
+  color: var(--arcade-pink);
+}
+.arcade[data-variant="holo"] .arcade-hud {
+  border-bottom: 1px solid #2d1f4d;
+}
+.arcade[data-variant="holo"] .arcade-bar i {
+  border-radius: 3px;
+}
+.arcade[data-variant="holo"] .arcade-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  perspective: 1000px;
+}
+.arcade[data-variant="holo"] .arcade-card {
+  --c: var(--r);
+  aspect-ratio: 5 / 7;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 0;
+  padding: 16px;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--r) 22%, #1c1233),
+    #120b22 55%,
+    color-mix(in srgb, var(--r) 14%, #120b22)
+  );
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--r) 70%, transparent),
+    inset 0 0 0 6px #120b22,
+    inset 0 0 0 7px color-mix(in srgb, var(--r) 35%, transparent),
+    0 18px 40px -18px color-mix(in srgb, var(--r) 55%, transparent);
+  transition: transform 500ms var(--ease-out-quint);
+  transform-style: preserve-3d;
+}
+/* foil: a rainbow band sweeping across the card */
+.arcade[data-variant="holo"] .arcade-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 25%,
+    rgba(255, 90, 200, 0.35) 38%,
+    rgba(90, 240, 255, 0.35) 46%,
+    rgba(255, 235, 120, 0.35) 54%,
+    transparent 68%
+  );
+  background-size: 250% 250%;
+  background-position: 100% 50%;
+  mix-blend-mode: color-dodge;
+  opacity: 0.35;
+  transition:
+    background-position 900ms var(--ease-out-quint),
+    opacity 300ms ease;
+}
+.arcade[data-variant="holo"] .arcade-card > * {
+  position: relative;
+  z-index: 2;
+}
+.arcade[data-variant="holo"] .arcade-sprite {
+  width: 76px;
+  height: 76px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--r) 60%, transparent);
+  color: var(--r);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--r) 70%, transparent));
+}
+.arcade[data-variant="holo"] .arcade-xp,
+.arcade[data-variant="holo"] .arcade-status {
+  color: var(--r);
+}
+.arcade[data-variant="holo"] .arcade-card h3 {
+  margin-top: auto;
+  font-size: 17px;
+}
+/* locked cards lie face down: a patterned back, a big lock, the goal at the bottom */
+.arcade[data-variant="holo"] .arcade-card.is-locked {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(143, 227, 242, 0.12), transparent 45%),
+    repeating-linear-gradient(45deg, #171034 0 8px, #120b26 8px 16px);
+  box-shadow:
+    inset 0 0 0 2px #3a2c66,
+    inset 0 0 0 6px #120b22,
+    inset 0 0 0 7px #2b2050;
+}
+.arcade[data-variant="holo"] .arcade-card.is-locked .arcade-sprite {
+  color: #6f5fa6;
+  filter: none;
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 0 0 1px #3a2c66;
+}
+.arcade[data-variant="holo"] .arcade-card.is-locked::before {
+  display: none;
+}
+.arcade[data-variant="holo"] .arcade-card.is-locked :is(.arcade-xp, .arcade-status) {
+  color: var(--arcade-dim);
+}
+@media (hover: hover) and (pointer: fine) {
+  .arcade[data-variant="holo"] .arcade-card:hover {
+    transform: rotateX(7deg) rotateY(-9deg) translateY(-8px);
+  }
+  .arcade[data-variant="holo"] .arcade-card:hover::before {
+    background-position: 0% 50%;
+    opacity: 0.8;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .arcade[data-variant="holo"] .arcade-card,
+  .arcade[data-variant="holo"] .arcade-card::before {
+    transition: none;
   }
 }

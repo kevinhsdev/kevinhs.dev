@@ -1,12 +1,14 @@
 import { z } from "zod";
 import type { Locale } from "@/i18n/routing";
 import { about as rawAbout } from "./about";
+import { achievements as rawAchievements } from "./achievements";
 import { gallery as rawGallery } from "./gallery";
 import { now as rawNow } from "./now";
 import { profile as rawProfile } from "./profile";
 import { projects as rawProjects } from "./projects";
 import {
   aboutSchema,
+  achievementSchema,
   gallerySchema,
   nowSchema,
   profileSchema,
@@ -31,6 +33,14 @@ export const projects = z
   .parse(rawProjects);
 export const skills = z.array(skillGroupSchema).parse(rawSkills);
 export const now = nowSchema.parse(rawNow);
+/** Unlocked first (newest first), then in progress, then locked goals. */
+export const achievements = z
+  .array(achievementSchema)
+  .parse(rawAchievements)
+  .sort((a, b) => {
+    const order = { unlocked: 0, progress: 1, locked: 2 } as const;
+    return order[a.status] - order[b.status] || (b.date ?? "").localeCompare(a.date ?? "");
+  });
 export const gallery = z.array(gallerySchema).min(3).parse(rawGallery);
 export const timeline = sortTimeline(z.array(timelineItemSchema).parse(rawTimeline));
 /** Every photo id and project slug the About page names must exist, or the build fails. */

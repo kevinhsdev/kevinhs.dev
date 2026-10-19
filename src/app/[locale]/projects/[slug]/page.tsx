@@ -162,7 +162,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
                 <Link
                   key={icon}
                   href={`/projects/${item.slug}`}
-                  className={`group flex flex-col gap-2 bg-background px-4 py-10 transition-colors duration-200 hover:bg-surface sm:px-8 ${icon === "next" ? "sm:items-end sm:text-right" : ""}`}
+                  className={`group flex flex-col gap-4 bg-background px-4 py-14 transition-colors duration-200 hover:bg-surface sm:px-8 sm:py-20 ${icon === "next" ? "sm:items-end sm:text-right" : ""}`}
                 >
                   <span className="inline-flex items-center gap-2 font-mono text-xs tracking-widest text-muted uppercase">
                     {icon === "prev" && <ArrowLeft aria-hidden className="size-4" />}
@@ -171,6 +171,20 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
                   </span>
                   <span className="font-display text-4xl transition-colors duration-200 group-hover:text-accent sm:text-6xl">
                     {item.title}
+                  </span>
+                </Link>
+              ) : icon === "prev" ? (
+                <Link
+                  key={icon}
+                  href={`${HOME_PATH}#projects`}
+                  className="group flex flex-col gap-4 bg-background px-4 py-14 transition-colors duration-200 hover:bg-surface sm:px-8 sm:py-20"
+                >
+                  <span className="inline-flex items-center gap-2 font-mono text-xs tracking-widest text-muted uppercase">
+                    <ArrowLeft aria-hidden className="size-4" />
+                    {t("caseStudy.back")}
+                  </span>
+                  <span className="font-display text-4xl transition-colors duration-200 group-hover:text-accent sm:text-6xl">
+                    {t("nav.projects")}
                   </span>
                 </Link>
               ) : (

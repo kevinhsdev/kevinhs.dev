@@ -1,9 +1,11 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { scrollToAnchor } from "@/components/shared/command-menu";
 import { KevinMark } from "@/components/shared/logo";
+import { arcadeSnapshot, subscribeArcade } from "@/components/shared/visitor-achievements-data";
+import { TerminalSnake } from "./terminal-snake";
 // Raw content (no Zod) keeps the client bundle small; it is validated at build time.
 import { profile } from "@/content/profile";
 import { trackCta, type CtaEvent } from "@/lib/analytics";
@@ -29,6 +31,8 @@ export function ZipFooter({ year }: { year: number }) {
   const [shown, setShown] = useState(0);
   // Once downloaded it stays downloaded, even if the visitor scrolls back up.
   const [complete, setComplete] = useState(false);
+  // under the secret arcade theme the terminal also runs a game
+  const arcade = useSyncExternalStore(subscribeArcade, arcadeSnapshot, () => false);
 
   const files: {
     name: string;
@@ -221,6 +225,7 @@ export function ZipFooter({ year }: { year: number }) {
                 />
               </a>
             </p>
+            {arcade && shown > files.length && <TerminalSnake />}
           </div>
         </div>
       </div>

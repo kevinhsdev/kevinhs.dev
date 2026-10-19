@@ -200,6 +200,32 @@ export const skillGroupSchema = z.object({
 });
 export type SkillGroup = z.infer<typeof skillGroupSchema>;
 
+export const achievementStatuses = ["unlocked", "progress", "locked"] as const;
+export type AchievementStatus = (typeof achievementStatuses)[number];
+export const achievementKinds = ["cert", "event", "language", "career", "competition"] as const;
+export type AchievementKind = (typeof achievementKinds)[number];
+
+/**
+ * One trophy in the arcade Achievements section. `locked` ones are goals and
+ * need a `hint` saying what unlocks them. `credentialUrl` links the certificate.
+ */
+export const achievementSchema = z
+  .object({
+    id: z.string(),
+    status: z.enum(achievementStatuses),
+    kind: z.enum(achievementKinds),
+    title: localized,
+    org: z.string().optional(),
+    date: partialDate.optional(),
+    /** What unlocks it (locked) or what is left (in progress). */
+    hint: localized.optional(),
+    /** Arcade score for the HUD: flavor, not a claim. */
+    xp: z.number().int().positive(),
+    credentialUrl: z.string().url().optional(),
+  })
+  .refine((a) => a.status !== "locked" || a.hint, "A locked achievement needs a hint");
+export type Achievement = z.infer<typeof achievementSchema>;
+
 export const nowSchema = z.object({
   updatedAt: partialDate,
   learning: z.array(localized).min(1),

@@ -11,13 +11,15 @@ import { LocaleToggle } from "@/components/shared/locale-toggle";
 import { KevinMark } from "@/components/shared/logo";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
-import { getProject, pick, profile } from "@/content";
+import { getProject, pick, profile, skills } from "@/content";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { HOME_PATH } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { HeroEditor } from "./hero-editor";
 import { HeroShader } from "./hero-shader";
+import { skillMarks, type SkillMark } from "./skill-marks";
+import { TechLogo } from "./tech-logo";
 import { MenuButton } from "./menu-button";
 
 export const creativeButton = {
@@ -177,28 +179,63 @@ export async function CreativeHero({ locale }: { locale: Locale }) {
   );
 }
 
-export async function Marquee() {
-  const t = await getTranslations("creative");
-  const items = t.raw("marquee") as string[];
+type MarqueeItem = { key: string; label: string; mark: SkillMark };
+
+/** Two rows from the Skills list: technologies with their logo, then concepts with an icon. */
+function marqueeRows(locale: Locale): [MarqueeItem[], MarqueeItem[]] {
+  const all = skills.flatMap((group) =>
+    group.items.map((item) => {
+      const key = typeof item === "string" ? item : item.en;
+      // "MySQL / SQL" → "MySQL": the strip only needs the short name
+      return { key, label: pick(item, locale).split(" / ")[0], mark: skillMarks[key] };
+    }),
+  );
+  const marked = all.filter((item): item is MarqueeItem => Boolean(item.mark));
+  return [marked.filter((i) => "logo" in i.mark), marked.filter((i) => "icon" in i.mark)];
+}
+
+function MarqueeRow({
+  items,
+  label,
+  reverse,
+}: {
+  items: MarqueeItem[];
+  label: string;
+  reverse?: boolean;
+}) {
   const track = (hidden: boolean) => (
-    <ul aria-hidden={hidden || undefined} className="flex shrink-0 items-center">
-      {items.map((item) => (
-        <li key={item} className="font-display flex items-center text-5xl sm:text-7xl">
-          <span className="px-6">{item}</span>
-          <span aria-hidden className="text-accent-contrast/40">
-            /
-          </span>
+    <ul aria-hidden={hidden || undefined} className="flex shrink-0 items-center gap-3 pr-3">
+      {items.map(({ key, label: name, mark }) => (
+        <li
+          key={key}
+          className="marquee-chip flex items-center gap-2.5 rounded-full border border-border bg-surface/60 py-2 pr-4 pl-3 text-[15px] font-medium whitespace-nowrap text-muted"
+        >
+          {"logo" in mark ? (
+            <TechLogo logo={mark.logo} dark={mark.dark} className="marquee-logo size-5" />
+          ) : (
+            <mark.icon aria-hidden className="marquee-logo size-4 text-accent" strokeWidth={1.75} />
+          )}
+          <span>{name}</span>
         </li>
       ))}
     </ul>
   );
-
   return (
-    <div className="marquee overflow-hidden bg-accent py-5 text-accent-contrast">
-      <div className="marquee-track flex w-max">
+    <div className="marquee-row overflow-hidden" role="group" aria-label={label}>
+      <div className={cn("marquee-track flex w-max", reverse && "marquee-track-reverse")}>
         {track(false)}
         {track(true)}
       </div>
     </div>
+  );
+}
+
+export function Marquee({ locale }: { locale: Locale }) {
+  const [tech, concepts] = marqueeRows(locale);
+  return (
+    <section aria-label="Stack" className="marquee relative grid gap-3 border-y border-border py-6">
+      <MarqueeRow items={tech} label={locale === "pt" ? "Tecnologias" : "Technologies"} />
+      <MarqueeRow items={concepts} label={locale === "pt" ? "Conceitos" : "Concepts"} reverse />
+    </section>
   );
 }

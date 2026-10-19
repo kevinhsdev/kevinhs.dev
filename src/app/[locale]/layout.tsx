@@ -1,7 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, VT323 } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -16,6 +16,17 @@ import "../globals.css";
 
 const sans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], display: "swap" });
 const mono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], display: "swap" });
+// Only the secret arcade theme uses it, so it is never preloaded.
+const pixel = VT323({
+  variable: "--font-pixel",
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
+
+/** Sets the arcade theme before first paint, so it never flashes the normal one. */
+const arcadeScript = `try{if(localStorage.getItem("kh:arcade")==="1")document.documentElement.setAttribute("data-arcade","")}catch(e){}`;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -68,10 +79,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   return (
     <html
       lang={locale === "pt" ? "pt-BR" : "en"}
-      className={`${sans.variable} ${mono.variable}`}
+      className={`${sans.variable} ${mono.variable} ${pixel.variable}`}
       suppressHydrationWarning
     >
       <body>
+        <script dangerouslySetInnerHTML={{ __html: arcadeScript }} />
         <NextIntlClientProvider>
           <Providers>
             <SkipLink />
