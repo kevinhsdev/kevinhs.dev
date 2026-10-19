@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { useIdleMount } from "@/components/shared/use-idle-mount";
+import { VisitorAchievements } from "@/components/shared/visitor-achievements";
 import { TOASTER_EVENT } from "@/lib/toast";
 
 // sonner is only needed after an action (copy email, send form): load it after idle.
@@ -20,6 +21,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       {children}
+      <VisitorAchievements />
       <LazyToaster />
     </ThemeProvider>
   );

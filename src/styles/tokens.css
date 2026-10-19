@@ -4,6 +4,11 @@
  * next-themes puts on <html>. `tests/unit/contrast.test.ts` parses this file
  * and checks WCAG AA contrast for every pair, so each block must define the
  * full token set.
+ *
+ * The last two blocks are the secret "arcade" theme (light and dark),
+ * unlocked by getting every visitor trophy (components/shared/visitor-trophies.tsx).
+ * It is a `data-arcade` attribute on <html>, so it wins over the themes above,
+ * and it still follows the `.dark` class for its own light/dark pair.
  */
 
 :root {
@@ -35,4 +40,36 @@
   --danger: #f87171;
   --paper: #eef2fb;
   --paper-ink: #0a1430;
+}
+
+/* arcade, light: a Game Boy LCD */
+html[data-arcade] {
+  --background: #d4dcb4;
+  --surface: #e4ead0;
+  --foreground: #0f2a0f;
+  --muted: #2f4d2a;
+  --border: #a9b787;
+  --accent: #18471a;
+  --accent-contrast: #e4ead0;
+  --link: #1d4f1d;
+  --positive: #145214;
+  --danger: #8a1c1c;
+  --paper: #e4ead0;
+  --paper-ink: #0f2a0f;
+}
+
+/* arcade, dark: a neon cabinet */
+html[data-arcade].dark {
+  --background: #0a0b1e;
+  --surface: #12143a;
+  --foreground: #f1f0ff;
+  --muted: #a3a6d6;
+  --border: #2a2d66;
+  --accent: #ffd23f;
+  --accent-contrast: #1a1300;
+  --link: #5ef0ff;
+  --positive: #3dff7a;
+  --danger: #ff6b8b;
+  --paper: #f1f0ff;
+  --paper-ink: #0a0b1e;
 }

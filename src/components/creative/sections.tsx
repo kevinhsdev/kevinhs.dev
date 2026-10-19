@@ -10,6 +10,7 @@ import {
 } from "@/components/shared/ctas";
 import { profile } from "@/content";
 import type { Locale } from "@/i18n/routing";
+import { VisitorTrophies } from "@/components/shared/visitor-trophies";
 import { ZipFooter } from "./zip-footer";
 import { creativeButton } from "./hero";
 
@@ -97,5 +98,10 @@ export async function CreativeContact() {
 
 /** The kevin.zip terminal; the year comes from the server so the client never disagrees with it. */
 export function CreativeFooter({ updatedAt }: { locale: Locale; updatedAt: Date }) {
-  return <ZipFooter year={updatedAt.getFullYear()} />;
+  return (
+    <>
+      <VisitorTrophies />
+      <ZipFooter year={updatedAt.getFullYear()} />
+    </>
+  );
 }

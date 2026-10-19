@@ -1,0 +1,427 @@
+/*
+ * The secret arcade theme: the platinum reward for getting every visitor
+ * trophy (components/shared/visitor-trophies.tsx). It is a `data-arcade`
+ * attribute on <html>, set before first paint by the layout script; the
+ * colour tokens live in tokens.css (contrast-tested with the other themes).
+ *
+ * It has a light and a dark side, following the site's theme switch: light is
+ * a Game Boy LCD (greens), dark is a neon cabinet (gold on night blue). The
+ * per-side values below are the only colours this file hardcodes.
+ *
+ * The look: an 8-bit cabinet. Square corners everywhere, pixel type on every
+ * label and control, buttons that sit on a hard shadow and sink when pressed,
+ * cards with blocky drop shadows, section titles as a terminal prompt with a
+ * blinking cursor, segmented bars, pixel cursors, scanlines over it all.
+ * Body copy keeps the sans font, so reading stays comfortable.
+ */
+
+/* light side: Game Boy */
+html[data-arcade] {
+  --arcade-ink: #0f2a0f;
+  --arcade-title-shadow: 3px 3px 0 #a9b787;
+  --arcade-scan: rgba(15, 42, 15, 0.07);
+  --arcade-vignette: rgba(15, 42, 15, 0.18);
+  color-scheme: light;
+  scrollbar-color: var(--accent) var(--background);
+  /* pixel arrow; an accent one over anything clickable */
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%23e4ead0' stroke='%230f2a0f' stroke-width='1.5'/%3E%3C/svg%3E")
+      1 1,
+    auto;
+}
+html[data-arcade] :is(a, button, [role="button"], [role="switch"], label, summary, select) {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%2318471a' stroke='%23e4ead0' stroke-width='1.5'/%3E%3C/svg%3E")
+      1 1,
+    pointer;
+}
+
+/* dark side: neon cabinet */
+html[data-arcade].dark {
+  --arcade-ink: #05060f;
+  --arcade-title-shadow: 3px 3px 0 #3a1b6b, 0 0 22px rgba(255, 210, 63, 0.35);
+  --arcade-scan: rgba(0, 0, 0, 0.16);
+  --arcade-vignette: rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%23f1f0ff' stroke='%2305060f' stroke-width='1.5'/%3E%3C/svg%3E")
+      1 1,
+    auto;
+}
+html[data-arcade].dark :is(a, button, [role="button"], [role="switch"], label, summary, select) {
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%23ffd23f' stroke='%2305060f' stroke-width='1.5'/%3E%3C/svg%3E")
+      1 1,
+    pointer;
+}
+
+/* ---------- 1. square: no rounded corner survives ---------- */
+html[data-arcade] *,
+html[data-arcade] *::before,
+html[data-arcade] *::after {
+  border-radius: 0 !important;
+}
+
+/* ---------- 2. pixel type, on every letter ---------- */
+/* VT323 has a small x-height: font-size-adjust keeps body copy as large as the
+   text it replaces; big titles keep their own size. */
+:root {
+  --font-arcade: var(--font-pixel);
+  --arcade-adjust: 0.56;
+}
+html[data-arcade] body,
+html[data-arcade] body * {
+  font-family: var(--font-arcade), monospace;
+  /* pixel faces have one or two weights; a synthesized bold smears the pixels */
+  font-synthesis: none;
+}
+html[data-arcade] body :not(.font-display) {
+  font-size-adjust: var(--arcade-adjust);
+}
+html[data-arcade] .font-display {
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-shadow: var(--arcade-title-shadow);
+}
+/* labels and controls read as UI text: a little tracking */
+html[data-arcade] :is(.font-mono, button, input[type="submit"], header a, nav a),
+html[data-arcade]
+  :is(a, button):is([class*="rounded-full"], [class*="rounded-xl"], [class*="rounded-lg"]) {
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+html[data-arcade] .text-accent {
+  text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* ---------- 3. section titles as a terminal prompt ---------- */
+/* titles are split into lines by the reveal animation, so the prompt is pinned
+   to the first line instead of flowing as text */
+html[data-arcade] section > h2.font-display {
+  position: relative;
+  padding-left: 0.62em;
+}
+html[data-arcade] section > h2.font-display::before {
+  content: ">";
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--accent);
+  animation: arcade-caret 1.05s steps(1) infinite;
+}
+@keyframes arcade-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------- 4. 8-bit buttons: hard shadow, lift on hover, sink on press ---------- */
+html[data-arcade]
+  :is(a, button):is([class*="rounded-full"], [class*="rounded-xl"], [class*="rounded-lg"]) {
+  border: 2px solid color-mix(in srgb, currentColor 60%, transparent);
+  box-shadow: 4px 4px 0 0 var(--arcade-ink);
+  transition:
+    translate 90ms steps(2),
+    box-shadow 90ms steps(2),
+    background-color 120ms steps(2),
+    color 120ms steps(2);
+}
+html[data-arcade]
+  :is(a, button):is([class*="rounded-full"], [class*="rounded-xl"], [class*="rounded-lg"]):hover {
+  translate: -2px -2px;
+  box-shadow: 6px 6px 0 0 var(--arcade-ink);
+}
+html[data-arcade]
+  :is(a, button):is([class*="rounded-full"], [class*="rounded-xl"], [class*="rounded-lg"]):active {
+  translate: 4px 4px;
+  box-shadow: 0 0 0 0 var(--arcade-ink);
+  scale: 1;
+}
+/* the header pill holding search, language and theme */
+html[data-arcade] header [class*="bg-background/70"] {
+  border: 2px solid var(--border);
+  box-shadow: 4px 4px 0 0 var(--arcade-ink);
+}
+
+/* ---------- 5. cards and windows: thicker edges, blocky drop shadow ---------- */
+html[data-arcade] :is([class*="rounded-2xl"], [class*="rounded-3xl"])[class*="border"] {
+  border-width: 2px;
+  box-shadow: 8px 8px 0 0 var(--arcade-ink);
+}
+html[data-arcade] :is([class*="rounded-2xl"], [class*="rounded-3xl"])[class*="border"]:hover {
+  border-color: var(--accent);
+}
+/* chips and tags read as inventory slots */
+html[data-arcade] [class*="rounded-full"][class*="border"]:not(a, button) {
+  border-width: 2px;
+}
+
+/* ---------- 6. the visitor trophies, in cabinet style ---------- */
+html[data-arcade] .vt {
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    8px 8px 0 0 var(--arcade-ink);
+}
+html[data-arcade] .vt-intro h2,
+html[data-arcade] .vt-reward h3,
+html[data-arcade] .vt-count,
+html[data-arcade] .vt-name,
+html[data-arcade] .vt-switch-text b {
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+html[data-arcade] .vt-badge {
+  box-shadow:
+    inset 0 0 0 2px var(--border),
+    3px 3px 0 0 var(--arcade-ink);
+}
+html[data-arcade] :is(.vt-list li.is-on .vt-badge, .vt-cup, .va-icon, .vt-switch-icon) {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  box-shadow: 3px 3px 0 0 var(--arcade-ink);
+  animation: none;
+}
+/* bars become segmented, like a health bar */
+html[data-arcade] :is(.vt-bar i, .va-life) {
+  background: repeating-linear-gradient(90deg, var(--accent) 0 10px, transparent 10px 13px);
+}
+html[data-arcade] .vt-bar {
+  height: 10px;
+  background: repeating-linear-gradient(90deg, var(--border) 0 10px, transparent 10px 13px);
+}
+html[data-arcade] .vt-switch {
+  box-shadow:
+    inset 0 0 0 2px var(--border),
+    4px 4px 0 0 var(--arcade-ink);
+}
+html[data-arcade] .vt-switch[aria-checked="true"] .vt-toggle {
+  background: var(--accent);
+}
+html[data-arcade] .vt-toggle i {
+  background: var(--surface);
+  box-shadow: 2px 2px 0 0 var(--arcade-ink);
+}
+html[data-arcade] .vt-switch:active {
+  translate: 4px 4px;
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+
+/* the toasts: a dialog box from an old RPG */
+html[data-arcade] .va-toast {
+  color: var(--foreground);
+  background: var(--background);
+  box-shadow:
+    inset 0 0 0 2px var(--foreground),
+    inset 0 0 0 4px var(--background),
+    inset 0 0 0 6px var(--border),
+    6px 6px 0 0 var(--arcade-ink);
+}
+html[data-arcade] .va-toast.is-platinum {
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    inset 0 0 0 4px var(--surface),
+    inset 0 0 0 6px var(--accent),
+    6px 6px 0 0 var(--arcade-ink);
+}
+html[data-arcade] :is(.va-text small, .va-text span, .va-close) {
+  color: var(--muted);
+}
+html[data-arcade] :is(.va-text small em, .va-toast.is-platinum .va-text small) {
+  color: var(--accent);
+}
+html[data-arcade] .va-cta {
+  color: var(--accent-contrast);
+  background: var(--accent);
+  box-shadow: 3px 3px 0 0 var(--arcade-ink);
+}
+html[data-arcade] :is(.va-icon::before, .va-toast::after) {
+  display: none;
+}
+html[data-arcade] :is(.va-text small, .va-text b, .va-cta) {
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+/* the hero's contour field renders low-res in arcade mode (hero-shader.tsx): keep its pixels square */
+html[data-arcade] .hero-shader {
+  image-rendering: pixelated;
+}
+
+/* the footer terminal's ./snake.exe (terminal-snake.tsx); the terminal stays dark in both sides */
+.snake-hud {
+  display: flex;
+  gap: 18px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.snake-hud b {
+  font-weight: 400;
+  color: #febc2e;
+}
+.snake-board {
+  position: relative;
+  width: min(100%, 520px);
+  margin-top: 8px;
+  outline: none;
+  touch-action: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
+.snake-board:focus-visible {
+  box-shadow: 0 0 0 2px #28c840;
+}
+.snake-board canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+.snake-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 4px;
+  padding: 12px;
+  text-align: center;
+  background: rgba(5, 7, 13, 0.72);
+  cursor: pointer;
+}
+.snake-over {
+  color: #ff5f57;
+}
+.snake-record {
+  color: #febc2e;
+}
+.snake-start {
+  color: #28c840;
+  animation: arcade-caret 1s steps(1) infinite;
+}
+.snake-hint {
+  font-size: 0.85em;
+  color: rgba(255, 255, 255, 0.5);
+}
+/* the d-pad only shows on touch screens */
+.snake-pad {
+  display: none;
+}
+@media (hover: none) {
+  .snake-pad {
+    display: grid;
+    grid-template-columns: repeat(3, 44px);
+    grid-template-areas:
+      ". up ."
+      "left down right";
+    gap: 6px;
+    justify-content: center;
+    margin-top: 12px;
+    width: min(100%, 520px);
+  }
+  .snake-pad-btn:nth-child(1) {
+    grid-area: up;
+  }
+  .snake-pad-btn:nth-child(2) {
+    grid-area: left;
+  }
+  .snake-pad-btn:nth-child(3) {
+    grid-area: down;
+  }
+  .snake-pad-btn:nth-child(4) {
+    grid-area: right;
+  }
+}
+.snake-pad-btn {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  color: #c9d1e3;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.14),
+    3px 3px 0 0 #000;
+}
+.snake-pad-btn:active {
+  translate: 3px 3px;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.14);
+}
+
+/* ---------- 7. focus, selection, scrollbar ---------- */
+html[data-arcade] :focus-visible {
+  outline: 2px dashed var(--accent) !important;
+  outline-offset: 3px;
+}
+html[data-arcade] ::selection {
+  color: var(--accent-contrast);
+  background: var(--accent);
+}
+html[data-arcade] ::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+html[data-arcade] ::-webkit-scrollbar-track {
+  background: var(--background);
+}
+html[data-arcade] ::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border: 3px solid var(--background);
+}
+
+/* ---------- 8. the screen: scanlines and a soft vignette over everything ---------- */
+html[data-arcade] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, var(--arcade-scan) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 100% at 50% 50%, transparent 65%, var(--arcade-vignette));
+}
+
+/* ---------- 9. switching on or off: pixels take the screen over (see setArcade) ---------- */
+.arcade-virus {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  width: 100vw;
+  height: 100vh;
+  image-rendering: pixelated;
+  /* nothing clicks through while the screen is being taken over */
+  pointer-events: auto;
+}
+.arcade-virus-msg {
+  position: fixed;
+  inset: 0;
+  z-index: 91;
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  padding: 16px;
+  pointer-events: none;
+  font-family: var(--font-arcade), monospace;
+  font-size: clamp(22px, 4vw, 44px);
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  text-align: left;
+  /* colour and chromatic split come from the palette, see arcade-takeover.ts */
+}
+.arcade-virus-msg p:last-child::after {
+  content: "_";
+  animation: arcade-caret 0.5s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-arcade] section > h2.font-display::before {
+    animation: none;
+  }
+  html[data-arcade] :is(a, button) {
+    transition: none !important;
+  }
+}
+@media print {
+  html[data-arcade] body::after,
+  .arcade-virus,
+  .arcade-virus-msg {
+    display: none;
+  }
+}

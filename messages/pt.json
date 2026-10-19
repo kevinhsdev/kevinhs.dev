@@ -49,7 +49,8 @@
     "skills": "Habilidades",
     "contact": "Contato",
     "now": "Agora",
-    "toolbar": "Preferências de exibição"
+    "toolbar": "Preferências de exibição",
+    "achievements": "Conquistas"
   },
   "timeline": {
     "filters": {
@@ -123,7 +124,20 @@
     "emailNote": "vazio, escreve você",
     "backToTop": "voltar ao início",
     "cvFile": "curriculo.pdf",
-    "repo": "Ver o código do site"
+    "repo": "Ver o código do site",
+    "snake": {
+      "score": "pontos",
+      "best": "recorde",
+      "label": "Jogo Snake. Use as setas ou WASD para mover; Enter para começar.",
+      "start": "▶ ENTER ou toque para jogar",
+      "hint": "setas / WASD · no celular, deslize ou use o direcional",
+      "record": "NOVO RECORDE!",
+      "pad": "Direcional",
+      "up": "Cima",
+      "down": "Baixo",
+      "left": "Esquerda",
+      "right": "Direita"
+    }
   },
   "notFound": {
     "title": "Página não encontrada",
@@ -134,7 +148,6 @@
   "creative": {
     "kicker": "Engenharia de Software · São Paulo",
     "scroll": "Role para ver",
-    "marquee": ["Java", "Spring Boot", "MySQL", "DevOps", "Cloud", "IA aplicada"],
     "statement": ["Vi um problema real.", "Construí a solução.", "Hoje ela roda todo dia."],
     "otherProjects": "Outros projetos",
     "talk": "Vamos conversar",
@@ -195,5 +208,82 @@
     "offScreen": "Fora da tela",
     "learning": "Estudando agora",
     "nowLink": "O que estou fazendo agora"
+  },
+  "achievements": {
+    "title": "Conquistas",
+    "player": "P1",
+    "score": "Pontos",
+    "unlocked": "Desbloqueadas",
+    "statusUnlocked": "Desbloqueada",
+    "statusProgress": "Em andamento",
+    "statusLocked": "Bloqueada",
+    "goal": "Objetivo",
+    "credential": "Ver certificado",
+    "loading": "Carregando",
+    "continue": "Continue?",
+    "continueCta": "Me chame para o primeiro estágio",
+    "legend": "Placar de conquistas: {unlocked} de {total} desbloqueadas, {score} pontos"
+  },
+  "visitorAchievements": {
+    "unlocked": "Conquista desbloqueada",
+    "dismiss": "Fechar notificação",
+    "case": {
+      "title": "Seus troféus",
+      "note": "Explore o site para desbloquear. Cada troféu bloqueado guarda uma dica.",
+      "done": "Platinado! Você viu tudo por aqui. Obrigado pela visita.",
+      "left": "faltam {left}",
+      "complete": "completo",
+      "locked": "Bloqueado"
+    },
+    "items": {
+      "explorer": {
+        "title": "Explorador",
+        "desc": "Abriu os meus projetos.",
+        "hint": "Dê uma olhada nos projetos."
+      },
+      "traveler": {
+        "title": "Viajante do tempo",
+        "desc": "Percorreu a minha trajetória.",
+        "hint": "Conheça a minha trajetória."
+      },
+      "curious": {
+        "title": "Curioso",
+        "desc": "Quis saber quem eu sou.",
+        "hint": "Descubra quem eu sou."
+      },
+      "endgame": {
+        "title": "Fim de jogo",
+        "desc": "Chegou até o contato.",
+        "hint": "Chegue até o fim da página."
+      },
+      "present": {
+        "title": "No presente",
+        "desc": "Viu no que estou trabalhando agora.",
+        "hint": "Veja o que estou fazendo agora."
+      },
+      "theme": {
+        "title": "Mestre da luz",
+        "desc": "Trocou o tema do site.",
+        "hint": "Experimente o outro lado."
+      },
+      "polyglot": {
+        "title": "Poliglota",
+        "desc": "Leu o site em dois idiomas.",
+        "hint": "Leia o site em outro idioma."
+      }
+    },
+    "platinum": {
+      "kicker": "Troféu de platina",
+      "title": "Platinado!",
+      "desc": "Você desbloqueou todas as conquistas.",
+      "cta": "Ver recompensa"
+    },
+    "reward": {
+      "title": "Sua recompensa",
+      "note": "Um tema secreto: o site inteiro vira um fliperama. Ligue e desligue quando quiser.",
+      "theme": "Tema arcade",
+      "on": "Ligado",
+      "off": "Desligado"
+    }
   }
 }

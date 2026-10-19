@@ -54,7 +54,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
         <PrintSummary locale={locale} />
         <main id="main" data-print="hide">
           <CreativeHero locale={locale} />
-          <Marquee />
+          <Marquee locale={locale} />
           <Statement />
 
           <Block id="projects" title={t("nav.projects")}>

@@ -48,8 +48,8 @@ const pairs: [fg: string, bg: string, min: number][] = [
 const blocks = parseBlocks(readFileSync("src/styles/tokens.css", "utf8"));
 
 describe("design tokens", () => {
-  it("defines the light and dark themes", () => {
-    expect(blocks).toHaveLength(2);
+  it("defines the light, dark and the two arcade themes", () => {
+    expect(blocks).toHaveLength(4);
   });
 
   describe.each(blocks)("$selector", ({ tokens }) => {
