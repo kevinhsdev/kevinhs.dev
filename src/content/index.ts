@@ -13,6 +13,7 @@ import {
   nowSchema,
   profileSchema,
   projectSchema,
+  skillBranchSchema,
   skillGroupSchema,
   timelineItemSchema,
   type Localized,
@@ -20,6 +21,7 @@ import {
   type TimelineItem,
   type TimelineKind,
 } from "./schema";
+import { skillTree as rawSkillTree } from "./skill-tree";
 import { skills as rawSkills } from "./skills";
 import { timeline as rawTimeline } from "./timeline";
 
@@ -32,6 +34,20 @@ export const projects = z
   .refine((list) => new Set(list.map((p) => p.slug)).size === list.length, "Duplicate slug")
   .parse(rawProjects);
 export const skills = z.array(skillGroupSchema).parse(rawSkills);
+/** Every node must be a skill in skills.ts (by English name), so its tier is known. */
+export const skillTree = z
+  .array(skillBranchSchema)
+  .parse(rawSkillTree)
+  .map((branch) => ({
+    ...branch,
+    nodes: branch.nodes.map((key) => {
+      for (const group of skills)
+        for (const item of group.items)
+          if ((typeof item === "string" ? item : item.en) === key)
+            return { key, item, tier: group.tier };
+      throw new Error(`skill-tree.ts: "${key}" is not in skills.ts`);
+    }),
+  }));
 export const now = nowSchema.parse(rawNow);
 /** Unlocked first (newest first), then in progress, then locked goals. */
 export const achievements = z

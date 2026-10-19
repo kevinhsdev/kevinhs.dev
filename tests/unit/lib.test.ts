@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildMailto, contactSchema } from "@/lib/contact-schema";
+import { jpegToPdf } from "@/lib/pdf";
 import { formatPeriod } from "@/lib/period";
 import { createRateLimiter } from "@/lib/rate-limit";
 import { formatPartialDate, splitLead } from "@/lib/utils";
@@ -96,5 +97,17 @@ describe("case studies", () => {
       { id: "decisoes-tecnicas-e-trade-offs", title: "Decisões técnicas e trade-offs" },
       { id: "what-i-d-do-differently", title: "What I'd do differently" },
     ]);
+  });
+});
+
+describe("jpegToPdf", () => {
+  it("writes a cross-reference table that points at every object", () => {
+    const pdf = jpegToPdf(new Uint8Array([0xff, 0xd8, 0xff, 0xd9]), 2, 1);
+    const text = new TextDecoder("latin1").decode(pdf);
+    const offsets = [...text.matchAll(/^(\d{10}) 00000 n $/gm)].map((m) => Number(m[1]));
+    expect(offsets).toHaveLength(5);
+    offsets.forEach((o, i) => expect(text.slice(o).startsWith(`${i + 1} 0 obj`)).toBe(true));
+    const start = Number(/startxref\n(\d+)/.exec(text)?.[1]);
+    expect(text.slice(start).startsWith("xref")).toBe(true);
   });
 });

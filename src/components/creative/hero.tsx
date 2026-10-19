@@ -16,6 +16,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { HOME_PATH } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { ArcadeHud, ArcadeScene, ArcadeWalker } from "./arcade";
 import { HeroEditor } from "./hero-editor";
 import { HeroShader } from "./hero-shader";
 import { skillMarks, type SkillMark } from "./skill-marks";
@@ -102,11 +103,15 @@ export async function CreativeHero({ locale }: { locale: Locale }) {
         className="absolute inset-0 -z-10 bg-[radial-gradient(120%_80%_at_80%_110%,color-mix(in_srgb,var(--accent)_28%,transparent),transparent_60%)]"
       >
         <HeroShader />
+        <ArcadeScene />
         <div className="grain absolute inset-0" />
         <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-background to-transparent" />
       </div>
 
-      <StatusBadge className="self-start border-foreground/15 bg-background/60 backdrop-blur" />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <StatusBadge className="border-foreground/15 bg-background/60 backdrop-blur" />
+        <ArcadeHud />
+      </div>
 
       <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
         <div className="flex flex-col gap-6 lg:col-span-6 xl:col-span-7">
@@ -150,31 +155,35 @@ export async function CreativeHero({ locale }: { locale: Locale }) {
         </div>
       </div>
 
-      <dl
-        aria-label={t("creative.telemetryStrip")}
-        className="grid grid-cols-2 border-t border-foreground/15 lg:grid-cols-4"
-      >
-        {strip.map(({ project, metric }, index) => (
-          <div
-            key={`${project.slug}-${metric.value}`}
-            className={cn(
-              "flex flex-col gap-1 py-4 pr-4",
-              index > 0 && "lg:border-l lg:border-foreground/15 lg:pl-6",
-              index % 2 === 1 && "border-l border-foreground/15 pl-4 lg:pl-6",
-            )}
-          >
-            <dt className="order-2 text-xs text-muted sm:text-sm">
-              {pick(metric.label, locale)}
-              <span className="block font-mono text-[10px] tracking-widest uppercase opacity-80">
-                {project.title}
-              </span>
-            </dt>
-            <dd className="font-display order-1 text-4xl text-accent sm:text-5xl">
-              {metric.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      {/* under the arcade theme the strip is a platform Kevin's sprite walks on */}
+      <div className="px-platform relative">
+        <ArcadeWalker />
+        <dl
+          aria-label={t("creative.telemetryStrip")}
+          className="grid grid-cols-2 border-t border-foreground/15 lg:grid-cols-4"
+        >
+          {strip.map(({ project, metric }, index) => (
+            <div
+              key={`${project.slug}-${metric.value}`}
+              className={cn(
+                "flex flex-col gap-1 py-4 pr-4",
+                index > 0 && "lg:border-l lg:border-foreground/15 lg:pl-6",
+                index % 2 === 1 && "border-l border-foreground/15 pl-4 lg:pl-6",
+              )}
+            >
+              <dt className="order-2 text-xs text-muted sm:text-sm">
+                {pick(metric.label, locale)}
+                <span className="block font-mono text-[10px] tracking-widest uppercase opacity-80">
+                  {project.title}
+                </span>
+              </dt>
+              <dd className="font-display order-1 text-4xl text-accent sm:text-5xl">
+                {metric.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </section>
   );
 }

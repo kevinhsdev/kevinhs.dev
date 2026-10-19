@@ -5,7 +5,8 @@
  * colour tokens live in tokens.css (contrast-tested with the other themes).
  *
  * It has a light and a dark side, following the site's theme switch: light is
- * a Game Boy LCD (greens), dark is a neon cabinet (gold on night blue). The
+ * a sunny 8-bit day (brick red and sky blue on cream), dark is a neon cabinet
+ * (gold on night blue). The
  * per-side values below are the only colours this file hardcodes.
  *
  * The look: an 8-bit cabinet. Square corners everywhere, pixel type on every
@@ -15,23 +16,53 @@
  * Body copy keeps the sans font, so reading stays comfortable.
  */
 
-/* light side: Game Boy */
+/* light side: a sunny 8-bit day */
 html[data-arcade] {
-  --arcade-ink: #0f2a0f;
-  --arcade-title-shadow: 3px 3px 0 #a9b787;
-  --arcade-scan: rgba(15, 42, 15, 0.07);
-  --arcade-vignette: rgba(15, 42, 15, 0.18);
+  --arcade-ink: #1c1b3d;
+  --arcade-title-shadow: 3px 3px 0 #ffd23f;
+  --arcade-scan: rgba(28, 27, 61, 0.05);
+  --arcade-vignette: rgba(28, 27, 61, 0.12);
+  /* the hero scene (.px-scene): a sunny day over the city */
+  --scene-sky: linear-gradient(#6ec3ff 0%, #bfe6ff 70%);
+  --scene-moon: #ffd23f;
+  --scene-star: transparent;
+  --scene-cloud: #ffffff;
+  --scene-far: #a9bff0;
+  --scene-near: #7b8fd6;
+  --scene-road: #8a9be0;
+  --scene-lit: #fff2b0;
+  --scene-brick: #c8743c;
+  --scene-mortar: #7a3d1a;
+  /* the hacker: an indigo hoodie and a dark visor (the guitar keeps its own colours) */
+  --av-hood: #1c1b3d;
+  --av-hood-hi: #33357a;
+  --av-hood-lt: #5158b0;
+  --av-frame: #9aa3c7;
+  --av-screen: #11122b;
+  --av-glare: #3a3f78;
+  --av-code: #3dff7a;
+  --av-hoodie: #3a3f87;
+  --av-hoodie-sh: #262a5e;
+  --av-hoodie-lt: #5c64c0;
+  --av-string: #fffaf0;
+  --av-pocket: #2f3370;
+  --av-glove: #1c1b3d;
+  --av-pants: #2e5aa8;
+  --av-pants-sh: #22437f;
+  --av-shoe: #c42a1f;
+  --av-sole: #fffaf0;
+  --av-line: #1c1b3d;
   color-scheme: light;
   scrollbar-color: var(--accent) var(--background);
   /* pixel arrow; an accent one over anything clickable */
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%23e4ead0' stroke='%230f2a0f' stroke-width='1.5'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%23fffaf0' stroke='%231c1b3d' stroke-width='1.5'/%3E%3C/svg%3E")
       1 1,
     auto;
 }
 html[data-arcade] :is(a, button, [role="button"], [role="switch"], label, summary, select) {
   cursor:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%2318471a' stroke='%23e4ead0' stroke-width='1.5'/%3E%3C/svg%3E")
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%23c42a1f' stroke='%23fffaf0' stroke-width='1.5'/%3E%3C/svg%3E")
       1 1,
     pointer;
 }
@@ -42,6 +73,36 @@ html[data-arcade].dark {
   --arcade-title-shadow: 3px 3px 0 #3a1b6b, 0 0 22px rgba(255, 210, 63, 0.35);
   --arcade-scan: rgba(0, 0, 0, 0.16);
   --arcade-vignette: rgba(0, 0, 0, 0.35);
+  /* the hero scene: the city at night */
+  --scene-sky: linear-gradient(#05061a 0%, #12124a 55%, #2a1660 100%);
+  --scene-moon: #f1f0ff;
+  --scene-star: #f1f0ff;
+  --scene-cloud: rgba(163, 166, 214, 0.16);
+  --scene-far: #1e1a55;
+  --scene-near: #0f0c30;
+  --scene-road: #2a2470;
+  --scene-lit: #ffd23f;
+  --scene-brick: #3a2d7a;
+  --scene-mortar: #1b1450;
+  /* the hacker in neon: a terminal-green face on a black visor */
+  --av-hood: #1d1d33;
+  --av-hood-hi: #383856;
+  --av-hood-lt: #55557d;
+  --av-frame: #8b7dff;
+  --av-screen: #05060f;
+  --av-glare: #1f2050;
+  --av-code: #39ff88;
+  --av-hoodie: #2b2b48;
+  --av-hoodie-sh: #17172a;
+  --av-hoodie-lt: #45456e;
+  --av-string: #f1f0ff;
+  --av-pocket: #1d1d33;
+  --av-glove: #0e0e18;
+  --av-pants: #3554a0;
+  --av-pants-sh: #263d78;
+  --av-shoe: #ff5fd2;
+  --av-sole: #f1f0ff;
+  --av-line: #8b7dff;
   color-scheme: dark;
   cursor:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='24' shape-rendering='crispEdges'%3E%3Cpath d='M1 1v18h4v-2h2v4h3v-4h-2v-3h6v-2h-2v-2h-2v-2h-2V6H6V4H4V2H2V1z' fill='%23f1f0ff' stroke='%2305060f' stroke-width='1.5'/%3E%3C/svg%3E")
@@ -89,6 +150,13 @@ html[data-arcade]
   :is(a, button):is([class*="rounded-full"], [class*="rounded-xl"], [class*="rounded-lg"]) {
   font-weight: 400;
   letter-spacing: 0.03em;
+}
+/* the pixel face is wider than Anton: long words in 6xl titles (HEMOCENTRO,
+   PERSONAGEM) would push past a 360px screen */
+@media (max-width: 480px) {
+  html[data-arcade] .font-display.text-6xl {
+    font-size: 2.75rem;
+  }
 }
 html[data-arcade] .text-accent {
   text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 45%, transparent);
@@ -244,9 +312,9 @@ html[data-arcade] :is(.va-text small, .va-text b, .va-cta) {
   letter-spacing: 0.04em;
 }
 
-/* the hero's contour field renders low-res in arcade mode (hero-shader.tsx): keep its pixels square */
-html[data-arcade] .hero-shader {
-  image-rendering: pixelated;
+/* the hero's contour field and its fade give way to the pixel scene (.px-scene) */
+html[data-arcade] :is(.hero-shader, .px-scene ~ .bg-gradient-to-t) {
+  display: none;
 }
 
 /* the footer terminal's ./snake.exe (terminal-snake.tsx); the terminal stays dark in both sides */
@@ -423,5 +491,1906 @@ html[data-arcade] body::after {
   .arcade-virus,
   .arcade-virus-msg {
     display: none;
+  }
+}
+
+/* ---------- 10. the arcade-only sections (components/creative/arcade.tsx) ---------- */
+
+/* the hero scene: sky, sun, stepped hills and a grid floor rolling toward you */
+.px-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--scene-sky);
+}
+.px-scene > * {
+  position: absolute;
+}
+/* the coin-op HUD in the hero */
+.px-hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.px-hud b {
+  font-weight: 400;
+  color: var(--accent);
+}
+.px-blink {
+  animation: arcade-caret 1.05s steps(1) infinite;
+}
+
+/* an old RPG's dialog window: double frame and a blocky shadow */
+.px-window {
+  position: relative;
+  padding: clamp(20px, 4vw, 40px);
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 2px var(--foreground),
+    inset 0 0 0 5px var(--surface),
+    inset 0 0 0 7px var(--border),
+    8px 8px 0 0 var(--arcade-ink);
+}
+
+/* photos snapped to the theme's 4 colours, pixels kept square */
+.px-img {
+  image-rendering: pixelated;
+  filter: url(#px-gb);
+}
+html[data-arcade].dark .px-img {
+  filter: url(#px-neon);
+}
+
+/* character sheet */
+.px-profile {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .px-profile {
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+  }
+}
+.px-portrait {
+  position: relative;
+  max-width: 14rem;
+  margin: 0;
+  padding: 6px;
+  background: var(--background);
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    6px 6px 0 0 var(--arcade-ink);
+}
+.px-stats {
+  display: grid;
+  gap: 0.9rem 2rem;
+}
+@media (min-width: 640px) {
+  .px-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .px-stats > div:last-child {
+    grid-column: 1 / -1;
+  }
+}
+.px-stats dt,
+.px-panel-note {
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.px-stats dd {
+  margin: 0;
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+.px-panels {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+@media (min-width: 768px) {
+  .px-panels {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .px-panels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.px-panel {
+  padding: 1.25rem;
+  background: var(--background);
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+.px-panel h3 {
+  font-size: 1.45rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.px-panel h3::before {
+  content: "▶ ";
+}
+.px-panel-note {
+  margin-bottom: 0.75rem;
+}
+.px-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.75rem, 1fr));
+  gap: 6px;
+}
+.px-slots li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.75rem;
+  padding: 6px;
+  font-size: 0.85rem;
+  line-height: 1.1;
+  text-align: center;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+.px-slots li:hover {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.px-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  align-items: baseline;
+  padding: 0.25rem 0;
+  font-size: 1.1rem;
+}
+.px-list b {
+  font-weight: 400;
+}
+.px-list span {
+  color: var(--muted);
+}
+
+/* save points: the photo loads in steps (16px, 48px, full) on hover, focus or tap */
+.px-saves {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+@media (min-width: 1024px) {
+  .px-saves {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.px-shot {
+  margin: 0;
+}
+.px-frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  background: var(--background);
+  box-shadow:
+    inset 0 0 0 2px var(--border),
+    6px 6px 0 0 var(--arcade-ink);
+  transition:
+    translate 90ms steps(2),
+    box-shadow 90ms steps(2);
+}
+.px-frame img {
+  position: absolute;
+  inset: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  object-fit: cover;
+}
+.px-frame .px-img {
+  transition: opacity 0s;
+}
+.px-shot:is(:hover, :focus) .px-frame {
+  translate: -2px -2px;
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    8px 8px 0 0 var(--arcade-ink);
+}
+.px-shot:is(:hover, :focus) .px-img {
+  opacity: 0;
+}
+.px-shot:is(:hover, :focus) .px-step-48 {
+  transition-delay: 260ms;
+}
+.px-shot figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  margin-top: 0.85rem;
+  font-size: 1.1rem;
+}
+.px-shot figcaption b {
+  font-weight: 400;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-traffic,
+  .px-plane,
+  .px-birds,
+  .px-shoot {
+    display: none !important;
+  }
+  .px-stars,
+  .px-layer,
+  .px-blink,
+  .px-walker,
+  .px-avatar *,
+  .px-tree .is-training .px-node {
+    animation: none !important;
+  }
+}
+
+/* ---------- 11. the hero scene: a side-scrolling pixel city ---------- */
+/* each layer is a one-colour SVG mask (arcade.tsx), wider than the hero by
+   one tile and slid left by exactly one tile, so the loop is seamless */
+.px-stars {
+  inset: 0 0 45% 0;
+  background-image:
+    radial-gradient(var(--scene-star) 1px, transparent 1.6px),
+    radial-gradient(var(--scene-star) 1px, transparent 1.6px);
+  background-size:
+    97px 61px,
+    151px 89px;
+  background-position:
+    0 0,
+    40px 30px;
+  opacity: 0.7;
+  animation: px-twinkle 2.4s steps(2) infinite;
+}
+@keyframes px-twinkle {
+  50% {
+    opacity: 0.35;
+  }
+}
+.px-moon {
+  top: 16%;
+  right: 12%;
+  width: clamp(72px, 9vw, 120px);
+  aspect-ratio: 1;
+  background: var(--scene-moon);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+.px-layer {
+  bottom: 0;
+  left: 0;
+  width: calc(100% + var(--tile));
+  height: var(--h);
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-position: 0 100%;
+  mask-position: 0 100%;
+  -webkit-mask-size: var(--tile) var(--h);
+  mask-size: var(--tile) var(--h);
+  animation: px-scroll var(--speed) linear infinite;
+}
+@keyframes px-scroll {
+  to {
+    translate: calc(-1 * var(--tile)) 0;
+  }
+}
+.px-clouds {
+  --tile: 720px;
+  --h: 120px;
+  --speed: 140s;
+  top: 12%;
+  bottom: auto;
+  background: var(--scene-cloud);
+}
+.px-far {
+  --tile: 640px;
+  --h: 300px;
+  --speed: 90s;
+  background: var(--scene-far);
+}
+.px-near {
+  --tile: 560px;
+  --h: 220px;
+  --speed: 45s;
+  background: var(--scene-near);
+}
+.px-lit {
+  background: var(--scene-lit);
+}
+.px-far.px-lit {
+  opacity: 0.4;
+}
+.px-near.px-lit {
+  opacity: 0.85;
+}
+/* some windows switch on and off, and the antennas blink */
+.px-flicker {
+  animation:
+    px-scroll var(--speed) linear infinite,
+    px-flick 7s steps(1) infinite;
+}
+.px-far.px-flicker {
+  animation-delay:
+    0s,
+    -3s;
+}
+@keyframes px-flick {
+  0%,
+  55%,
+  80% {
+    opacity: 0.85;
+  }
+  30%,
+  70% {
+    opacity: 0;
+  }
+}
+.px-beacon {
+  background: #ff4d4d;
+  animation:
+    px-scroll var(--speed) linear infinite,
+    px-beacon 1.6s steps(1) infinite;
+}
+@keyframes px-beacon {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+/* the elevated highway and its traffic, between the two rows of buildings */
+.px-viaduct {
+  --tile: 320px;
+  --h: 100px;
+  --speed: 70s;
+  bottom: 95px;
+  background: var(--scene-road);
+}
+.px-traffic {
+  right: 0;
+  bottom: 175px;
+  left: 0;
+  height: 18px;
+}
+.px-car {
+  position: absolute;
+  bottom: 0;
+  left: -60px;
+  width: 48px;
+  animation: px-drive var(--t, 14s) linear var(--d, 0s) infinite;
+}
+.px-car.is-back {
+  bottom: 3px;
+  scale: -1 1;
+  animation-direction: reverse;
+}
+@keyframes px-drive {
+  from {
+    left: -60px;
+  }
+  to {
+    left: 100%;
+  }
+}
+.pc-a {
+  --t: 13s;
+}
+.pc-b {
+  --t: 19s;
+  --d: -7s;
+}
+.pc-c {
+  --t: 16s;
+  --d: -3s;
+}
+.pc-d {
+  --t: 11s;
+  --d: -9s;
+}
+.pc-e {
+  --t: 22s;
+  --d: -15s;
+}
+.pc-a .pc-body {
+  fill: #c42a1f;
+}
+.pc-b .pc-body {
+  fill: #ffd23f;
+}
+.pc-c .pc-body {
+  fill: #2e5aa8;
+}
+.pc-d .pc-body {
+  fill: #fffaf0;
+}
+.pc-e .pc-body {
+  fill: #2c8a4f;
+}
+.pc-glass {
+  fill: #bfe6ff;
+}
+.pc-ink {
+  fill: #1c1b3d;
+}
+.pc-light {
+  fill: #ffd23f;
+}
+.pc-tail {
+  fill: #ff5a4a;
+}
+.pc-wing {
+  fill: #fffaf0;
+}
+html[data-arcade].dark .pc-glass {
+  fill: #3a3f78;
+}
+html[data-arcade].dark .px-car {
+  filter: drop-shadow(0 0 3px rgba(255, 210, 63, 0.55));
+}
+
+/* a plane towing a banner across the sky, and a flock of birds */
+.px-plane {
+  top: 17%;
+  left: 0;
+  display: flex;
+  align-items: center;
+  animation: px-fly 48s linear infinite;
+}
+.px-plane svg {
+  width: 60px;
+}
+.px-plane .pc-body {
+  fill: #c42a1f;
+}
+.px-banner {
+  padding: 0.05rem 0.5rem;
+  font-family: var(--font-pixel), monospace;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  color: #c42a1f;
+  background: #fffaf0;
+  box-shadow: inset 0 0 0 2px #1c1b3d;
+  animation: px-wave 0.8s steps(2) infinite;
+}
+.px-rope {
+  width: 22px;
+  height: 2px;
+  background: #1c1b3d;
+}
+@keyframes px-wave {
+  50% {
+    translate: 0 2px;
+  }
+}
+@keyframes px-fly {
+  from {
+    translate: -360px 0;
+  }
+  to {
+    translate: calc(100vw + 40px) 0;
+  }
+}
+html[data-arcade].dark .px-banner {
+  color: #ffd23f;
+  background: #1b1450;
+  box-shadow: inset 0 0 0 2px #ffd23f;
+}
+html[data-arcade].dark .px-rope {
+  background: #a3a6d6;
+}
+.px-birds {
+  top: 34%;
+  left: 0;
+  width: 72px;
+  height: 26px;
+  animation: px-fly 30s linear -11s infinite;
+}
+.px-bird {
+  position: absolute;
+  width: 21px;
+}
+.px-bird:nth-child(1) {
+  top: 10px;
+  left: 0;
+}
+.px-bird:nth-child(2) {
+  top: 0;
+  left: 24px;
+}
+.px-bird:nth-child(3) {
+  top: 14px;
+  left: 48px;
+}
+.px-bird-up {
+  animation: px-flap 0.5s steps(1) infinite;
+}
+.px-bird-down {
+  animation: px-flap 0.5s steps(1) -0.25s infinite;
+}
+.px-bird:nth-child(2) g {
+  animation-delay: -0.15s;
+}
+@keyframes px-flap {
+  50% {
+    opacity: 0;
+  }
+}
+html[data-arcade].dark .px-birds .pc-ink {
+  fill: #a3a6d6;
+}
+/* now and then, a shooting star (night only) */
+.px-shoot {
+  display: none;
+}
+html[data-arcade].dark .px-shoot {
+  display: block;
+  top: 8%;
+  left: 62%;
+  width: 90px;
+  height: 3px;
+  opacity: 0;
+  rotate: -18deg;
+  background: linear-gradient(90deg, #ffffff, transparent);
+  animation: px-shoot 9s steps(14) infinite;
+}
+@keyframes px-shoot {
+  0%,
+  88% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    translate: -220px 70px;
+  }
+}
+
+/* the metrics strip turns into a brick platform, with Kevin walking on it */
+html[data-arcade] .px-platform::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 12px;
+  background:
+    linear-gradient(var(--scene-mortar) 0 2px, transparent 2px),
+    repeating-linear-gradient(90deg, var(--scene-brick) 0 22px, var(--scene-mortar) 22px 24px);
+}
+html[data-arcade] .px-platform > dl {
+  padding-inline: 1rem;
+  border-top: 0;
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 2px var(--border),
+    6px 6px 0 0 var(--arcade-ink);
+}
+.px-walker {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  z-index: 1;
+  width: 48px;
+  animation: px-walk 26s linear infinite;
+}
+@keyframes px-walk {
+  from {
+    translate: -64px 0;
+  }
+  to {
+    translate: calc(100vw + 16px) 0;
+  }
+}
+
+/* ---------- 12. the hacker sprite (pixel-avatar.tsx, live-avatar.tsx) ---------- */
+.px-avatar {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  /* a one-pixel outline so the dark hoodie reads on a dark screen */
+  filter: drop-shadow(1px 0 0 var(--av-line)) drop-shadow(-1px 0 0 var(--av-line))
+    drop-shadow(0 1px 0 var(--av-line)) drop-shadow(0 -1px 0 var(--av-line));
+}
+.av-hood {
+  fill: var(--av-hood);
+}
+.av-hood-hi {
+  fill: var(--av-hood-hi);
+}
+.av-hood-lt {
+  fill: var(--av-hood-lt);
+}
+.av-glare {
+  fill: var(--av-glare);
+}
+.av-hoodie-lt {
+  fill: var(--av-hoodie-lt);
+}
+.av-pants-sh {
+  fill: var(--av-pants-sh);
+}
+.av-sole {
+  fill: var(--av-sole);
+}
+.av-frame {
+  fill: var(--av-frame);
+}
+.av-screen {
+  fill: var(--av-screen);
+}
+.av-hoodie {
+  fill: var(--av-hoodie);
+}
+.av-hoodie-sh {
+  fill: var(--av-hoodie-sh);
+}
+.av-string {
+  fill: var(--av-string);
+}
+.av-pocket {
+  fill: var(--av-pocket);
+}
+.av-glove {
+  fill: var(--av-glove);
+}
+.av-pants {
+  fill: var(--av-pants);
+}
+.av-shoe {
+  fill: var(--av-shoe);
+}
+.av-code,
+.av-rain rect {
+  fill: var(--av-code);
+}
+.av-maple {
+  fill: #ecc98e;
+}
+.av-fret {
+  fill: #b98a4b;
+}
+.av-guitar {
+  fill: #3f86d1;
+}
+.av-guitar-sh {
+  fill: #275e9e;
+}
+.av-guitar-hi {
+  fill: #78b2ec;
+}
+.av-guard {
+  fill: #ffffff;
+}
+.av-pickup {
+  fill: #23232b;
+}
+.av-chrome {
+  fill: #c9ced8;
+}
+/* the outfits' own materials */
+.av-mohawk {
+  fill: #ff2e4d;
+}
+.av-mohawk-sh {
+  fill: #a3122a;
+}
+.av-lapel {
+  fill: #2c2c36;
+}
+.av-tee {
+  fill: #f1f0ff;
+}
+.av-tee-ink {
+  fill: #e0312f;
+}
+.av-rip {
+  fill: #e6e6ee;
+}
+.av-gold {
+  fill: #ffd23f;
+}
+.av-gold-sh {
+  fill: #c99a1a;
+}
+.av-ruby {
+  fill: #e0312f;
+}
+.av-sapphire {
+  fill: #3f86d1;
+}
+.av-rock,
+.av-legend,
+.av-guitar-held {
+  display: none;
+}
+
+/* the rock skin, unlocked by the coins: a mohawk, a leather jacket, a red face and the guitar */
+.px-live[data-skin="rock"] {
+  --av-hood: #121216;
+  --av-hood-hi: #2c2c36;
+  --av-hood-lt: #4a4a58;
+  --av-frame: #e0312f;
+  --av-screen: #0b0b0f;
+  --av-glare: #2c2c36;
+  --av-code: #ff3b3b;
+  --av-hoodie: #1a1a20;
+  --av-hoodie-sh: #0b0b0f;
+  --av-hoodie-lt: #4a4a58;
+  --av-string: #c9c9d4;
+  --av-pocket: #2c2c36;
+  --av-glove: #121216;
+  --av-pants: #2b2b36;
+  --av-pants-sh: #15151c;
+  --av-shoe: #121216;
+  --av-sole: #4a4a58;
+}
+.px-live[data-skin="rock"] :is(.av-rock, .av-guitar-held) {
+  display: inline;
+}
+
+/* the legend skin, for every trophy: a black terminal with a green, corrupted
+   face, a crown, a green ghost trail and code raining down around it */
+.px-live[data-skin="legend"] {
+  --av-hood: #0a0c0b;
+  --av-hood-hi: #1a201d;
+  --av-hood-lt: #2c3631;
+  --av-frame: #39ff88;
+  --av-screen: #020805;
+  --av-glare: #0f2a1a;
+  --av-code: #39ff88;
+  --av-hoodie: #0e1110;
+  --av-hoodie-sh: #050606;
+  --av-hoodie-lt: #222a26;
+  --av-string: #39ff88;
+  --av-pocket: #1a201d;
+  --av-glove: #0a0c0b;
+  --av-pants: #0e1110;
+  --av-pants-sh: #050606;
+  --av-shoe: #0a0c0b;
+  --av-sole: #39ff88;
+  container-type: inline-size;
+}
+.px-live[data-skin="legend"] .av-legend {
+  display: inline;
+}
+.px-live[data-skin="legend"] > span {
+  filter: drop-shadow(-5px 0 0 rgba(57, 255, 136, 0.3))
+    drop-shadow(-5px 0 0 rgba(57, 255, 136, 0.15));
+}
+/* the face glitches: it jumps sideways and drops out for a frame now and then */
+.px-live[data-skin="legend"] .av-face-legend {
+  animation: av-glitch 2.6s steps(1) infinite;
+}
+@keyframes av-glitch {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  62% {
+    translate: 1px 0;
+  }
+  64% {
+    translate: -1px 0;
+    opacity: 0.4;
+  }
+  66% {
+    translate: 0 0;
+    opacity: 1;
+  }
+  88% {
+    opacity: 0;
+  }
+  90% {
+    opacity: 1;
+  }
+}
+/* code falling on both sides, each pseudo-element is two columns (text-shadow copies it) */
+.px-live[data-skin="legend"]::before,
+.px-live[data-skin="legend"]::after {
+  position: absolute;
+  top: -10%;
+  white-space: pre;
+  pointer-events: none;
+  font:
+    400 15cqi / 0.85 var(--font-pixel),
+    monospace;
+  color: #39ff88;
+  -webkit-mask-image: linear-gradient(transparent, #000 35%, #000 55%, transparent);
+  mask-image: linear-gradient(transparent, #000 35%, #000 55%, transparent);
+  animation: av-fall 2.4s steps(12) infinite;
+}
+.px-live[data-skin="legend"]::before {
+  content: "1\A 0\A 7\A $\A 1\A 0\A >\A 1";
+  left: -26%;
+  text-shadow: 13cqi 22cqi 0 rgba(57, 255, 136, 0.55);
+}
+.px-live[data-skin="legend"]::after {
+  content: "0\A #\A 1\A 0\A /\A 1\A 0\A 9";
+  right: -26%;
+  text-shadow: -13cqi 30cqi 0 rgba(57, 255, 136, 0.55);
+  animation-delay: -1.2s;
+}
+/* by day the rain is a deeper green, so it reads on cream */
+html[data-arcade]:not(.dark) .px-live[data-skin="legend"]::before,
+html[data-arcade]:not(.dark) .px-live[data-skin="legend"]::after {
+  color: #138a43;
+}
+@keyframes av-fall {
+  from {
+    translate: 0 -25%;
+  }
+  to {
+    translate: 0 25%;
+  }
+}
+
+/* idle: breathes one pixel, the code rains behind the face and it blinks now and then */
+.av-body {
+  animation: av-breathe 1.4s steps(1) infinite;
+}
+@keyframes av-breathe {
+  50% {
+    translate: 0 1px;
+  }
+}
+.av-rain rect {
+  opacity: 0.4;
+  animation: av-rain 1.1s steps(7) infinite;
+}
+@keyframes av-rain {
+  to {
+    translate: 0 7px;
+  }
+}
+.av-face {
+  display: none;
+}
+.av-face-idle {
+  display: inline;
+  animation: av-open 4.2s steps(1) infinite;
+}
+.av-face-blink {
+  display: inline;
+  opacity: 0;
+  animation: av-shut 4.2s steps(1) infinite;
+}
+@keyframes av-open {
+  94% {
+    opacity: 0;
+  }
+}
+@keyframes av-shut {
+  94% {
+    opacity: 1;
+  }
+}
+.px-live:is([data-skin="rock"], [data-skin="legend"]) :is(.av-face-idle, .av-face-blink) {
+  display: none;
+}
+.px-live[data-skin="rock"] .av-face-rock,
+.px-live[data-skin="legend"] .av-face-legend {
+  display: inline;
+}
+/* moods sent by the page (arcade-state.ts) take the screen for a moment */
+.px-live:not([data-mood="idle"])
+  :is(.av-face-idle, .av-face-blink, .av-face-rock, .av-face-legend) {
+  display: none;
+}
+.px-live[data-mood="happy"] .av-face-happy,
+.px-live[data-mood="wow"] .av-face-wow,
+.px-live[data-mood="angry"] .av-face-angry {
+  display: inline;
+}
+/* talking: the open mouth flickers over the idle face */
+.px-live[data-mood="talk"] .av-face-idle {
+  display: inline;
+  animation: none;
+}
+.px-live[data-mood="talk"] .av-face-talk {
+  display: inline;
+  animation: av-talk 0.24s steps(1) infinite;
+}
+@keyframes av-talk {
+  50% {
+    opacity: 0;
+  }
+}
+.px-live[data-mood="angry"] .av-face-angry {
+  fill: #ff4d4d;
+}
+.px-live,
+.px-live > span {
+  display: block;
+}
+.px-hop {
+  animation: px-hop 0.45s steps(5);
+}
+/* a new skin: the sprite flickers white, and a burst shows the skin's name */
+.px-live {
+  position: relative;
+}
+.px-flash .px-avatar {
+  animation: px-flash 0.7s steps(7);
+}
+@keyframes px-flash {
+  0%,
+  28%,
+  56% {
+    filter: brightness(0) invert(1);
+  }
+  14%,
+  42%,
+  70% {
+    filter: none;
+  }
+}
+.px-morph {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.px-morph::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6%;
+  aspect-ratio: 1;
+  color: #ffd23f;
+  box-shadow:
+    0 -260% currentColor,
+    260% 0 currentColor,
+    0 260% currentColor,
+    -260% 0 currentColor,
+    190% -190% #fff,
+    190% 190% #fff,
+    -190% 190% #fff,
+    -190% -190% #fff;
+  animation: px-burst 0.7s steps(7) forwards;
+}
+@keyframes px-burst {
+  from {
+    opacity: 1;
+    scale: 0.4;
+  }
+  to {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+.px-morph::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  translate: -50% 0;
+  padding: 0.1em 0.4em;
+  font-size: clamp(0.7rem, 1.2vw, 0.95rem);
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--accent-contrast);
+  background: var(--accent);
+  box-shadow: 2px 2px 0 0 var(--arcade-ink);
+  animation: px-label 1.4s steps(14) forwards;
+}
+@keyframes px-label {
+  0% {
+    opacity: 0;
+    translate: -50% 6px;
+  }
+  15%,
+  75% {
+    opacity: 1;
+    translate: -50% -4px;
+  }
+  100% {
+    opacity: 0;
+    translate: -50% -10px;
+  }
+}
+@keyframes px-hop {
+  40% {
+    translate: 0 -22%;
+  }
+  70% {
+    translate: 0 -8%;
+  }
+}
+
+.av-legs-b {
+  opacity: 0;
+}
+.is-walking .av-body {
+  animation-duration: 0.4s;
+}
+.is-walking .av-legs-a {
+  animation: av-step-a 0.4s steps(1) infinite;
+}
+.is-walking .av-legs-b {
+  animation: av-step-b 0.4s steps(1) infinite;
+}
+@keyframes av-step-a {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes av-step-b {
+  50% {
+    opacity: 1;
+  }
+}
+
+/* in the character sheet: a bigger sprite on a little stage; click it to talk */
+.px-portrait {
+  display: block;
+  width: 100%;
+  border: 0;
+  padding: 28px 36px 34px;
+  text-align: center;
+  background:
+    linear-gradient(transparent 82%, color-mix(in srgb, var(--accent) 18%, transparent) 82%),
+    var(--background);
+}
+.px-portrait .px-avatar {
+  filter: drop-shadow(3px 0 0 var(--av-line)) drop-shadow(-3px 0 0 var(--av-line))
+    drop-shadow(0 3px 0 var(--av-line)) drop-shadow(0 -3px 0 var(--av-line));
+}
+.px-portrait-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 0 6px;
+  color: var(--accent-contrast);
+  background: var(--accent);
+}
+.px-portrait-hint {
+  position: absolute;
+  right: 0;
+  bottom: 8px;
+  left: 0;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  animation: arcade-caret 1.05s steps(1) infinite;
+}
+.px-portrait:hover .px-portrait-hint,
+.px-portrait:focus-visible .px-portrait-hint {
+  animation: none;
+}
+
+/* ---------- 13. skill tree ---------- */
+.px-subtitle {
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.px-subtitle::before {
+  content: "▶ ";
+}
+.px-tree-wrap {
+  margin-top: 2.5rem;
+}
+.px-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0.5rem 0 1.25rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.px-legend li {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+.px-legend i {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+}
+.px-legend .is-max i {
+  background: var(--accent);
+}
+.px-legend .is-unlocked i {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.px-legend .is-training i {
+  background: repeating-linear-gradient(45deg, var(--muted) 0 2px, transparent 2px 4px);
+  box-shadow: inset 0 0 0 2px var(--muted);
+}
+.px-tree {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+@media (min-width: 768px) {
+  .px-tree {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .px-tree {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+.px-branch {
+  padding: 1rem 0.75rem;
+  background: var(--background);
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+.px-branch h4 {
+  margin-bottom: 0.9rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.px-branch li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+  padding-bottom: 1.6rem;
+  text-align: center;
+}
+.px-branch li:last-child {
+  padding-bottom: 0;
+}
+/* the link down to the next skill: lit when this one is mastered */
+.px-branch li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0.2rem;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 1.1rem;
+  background: var(--border);
+}
+.px-branch li.is-max:not(:last-child)::after {
+  background: var(--accent);
+}
+.px-node {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  color: var(--accent);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+.is-max .px-node {
+  box-shadow:
+    inset 0 0 0 3px var(--accent),
+    0 0 14px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.is-unlocked .px-node {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.is-training .px-node {
+  box-shadow: inset 0 0 0 2px var(--muted);
+  animation: px-pulse 1.6s steps(2) infinite;
+}
+@keyframes px-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+.px-node-name {
+  font-size: 1.05rem;
+  line-height: 1.15;
+}
+.px-node-name small {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.is-max .px-node-name small {
+  color: var(--accent);
+}
+
+/* ---------- 14. the arcade room: Snake in its own terminal ---------- */
+.px-cabinets {
+  display: grid;
+  gap: 2rem;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .px-cabinets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.px-terminal {
+  position: relative;
+  max-width: 600px;
+  padding: 4px 20px 20px;
+  font-size: 15px;
+  color: #c9d1e3;
+  background: #05070d;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+    8px 8px 0 0 var(--arcade-ink);
+}
+
+/* the arcade theme shows skills in the character sheet: drop the repeats */
+html[data-arcade] :is(#skills, .marquee) {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-walker {
+    translate: 60vw 0;
+  }
+  .px-flash .px-avatar,
+  .px-morph::before,
+  .px-live[data-skin="legend"]::before,
+  .px-live[data-skin="legend"]::after,
+  .px-live[data-skin="legend"] .av-face-legend {
+    animation: none;
+  }
+  .px-morph::before {
+    opacity: 0;
+  }
+}
+
+/* ---------- 15. the extras (arcade-extras.tsx, live-avatar.tsx) ---------- */
+
+/* the 8-bit "press start" button */
+.px-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.35rem 0.9rem;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-contrast);
+  background: var(--accent);
+  box-shadow: 4px 4px 0 0 var(--arcade-ink);
+  transition: translate 80ms steps(2);
+}
+.px-start:hover {
+  translate: -1px -1px;
+}
+.px-start:active {
+  translate: 3px 3px;
+  box-shadow: 1px 1px 0 0 var(--arcade-ink);
+}
+
+/* the NPC's dialog box, pinned to the bottom of the screen */
+.px-dialog {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: min(44rem, calc(100% - 32px));
+  padding: 16px 18px;
+  font-size: 1.2rem;
+  background: var(--surface);
+  translate: -50% 0;
+  box-shadow:
+    inset 0 0 0 2px var(--foreground),
+    inset 0 0 0 5px var(--surface),
+    inset 0 0 0 7px var(--border),
+    8px 8px 0 0 var(--arcade-ink);
+}
+.px-dialog p {
+  min-height: 3em;
+}
+.px-dialog-face {
+  flex: none;
+  width: 48px;
+}
+.px-dialog-name {
+  min-height: 0 !important;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.px-dialog-next {
+  flex: none;
+  align-self: flex-end;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+@media (max-width: 480px) {
+  .px-dialog {
+    flex-wrap: wrap;
+  }
+  .px-dialog-next {
+    margin-left: auto;
+  }
+}
+
+/* coins: a spinning gold disc hidden around the page */
+.px-coin {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+}
+.px-coin span {
+  width: 18px;
+  height: 24px;
+  background: linear-gradient(90deg, transparent 40%, #fff3a6 40% 55%, transparent 55%), #ffd23f;
+  box-shadow:
+    inset 0 0 0 2px #b8860b,
+    0 0 0 2px var(--arcade-ink);
+  animation: px-coin 0.9s steps(4) infinite;
+}
+@keyframes px-coin {
+  50% {
+    scale: 0.2 1;
+  }
+}
+.px-coin:hover span,
+.px-coin:focus-visible span {
+  animation-duration: 0.35s;
+}
+.px-coin-corner {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+}
+.px-coin-inline {
+  margin: -1.5rem 0 1.5rem;
+}
+/* floats over the platform, left of centre: clear of the CTAs, the editor and the dock */
+.px-hero-coin {
+  position: absolute;
+  left: 42%;
+  bottom: calc(100% + 44px);
+  z-index: 2;
+  animation: px-bob 1.2s steps(2) infinite;
+}
+@keyframes px-bob {
+  50% {
+    translate: 0 -4px;
+  }
+}
+
+/* the coins' reward in the inventory */
+.px-reward {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1.25rem;
+  padding: 12px;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.px-reward p {
+  color: var(--muted);
+}
+.px-reward-art {
+  flex: none;
+  width: 132px;
+}
+.px-reward:not(.is-locked) {
+  flex-wrap: wrap;
+}
+/* the wardrobe: one card per skin, the equipped one lit */
+.px-wardrobe {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+}
+.px-skin {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.25rem 0.45rem;
+  background: var(--background);
+  box-shadow: inset 0 0 0 2px var(--border);
+  transition: translate 120ms steps(2);
+}
+.px-skin .px-live {
+  width: 40px;
+  margin-top: 6px;
+}
+.px-skin b {
+  font-weight: 400;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+.px-skin small {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.px-skin:not(:disabled):hover {
+  translate: 0 -2px;
+}
+.px-skin[aria-checked="true"] {
+  box-shadow:
+    inset 0 0 0 2px var(--accent),
+    3px 3px 0 0 var(--arcade-ink);
+}
+.px-skin[aria-checked="true"] small {
+  color: var(--accent);
+}
+.px-skin[aria-checked="true"] .px-avatar {
+  animation: px-flash 0.7s steps(7);
+}
+.px-skin:disabled {
+  cursor: not-allowed;
+}
+.px-skin:disabled .px-avatar {
+  filter: brightness(0) opacity(0.35);
+}
+.px-skin:disabled .px-live::before,
+.px-skin:disabled .px-live::after {
+  display: none;
+}
+.px-reward.is-locked {
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+.px-reward.is-locked .px-reward-art {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  font-size: 2rem;
+  color: var(--muted);
+  background: var(--background);
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+
+/* the boss above the contact form */
+.px-boss {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 12px 14px;
+  background: var(--background);
+  box-shadow: inset 0 0 0 2px var(--danger, #e0312f);
+}
+.px-king {
+  flex: none;
+  width: 64px;
+}
+.px-king.is-hit {
+  animation: px-shake 0.3s steps(3);
+}
+@keyframes px-shake {
+  33% {
+    translate: -4px 0;
+  }
+  66% {
+    translate: 4px 0;
+  }
+}
+.px-boss.is-beaten {
+  box-shadow: inset 0 0 0 2px var(--positive, var(--accent));
+}
+.px-boss.is-beaten .px-king {
+  opacity: 0.35;
+  rotate: 180deg;
+}
+.px-boss-name {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.px-hp {
+  display: flex;
+  gap: 4px;
+  margin: 4px 0 6px;
+}
+.px-hp i {
+  width: 28px;
+  height: 10px;
+  box-shadow: inset 0 0 0 2px var(--border);
+}
+.px-hp i.is-full {
+  background: var(--danger, #e0312f);
+}
+.px-boss-say {
+  color: var(--muted);
+}
+
+/* the projects as a level select: one cartridge each */
+.px-carts {
+  display: grid;
+  gap: 1.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+.px-cart {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 34px 20px 20px;
+  background: var(--surface);
+  box-shadow:
+    inset 0 0 0 2px var(--foreground),
+    6px 6px 0 0 var(--arcade-ink);
+}
+/* the cartridge's label notch */
+.px-cart::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 60%;
+  height: 10px;
+  background: repeating-linear-gradient(90deg, var(--border) 0 6px, transparent 6px 10px);
+}
+.px-cart-label {
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.px-cart-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.px-powerups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 0.75rem;
+}
+.px-powerups li {
+  padding: 0 6px;
+  font-size: 0.9rem;
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+.px-cart-play {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+/* the journey as a world map: sunny fields by day, a neon night by night */
+.px-map {
+  --map-grass: #8fd16a;
+  --map-hill: #6db54d;
+  --map-road: #f3dca8;
+  --map-dash: #c8743c;
+  --map-water: #3d9df5;
+  --map-wave: #d6f0ff;
+  --map-tree: #2c7a37;
+  --map-trunk: #6b3f1d;
+  --map-cloud: #ffffff;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  background: var(--map-grass);
+  box-shadow:
+    inset 0 0 0 2px var(--foreground),
+    8px 8px 0 0 var(--arcade-ink);
+  scrollbar-width: thin;
+}
+html[data-arcade].dark .px-map {
+  --map-grass: #141447;
+  --map-hill: #1e1a5c;
+  --map-road: #3a2d7a;
+  --map-dash: #ffd23f;
+  --map-water: #0b3b6e;
+  --map-wave: #58c4ff;
+  --map-tree: #1f7a4c;
+  --map-trunk: #0b2a1c;
+  --map-cloud: rgba(163, 166, 214, 0.18);
+}
+.px-map-track {
+  position: relative;
+}
+.px-map-land,
+.px-map-trail {
+  position: absolute;
+  inset: 0;
+}
+.px-map-hill rect {
+  fill: var(--map-hill);
+}
+.px-map-water {
+  fill: var(--map-water);
+}
+.px-map-wave {
+  stroke: var(--map-wave);
+  stroke-width: 2;
+  animation: px-wave 1.6s steps(2) infinite;
+}
+@keyframes px-wave {
+  50% {
+    translate: 4px 0;
+  }
+}
+.px-map-tree rect {
+  fill: var(--map-tree);
+}
+.px-map-tree .px-map-trunk {
+  fill: var(--map-trunk);
+}
+.px-map-clouds {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 60px;
+  background:
+    linear-gradient(var(--map-cloud), var(--map-cloud)) 40px 18px / 64px 10px no-repeat,
+    linear-gradient(var(--map-cloud), var(--map-cloud)) 52px 10px / 36px 8px no-repeat,
+    linear-gradient(var(--map-cloud), var(--map-cloud)) 420px 30px / 80px 10px no-repeat,
+    linear-gradient(var(--map-cloud), var(--map-cloud)) 436px 22px / 44px 8px no-repeat,
+    linear-gradient(var(--map-cloud), var(--map-cloud)) 860px 14px / 72px 10px no-repeat,
+    linear-gradient(var(--map-cloud), var(--map-cloud)) 876px 6px / 40px 8px no-repeat;
+  animation: px-clouds 30s linear infinite;
+}
+@keyframes px-clouds {
+  to {
+    translate: 120px 0;
+  }
+}
+.px-map-road {
+  fill: none;
+  stroke: var(--map-road);
+  stroke-width: 18;
+  stroke-linejoin: round;
+}
+.px-map-dash {
+  fill: none;
+  stroke: var(--map-dash);
+  stroke-width: 3;
+  stroke-dasharray: 6 10;
+}
+.px-level {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  width: 56px;
+  height: 56px;
+  font-size: 0.95rem;
+  line-height: 1;
+  background: var(--background);
+  box-shadow:
+    inset 0 0 0 2px var(--foreground),
+    4px 4px 0 0 var(--arcade-ink);
+  transition: translate 80ms steps(2);
+}
+.px-level:hover {
+  translate: 0 -2px;
+}
+.px-level-glyph {
+  width: 21px;
+  height: 21px;
+}
+.px-level.is-seen {
+  background: color-mix(in srgb, var(--accent) 22%, var(--background));
+}
+.px-level.is-active {
+  color: var(--accent-contrast);
+  background: var(--accent);
+}
+.px-level.is-active .ti-a {
+  fill: var(--accent-contrast);
+}
+.px-level.is-ongoing::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  background: var(--positive, var(--accent));
+  animation: px-pulse 1.6s steps(2) infinite;
+}
+/* the castle at the end of the road: the next level */
+.px-castle {
+  width: 72px;
+  height: 72px;
+  background: var(--surface);
+}
+.px-castle-art {
+  width: 49px;
+  height: 49px;
+}
+.px-castle-flag {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  width: 16px;
+  height: 18px;
+  background:
+    linear-gradient(var(--foreground), var(--foreground)) 0 0 / 2px 100% no-repeat,
+    linear-gradient(var(--danger, #e0312f), var(--danger, #e0312f)) 2px 0 / 12px 8px no-repeat;
+  animation: px-flag 0.8s steps(2) infinite;
+}
+@keyframes px-flag {
+  50% {
+    background-size:
+      2px 100%,
+      9px 8px;
+  }
+}
+.px-map-hero {
+  position: absolute;
+  z-index: 2;
+  width: 48px;
+  pointer-events: none;
+  transition:
+    left 0.55s steps(8),
+    top 0.55s steps(8);
+}
+.px-map-hero.is-left {
+  scale: -1 1;
+}
+.px-map-hint {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.px-map-hint b {
+  font-weight: 400;
+  color: var(--accent);
+}
+.px-level-card {
+  margin-top: 1.25rem;
+}
+.px-level-now {
+  font-weight: 400;
+  color: var(--positive, var(--accent));
+}
+
+/* end credits, rolling above the footer */
+.px-credits {
+  position: relative;
+  height: min(70vh, 560px);
+  overflow: hidden;
+  color: #f1f0ff;
+  text-align: center;
+  background: #05060f;
+}
+.px-credits::before,
+.px-credits::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  height: 25%;
+  pointer-events: none;
+}
+.px-credits::before {
+  top: 0;
+  background: linear-gradient(#05060f, transparent);
+}
+.px-credits::after {
+  bottom: 0;
+  background: linear-gradient(transparent, #05060f);
+}
+.px-credits-roll {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  align-items: center;
+  padding: 0 16px;
+  animation: px-roll 28s linear infinite;
+}
+.px-credits:is(:hover, :focus-within) .px-credits-roll {
+  animation-play-state: paused;
+}
+@keyframes px-roll {
+  from {
+    translate: 0 min(70vh, 560px);
+  }
+  to {
+    translate: 0 -100%;
+  }
+}
+.px-credits dl {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.px-credits dt {
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #a3a6d6;
+}
+.px-credits dd {
+  font-size: 1.5rem;
+}
+.px-credits .px-coin-corner {
+  z-index: 2;
+}
+
+/* the 404 as a game over */
+.px-gameover {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.px-gameover p:first-child {
+  font-size: clamp(3.5rem, 15vw, 11rem);
+  line-height: 0.9;
+}
+.px-gameover-sub {
+  font-size: 1.4rem;
+  color: var(--muted);
+}
+.px-gameover-count {
+  font-size: 2rem;
+  letter-spacing: 0.1em;
+}
+.px-gameover-count span {
+  color: var(--accent);
+  animation: arcade-caret 1s steps(1) infinite;
+}
+
+/* the normal sections the arcade replaces with its own take */
+html[data-arcade] [data-arcade-hide] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .px-avatar *,
+  .px-hop,
+  .px-coin span,
+  .px-hero-coin,
+  .px-king,
+  .px-portrait-hint,
+  .px-level::after,
+  .px-map-wave,
+  .px-map-clouds,
+  .px-castle-flag,
+  .px-gameover-count span {
+    animation: none !important;
+  }
+  .px-map-hero {
+    transition: none;
+  }
+  .px-credits {
+    height: auto;
+    padding-block: 3rem;
+  }
+  .px-credits::before,
+  .px-credits::after {
+    display: none;
+  }
+  .px-credits-roll {
+    animation: none;
   }
 }

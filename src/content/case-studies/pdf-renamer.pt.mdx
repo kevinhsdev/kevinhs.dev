@@ -1,68 +1,145 @@
 <Tldr>
-  Um classificador de documentos que roda no navegador e **triplicou a capacidade da secretaria**:
-  de ~100 para ~300 documentos por dia. Uma turma, que levava 3 dias, passou a levar até 1.
+  Fiz uma ferramenta que lê PDFs escaneados e sugere o nome certo de cada um. Resultado: a
+  secretaria passou de **~100 para ~300 documentos por dia**, e uma turma que levava 3 dias agora
+  sai em até 1.
 </Tldr>
 
-## Contexto e problema
+## O problema
 
-Os prontuários digitais dos alunos chegam como PDFs escaneados com nomes como `scan_0412.pdf`. Para
-cada um, o fluxo era sempre o mesmo: **abrir, ler, descobrir o tipo, digitar o nome padronizado,
-escolher a pasta do aluno e salvar**. Uma turma tem cerca de **200 documentos**, então organizar uma
-turma inteira tomava **3 dias**.
+Imagina abrir um PDF chamado `scan_0412.pdf`, ler até descobrir que é um RG, digitar
+`RG_2026.pdf`, achar a pasta do aluno e salvar. Agora repete isso **200 vezes**, que é mais ou menos
+uma turma. Eram **3 dias** só nisso.
 
-O problema não era só o tempo. Nome digitado à mão gera variações ("Ficha medica", "FICHA MÉDICA",
-"ficha_saude"), e arquivo salvo na pasta errada some do prontuário.
+E não era só lento. Nome digitado à mão vira bagunça ("Ficha medica", "FICHA MÉDICA",
+"ficha_saude"), e um arquivo salvo na pasta errada simplesmente some do prontuário do aluno.
 
-## Meu papel
+<BeforeAfter
+  before={{
+    label: "Antes",
+    time: "3 dias",
+    steps: [
+      "Abrir o PDF escaneado",
+      "Ler até descobrir que documento é",
+      "Digitar o nome padronizado (e torcer para não errar)",
+      "Procurar a pasta do aluno no Windows",
+      "Salvar, fechar e repetir ~200 vezes",
+    ],
+  }}
+  after={{
+    label: "Depois",
+    time: "até 1 dia",
+    steps: [
+      "Arrastar o lote de PDFs para a ferramenta",
+      "Conferir o nome sugerido (ou escolher na lista)",
+      "Confirmar: o arquivo já vai para a pasta certa",
+    ],
+  }}
+/>
 
-Autor único: identifiquei o gargalo trabalhando na própria secretaria, desenhei o fluxo, construí a
-ferramenta e acompanhei o uso. Ela está **em uso diário** pela equipe.
+## Onde eu entro
 
-## Restrições
+Eu trabalho nessa secretaria, então senti o problema na pele. Fiz tudo sozinho: achei o gargalo,
+desenhei o fluxo, programei e acompanhei o uso. Hoje a equipe usa **todo dia**.
 
-- **Sem instalar programas**: tinha que rodar no navegador dos computadores da escola.
-- **Arquivos locais**: os prontuários ficam em pastas do Windows, não num servidor.
-- **Documentos escaneados**: muitos PDFs não têm texto pesquisável, só a imagem.
-- **Usuárias que não programam**: os tipos de documento e as regras mudam por setor, então ajustar
-  não podia depender de mim.
+## As regras do jogo
 
-## Decisões técnicas e trade-offs
+Nada de solução "do jeito fácil". Eu tinha que respeitar quatro limites:
 
-| Decisão                                                            | Alternativa                    | Por quê                                                                                                       |
-| ------------------------------------------------------------------ | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| **Regras com pesos** por palavra-chave, num dicionário editável    | Um modelo de machine learning  | Não havia base rotulada para treinar. As regras são explicáveis e a própria secretaria ajusta pela interface. |
-| Ler o **texto do PDF primeiro** e fazer OCR só quando não há texto | OCR em todo documento          | PDFs digitais são classificados na hora; o OCR (mais lento) fica só para os escaneados.                       |
-| Ler só as **2 primeiras páginas**                                  | O documento inteiro            | O tipo quase sempre está no cabeçalho, e em lote cada segundo conta.                                          |
-| Um **limiar mínimo de confiança**                                  | Sempre sugerir algum tipo      | Quando a pontuação é baixa, a ferramenta pede confirmação em vez de errar com confiança.                      |
-| **File System Access API** grava direto na pasta do aluno          | Baixar o arquivo e mover à mão | Elimina dois passos por documento. No Firefox, cai para o download normal.                                    |
-| Lembrar a pasta com **IndexedDB**                                  | Escolher a pasta toda vez      | A permissão da pasta continua entre uma sessão e outra.                                                       |
+- **Nada de instalar programa**: tinha que rodar no navegador dos computadores da escola.
+- **Os arquivos são locais**: os prontuários ficam em pastas do Windows, não num servidor.
+- **Muito PDF é só imagem**: escaneado, sem texto para pesquisar.
+- **Quem usa não programa**: os tipos de documento mudam por setor, então ajustar não podia depender
+  de mim.
 
-## Arquitetura
+## Escolhas difíceis
+
+Toda ferramenta é uma pilha de decisões. Aqui vão as que mais pesaram. Tenta adivinhar o que eu
+escolhi antes de ver a resposta.
+
+<Decision
+  question="Como descobrir que tipo de documento é cada PDF?"
+  options={[
+    {
+      label: "Treinar um modelo de machine learning",
+      note: "Parece moderno, mas precisaria de milhares de documentos já rotulados. Eu não tinha nenhum.",
+    },
+    {
+      label: "Regras com pesos por palavra-chave",
+      note: "Explicável, ajustável pela própria secretaria e funciona desde o primeiro dia.",
+    },
+  ]}
+  pick={1}
+  why="Sem base rotulada para treinar, regras com pesos são a escolha honesta. E dá para explicar cada sugestão: 'achei REGISTRO GERAL, +3'. A equipe ajusta as palavras pela interface, sem eu mexer no código."
+/>
+
+<Decision
+  question="O OCR (ler texto de imagem) é lento. Quando usar?"
+  options={[
+    {
+      label: "Em todo documento, por garantia",
+      note: "Simples, mas deixaria o lote inteiro lento.",
+    },
+    {
+      label: "Só quando o PDF não tem texto",
+      note: "PDF digital é classificado na hora; o OCR fica só para os escaneados.",
+    },
+  ]}
+  pick={1}
+  why="Primeiro eu tento ler o texto que o PDF já tem. Só se não houver nada eu chamo o OCR. E leio só as 2 primeiras páginas, porque o tipo quase sempre está no cabeçalho, e em lote cada segundo conta."
+/>
+
+<Decision
+  question="E quando a ferramenta não tem certeza?"
+  options={[
+    {
+      label: "Sugerir o tipo com mais pontos, sempre",
+      note: "Rápido, mas erra com toda a confiança.",
+    },
+    {
+      label: "Exigir uma pontuação mínima",
+      note: "Abaixo do limiar, ela pergunta em vez de chutar.",
+    },
+  ]}
+  pick={1}
+  why="Errar com confiança é pior do que perguntar. Um nome errado esconde o documento; uma pergunta custa dois segundos."
+/>
+
+Mais duas escolhas menores, mas que fazem diferença no dia a dia: a **File System Access API**
+grava direto na pasta do aluno (no Firefox, cai para o download normal), e o **IndexedDB** lembra a
+pasta escolhida, para ninguém ter que procurar de novo a cada sessão.
+
+## Como funciona por dentro
 
 <Diagram
-  label="Fluxo de um documento"
+  label="A viagem de um documento"
   flow={[
     { title: "PDFs em lote", detail: "arrastar e soltar; fila com progresso" },
-    { title: "PDF.js", detail: "visualiza e extrai o texto" },
+    { title: "PDF.js", detail: "mostra o documento e extrai o texto" },
     { title: "Classificador", detail: "regras + dicionário editável" },
     { title: "Nome sugerido", detail: "tipo + ano, padronizado" },
     { title: "Pasta do aluno", detail: "gravação direta, checa duplicados" },
   ]}
-  asideLabel="Apoio"
+  asideLabel="Nos bastidores"
   aside={[
-    { title: "OCR (Tesseract.js)", detail: "só para PDFs sem camada de texto" },
+    { title: "OCR (Tesseract.js)", detail: "só para PDFs sem texto" },
     { title: "IndexedDB e localStorage", detail: "pasta, perfis e configurações" },
     { title: "Histórico em CSV", detail: "tudo o que foi renomeado" },
   ]}
 />
 
-## Destaques de implementação
+## Mão na massa
 
-### Um classificador que dá para explicar
+Chega de texto: brinca com uma versão simplificada do classificador. Repara no **"RG" curto**: ele
+só conta como palavra inteira, senão casaria dentro de outras palavras.
 
-O texto é normalizado (sem acento, em maiúsculas) e cada tipo de documento soma os pesos das
-palavras-chave encontradas. **Termos curtos exigem palavra inteira**, para que "RG" não seja
-encontrado dentro de outra palavra. O tipo vencedor só é sugerido se passar do limiar.
+<ClassifierDemo />
+
+## Detalhes que eu curti
+
+### O classificador cabe numa tela
+
+O texto é normalizado (sem acento, tudo maiúsculo), cada tipo soma os pesos das palavras que
+encontrou, e o vencedor só é sugerido se passar do limiar. É isso. Sem mágica.
 
 ```js title="js/script.js (resumido)"
 function scoreKeyword(text, kw) {
@@ -87,36 +164,39 @@ function classify(text) {
 }
 ```
 
-As regras padrão convivem com as que a equipe cria na interface: um setor adiciona uma palavra-chave
-com um peso e ela passa a valer na hora, sem eu mexer no código.
+As regras padrão convivem com as que a equipe cria: um setor adiciona uma palavra com um peso e ela
+passa a valer na hora.
 
-### Feito para o uso diário
+### Feito para quem usa o dia inteiro
 
-- **Duplicados**: se o nome já existe na pasta, a ferramenta pergunta o que fazer e sugere uma
-  numeração livre.
-- **Teclado**: atalhos para confirmar, pular e navegar, para não tirar a mão do teclado no meio
-  de um lote.
-- **Histórico exportável** em CSV de tudo o que foi renomeado.
+- **Duplicados**: se o nome já existe na pasta, a ferramenta pergunta e sugere uma numeração livre.
+- **Teclado**: atalhos para confirmar, pular e navegar, sem tirar a mão do teclado no meio do lote.
+- **Histórico em CSV** de tudo o que foi renomeado.
 
-### Leitura com IA
+### E tem IA também
 
-Na versão usada pela secretaria, o PDF é enviado inteiro para a **API da Anthropic (Claude)**, que
-lê o documento e já sugere o nome. Quando não há sugestão, a pessoa escolhe o tipo numa lista
-pronta, e o arquivo continua aberto no visualizador para conferência. O repositório público mostra
-a classificação por OCR e regras; a integração com a API não está nele.
+Na versão que a secretaria usa, o PDF vai inteiro para a **API da Anthropic (Claude)**, que lê o
+documento e já sugere o nome. Se não vier sugestão, a pessoa escolhe o tipo numa lista e o arquivo
+continua aberto para conferir. O repositório público mostra a versão com OCR e regras; a integração
+com a API não está nele.
 
-## Resultado e impacto
+## Deu certo?
 
-- **3× mais documentos por dia**: de ~100 para ~300.
-- **Uma turma de ~200 documentos caiu de 3 dias para até 1.**
-- Nomes padronizados e arquivos na pasta certa, o que **reduziu erros de arquivamento** no
-  prontuário dos 545 alunos.
+<Stats
+  items={[
+    { value: "3×", label: "mais documentos por dia (de ~100 para ~300)" },
+    { value: "3 → 1", label: "dias para organizar uma turma de ~200 documentos" },
+    { value: "545", label: "prontuários com nomes padronizados e na pasta certa" },
+  ]}
+/>
 
-## O que eu faria diferente e próximos passos
+Menos arquivo perdido, menos nome torto e uma equipe que parou de temer a época de rematrícula.
 
-O `script.js` concentra cerca de mil linhas num arquivo só; eu dividiria em módulos (classificador,
-arquivos, visualizador). Também criaria um conjunto de PDFs fictícios para **medir a taxa de
-acerto** do classificador a cada mudança de regra, em vez de conferir à mão.
+## Se eu fizesse de novo
+
+O `script.js` tem umas mil linhas num arquivo só. Funciona, mas eu dividiria em módulos
+(classificador, arquivos, visualizador). E criaria um conjunto de PDFs fictícios para **medir a
+taxa de acerto** a cada mudança de regra, em vez de conferir no olho.
 
 ## Links
 

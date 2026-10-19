@@ -200,6 +200,18 @@ export const skillGroupSchema = z.object({
 });
 export type SkillGroup = z.infer<typeof skillGroupSchema>;
 
+/**
+ * One branch of the arcade skill tree. `nodes` are skill names in English
+ * (keys of skills.ts), in the order they build on each other; each node's
+ * status comes from its tier there.
+ */
+export const skillBranchSchema = z.object({
+  id: z.string(),
+  label: localized,
+  nodes: z.array(z.string()).min(1),
+});
+export type SkillBranch = z.infer<typeof skillBranchSchema>;
+
 export const achievementStatuses = ["unlocked", "progress", "locked"] as const;
 export type AchievementStatus = (typeof achievementStatuses)[number];
 export const achievementKinds = ["cert", "event", "language", "career", "competition"] as const;

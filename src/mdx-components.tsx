@@ -1,7 +1,14 @@
 import type { MDXComponents } from "mdx/types";
 import type { ComponentProps } from "react";
-import { Review, Tldr } from "@/components/case-study/callouts";
+import { Review, Stats, Tldr } from "@/components/case-study/callouts";
 import { Diagram } from "@/components/case-study/diagram";
+import {
+  BeforeAfter,
+  BloodMatch,
+  ClassifierDemo,
+  ConflictDemo,
+  Decision,
+} from "@/components/case-study/interactive";
 import { slugify } from "@/lib/utils";
 
 /*
@@ -73,6 +80,12 @@ const components: MDXComponents = {
   Diagram,
   Tldr,
   Review,
+  Stats,
+  BeforeAfter,
+  Decision,
+  ClassifierDemo,
+  ConflictDemo,
+  BloodMatch,
 };
 
 export function useMDXComponents(): MDXComponents {

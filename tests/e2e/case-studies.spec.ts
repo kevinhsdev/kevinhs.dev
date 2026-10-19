@@ -11,9 +11,10 @@ test.describe("case studies", () => {
         await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
         await expect(page.getByText("TL;DR")).toBeVisible();
         await expect(page.getByText(/^\d+ min$/)).toBeVisible();
-        // Context, role, constraints, decisions, architecture, highlights, results, next steps, links.
-        await expect(page.locator("article h2")).toHaveCount(9);
-        await expect(page.locator("article table")).toHaveCount(1);
+        // Problem, role, constraints, decisions, architecture, hands-on, highlights, results, next steps, links.
+        await expect(page.locator("article h2")).toHaveCount(10);
+        // the trade-offs are interactive "what would you do?" questions
+        await expect(page.locator("article .cs-decision").first()).toBeVisible();
         await expect(page.locator("article figure").first()).toBeVisible();
         await expect(page.locator("article pre").first()).toBeVisible();
       });
@@ -35,11 +36,11 @@ test.describe("case studies", () => {
     await page.goto("/en/projects/sek");
     // Hidden on phones, but still in the DOM.
     const links = page.locator('nav[aria-label="On this page"] a');
-    await expect(links).toHaveCount(9);
+    await expect(links).toHaveCount(10);
     const targets = await links.evaluateAll((anchors) =>
       anchors.map((a) => document.getElementById(a.getAttribute("href")!.slice(1))?.tagName),
     );
-    expect(targets).toEqual(Array(9).fill("H2"));
+    expect(targets).toEqual(Array(10).fill("H2"));
   });
 
   test("never links the school system's repository", async ({ page }) => {

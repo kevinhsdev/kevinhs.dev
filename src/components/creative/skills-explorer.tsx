@@ -2,6 +2,7 @@
 
 import { ChevronDown, FileText, Folder } from "lucide-react";
 import { useRef, useState, type KeyboardEvent } from "react";
+import { earnAchievement } from "@/components/shared/visitor-achievements-data";
 import { cn } from "@/lib/utils";
 import { skillMarks, type SkillMark } from "./skill-marks";
 import { TechLogo } from "./tech-logo";
@@ -46,6 +47,8 @@ export function SkillsExplorer({
 }) {
   const [active, setActive] = useState(0);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  // every file opened at least once earns the "stack" trophy
+  const opened = useRef(new Set([0]));
   const current = levels[active];
   // The longest file sets the editor's height, so switching files never moves the page.
   const longest = Math.max(...levels.map((level) => level.items.length));
@@ -55,8 +58,14 @@ export function SkillsExplorer({
     if (!step) return;
     event.preventDefault();
     const next = (active + step + levels.length) % levels.length;
-    setActive(next);
+    open(next);
     tabs.current[next]?.focus();
+  }
+
+  function open(index: number) {
+    setActive(index);
+    opened.current.add(index);
+    if (opened.current.size === levels.length) earnAchievement("stack");
   }
 
   return (
@@ -113,7 +122,7 @@ export function SkillsExplorer({
                   aria-selected={selected}
                   aria-controls={`skills-panel-${level.id}`}
                   tabIndex={selected ? 0 : -1}
-                  onClick={() => setActive(index)}
+                  onClick={() => open(index)}
                   style={{ height: ROW }}
                   className={cn(
                     "relative flex items-center gap-3 rounded-xl px-4 text-left font-mono text-sm transition-colors duration-200",

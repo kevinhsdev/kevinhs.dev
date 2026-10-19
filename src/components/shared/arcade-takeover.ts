@@ -25,12 +25,12 @@ const palettes = {
     split: ["#3a1b6b", "#f6a623"],
     glitch: ["#ffd23f", "#f6a623", "#fff3c4", "#c98a12", "#2a2d66", "#3a1b6b"],
   },
-  // into the light arcade: the four greens of a Game Boy screen
+  // into the light arcade: a sunny 8-bit day
   arcadeLight: {
-    base: "#0f2a0f",
-    text: "#d4dcb4",
-    split: ["#18471a", "#8bac0f"],
-    glitch: ["#d4dcb4", "#a9b787", "#4f7a3a", "#18471a", "#e4ead0", "#8bac0f"],
+    base: "#1c1b3d",
+    text: "#fffaf0",
+    split: ["#c42a1f", "#1a56c4"],
+    glitch: ["#fffaf0", "#ffd23f", "#c42a1f", "#1a56c4", "#7b8fd6", "#2c7a37"],
   },
   // back to the normal site, in either theme: its own blues
   normal: {

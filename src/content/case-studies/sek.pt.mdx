@@ -1,51 +1,116 @@
 <Tldr>
-  Um sistema de gestão escolar **offline, multiusuário e sem nenhuma dependência externa**, feito
-  sozinho em 4 etapas para trocar planilhas soltas por um lugar só. Hoje está **em uso por toda a
-  secretaria** da escola.
+  Troquei uma pilha de planilhas soltas por um sistema de gestão escolar **offline, multiusuário e
+  sem nenhuma dependência externa**. Fiz sozinho, em 4 etapas, e hoje **toda a secretaria usa**.
 </Tldr>
 
-## Contexto e problema
+## O problema
 
-Trabalho como Jovem Aprendiz na secretaria de uma escola com **cerca de 535 alunos**, do Maternal ao
-Ensino Médio. O dia a dia corria em **planilhas de Excel e documentos de Word avulsos**, espalhados
-por vários sistemas: o sistema acadêmico (desktop), o de captação de famílias, o da Secretaria
-Escolar Digital, o da cantina.
+Sou Jovem Aprendiz na secretaria de uma escola com **cerca de 535 alunos**, do Maternal ao Ensino
+Médio. O dia a dia rodava em **planilhas de Excel e documentos de Word avulsos**, espalhados entre
+vários sistemas: o acadêmico (desktop), o de captação de famílias, o da Secretaria Escolar Digital,
+o da cantina.
 
-Na prática, cada tarefa exigia procurar a planilha certa, copiar dados de um lugar para outro e
-montar documentos à mão. Rematrícula, pendências de documentos, contratos, declarações, bolsas,
-conferência de boletos e autorização de saída viviam em arquivos diferentes, e nenhum deles sabia
-dos outros.
+Rematrícula, pendências de documentos, contratos, declarações, bolsas, boletos, autorização de
+saída... cada coisa morava num arquivo diferente, e nenhum sabia da existência do outro. Toda tarefa
+começava com uma caça à planilha certa.
 
-## Meu papel
+<BeforeAfter
+  before={{
+    label: "Antes",
+    time: "horas (ou dias)",
+    steps: [
+      "Descobrir em qual planilha está a informação",
+      "Copiar dados de um sistema para outro",
+      "Montar o documento à mão no Word",
+      "Conferir se ninguém mexeu na mesma planilha ao mesmo tempo",
+    ],
+  }}
+  after={{
+    label: "Depois",
+    time: "poucos minutos",
+    steps: [
+      "Abrir o SEK no navegador de qualquer PC da secretaria",
+      "Buscar o aluno: está tudo num lugar só",
+      "Gerar o documento oficial pronto, a partir do modelo",
+    ],
+  }}
+/>
 
-Projeto **pessoal e de iniciativa própria**, feito sozinho: levantamento das necessidades,
-arquitetura, código, testes, documentação e instalação. Uso o **Claude Code como par de
-programação**, com um documento de handoff vivo (decisões, armadilhas, roteiro) para que cada
-sessão continue de onde a anterior parou.
+## Onde eu entro
 
-## Restrições
+Projeto **pessoal, de iniciativa própria**, feito sozinho: levantamento, arquitetura, código, testes,
+documentação e instalação. Uso o **Claude Code como par de programação**, com um documento de
+handoff vivo (decisões, armadilhas, roteiro) para cada sessão continuar de onde a outra parou.
 
-- **Sem TI dedicada** e computadores Windows comuns, sem garantia de poder instalar programas.
-- **Precisa funcionar sem internet**: a rede da escola não é confiável.
-- **Dados de menores**: tudo o que envolve LGPD pesa mais do que qualquer conveniência.
-- **Várias pessoas ao mesmo tempo**: um PC funciona como servidor e os outros acessam pelo
-  navegador.
-- **Integração só por exportação**: não há acesso garantido ao banco do sistema acadêmico, então os
-  dados entram pelas planilhas `.xlsx` que ele já exporta.
-- **Quem mantém pode não ser programador**: instalar e atualizar precisam ser coisa de dois cliques.
+## As regras do jogo
 
-## Decisões técnicas e trade-offs
+O cenário tinha mais restrições do que um speedrun:
 
-| Decisão                                                  | Alternativa                             | Por quê                                                                                                                              |
-| -------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| App web **local**: um PC é o servidor                    | Nuvem / SaaS                            | Dado de menor fica fora da internet, não há mensalidade e tudo funciona offline.                                                     |
-| **Node.js portátil, sem npm e sem dependências**         | npm + framework (React, Express)        | Roda com dois cliques e sem build. Não há pacote para atualizar, quebrar ou ser comprometido.                                        |
-| Banco **`node:sqlite`** embutido, em modo WAL            | MySQL / PostgreSQL                      | Um arquivo só, sem servidor de banco para instalar; backup a quente com `VACUUM INTO`.                                               |
-| Importar as **exportações `.xlsx`** do sistema acadêmico | Ler o MySQL dele direto                 | O acesso ao banco não é garantido; exportar é o que a secretaria já sabe fazer. O leitor de `.xlsx` é próprio, sem bibliotecas.      |
-| **Atualização com 1 botão** via `git pull --ff-only`     | Instalador ou cópia manual              | Quem não programa atualiza sozinho: o app mostra o que mudou, faz backup antes, aplica e reinicia. Recusa se houver alteração local. |
-| **Concorrência otimista** (versão por registro)          | Travar o registro enquanto alguém edita | Ninguém fica bloqueado; o conflito só aparece quando de fato acontece, e com nome e hora.                                            |
+- **Sem TI dedicada** e PCs Windows comuns, sem garantia de poder instalar programas.
+- **Tem que funcionar sem internet**: a rede da escola não é confiável.
+- **Dados de menores**: LGPD pesa mais do que qualquer conveniência.
+- **Várias pessoas ao mesmo tempo**: um PC vira servidor e os outros acessam pelo navegador.
+- **Integração só por exportação**: sem acesso garantido ao banco do sistema acadêmico, os dados
+  entram pelas planilhas `.xlsx` que ele já exporta.
+- **Quem mantém pode não programar**: instalar e atualizar têm que ser coisa de dois cliques.
 
-## Arquitetura
+## Escolhas difíceis
+
+Algumas dessas decisões vão contra o que todo tutorial manda fazer. Tenta adivinhar antes de abrir
+a resposta.
+
+<Decision
+  question="Onde o sistema deve rodar?"
+  options={[
+    {
+      label: "Na nuvem, como um SaaS",
+      note: "Prático, mas dado de menor na internet multiplica a responsabilidade, tem mensalidade e não funciona offline.",
+    },
+    {
+      label: "Local: um PC da escola vira o servidor",
+      note: "Dado fora da internet, custo zero e funciona mesmo com a rede caída.",
+    },
+  ]}
+  pick={1}
+  why="Com dados de crianças e uma rede instável, local ganha de lavada. Os outros PCs acessam pelo navegador, como se fosse um site."
+/>
+
+<Decision
+  question="Qual stack usar?"
+  options={[
+    {
+      label: "npm + React + Express",
+      note: "O caminho padrão, mas traz build, centenas de pacotes e atualizações que quebram.",
+    },
+    {
+      label: "Node.js portátil, sem npm e sem dependências",
+      note: "Abre com dois cliques. Não tem pacote para atualizar, quebrar ou ser comprometido.",
+    },
+  ]}
+  pick={1}
+  why="Quem vai manter isso pode não ser programador. Zero dependências significa zero surpresas: o banco é o node:sqlite embutido (um arquivo só, em modo WAL) e até o leitor de .xlsx eu escrevi na mão."
+/>
+
+<Decision
+  question="Duas pessoas abrem a mesma ficha. E agora?"
+  options={[
+    {
+      label: "Travar a ficha enquanto alguém edita",
+      note: "Seguro, mas alguém sai para o almoço e a ficha fica presa.",
+    },
+    {
+      label: "Concorrência otimista: uma versão por registro",
+      note: "Ninguém fica bloqueado; o conflito só aparece quando de fato acontece.",
+    },
+  ]}
+  pick={1}
+  why="Conflito de verdade é raro, travamento é chato todo dia. Com versão por registro, o servidor só reclama quando alguém realmente pisou no trabalho do outro, e diz quem e quando."
+/>
+
+E para atualizar? Um botão. O app roda `git pull --ff-only`, mostra o que mudou, faz backup antes,
+aplica e reinicia. Se tiver alteração local, ele se recusa. Coisa de dois cliques, como prometido.
+
+## Como funciona por dentro
 
 <Diagram
   label="Fluxo principal"
@@ -62,35 +127,23 @@ sessão continue de onde a anterior parou.
   ]}
 />
 
-O servidor é um processo Node.js sem frameworks. As rotas ficam em módulos por área (`rotas/*.js`)
-e recebem um contexto comum. **Toda alteração passa por um registro de auditoria**, e os documentos
-oficiais saem de modelos `.xlsx` preenchidos pelo próprio código.
+Sem framework no servidor: as rotas ficam em módulos por área (`rotas/*.js`) e recebem um contexto
+comum. **Toda alteração passa por um registro de auditoria**, e os documentos oficiais saem de
+modelos `.xlsx` preenchidos pelo próprio código.
 
-## Destaques de implementação
+## Mão na massa
 
-### Backup cifrado que viaja no pen drive
+Essa é a parte que mais dá dor de cabeça em sistema multiusuário. Simula aí: duas telas, uma ficha.
 
-O backup é feito com o sistema aberto (`VACUUM INTO`) e, se houver senha, sai cifrado com
-**AES-256-GCM**: chave derivada com `scrypt`, sal e IV aleatórios e uma marca no começo para
-reconhecer o arquivo. A restauração é feita em duas etapas: o app valida, agenda a troca e só
-substitui o banco na próxima abertura, guardando uma cópia do anterior.
+<ConflictDemo />
 
-```js title="app/lib/backup.js"
-function cifrar(dados, senha) {
-  const sal = crypto.randomBytes(16);
-  const iv = crypto.randomBytes(12);
-  const chave = crypto.scryptSync(senha, sal, 32);
-  const c = crypto.createCipheriv("aes-256-gcm", chave, iv);
-  const corpo = Buffer.concat([c.update(dados), c.final()]);
-  return Buffer.concat([MARCA, sal, iv, c.getAuthTag(), corpo]);
-}
-```
+## Detalhes que eu curti
 
-### Duas pessoas editando a mesma ficha
+### O conflito, no código de verdade
 
-A tela envia a versão que carregou. Se outra pessoa gravou depois, o servidor responde **409**
-dizendo quem e quando. Do lado do navegador, só os campos alterados são enviados: se cada pessoa
-mexeu num campo diferente, o trabalho das duas fica.
+A tela envia a versão que carregou. Se outra pessoa gravou depois, o servidor responde **409** com o
+nome e a hora. No navegador, só os campos alterados são enviados, então se cada um mexeu num campo
+diferente, o trabalho dos dois fica.
 
 ```js title="app/server.js"
 function conferirVersao(atual, b, u) {
@@ -108,45 +161,64 @@ function conferirVersao(atual, b, u) {
 }
 ```
 
+### Backup cifrado que cabe no bolso
+
+O backup sai com o sistema aberto (`VACUUM INTO`) e, se tiver senha, cifrado com **AES-256-GCM**:
+chave derivada com `scrypt`, sal e IV aleatórios e uma marca no começo para reconhecer o arquivo. A
+restauração é em duas etapas: valida, agenda e só troca o banco na próxima abertura, guardando uma
+cópia do anterior.
+
+```js title="app/lib/backup.js"
+function cifrar(dados, senha) {
+  const sal = crypto.randomBytes(16);
+  const iv = crypto.randomBytes(12);
+  const chave = crypto.scryptSync(senha, sal, 32);
+  const c = crypto.createCipheriv("aes-256-gcm", chave, iv);
+  const corpo = Buffer.concat([c.update(dados), c.final()]);
+  return Buffer.concat([MARCA, sal, iv, c.getAuthTag(), corpo]);
+}
+```
+
 ### O que mais cuida dos dados
 
-- **Login por pessoa**, com perfis (administração e aprendiz), troca de senha obrigatória no
-  primeiro acesso, bloqueio de tela validado no servidor e cabeçalho CSP.
-- **Sessões guardadas no banco** (só o hash do token): reiniciar o servidor não desloga ninguém. Se
-  ele cair, a tela mostra uma faixa de "sem conexão" e **o que foi digitado é preservado** como
-  rascunho recuperável.
-- **LGPD**: registro de quem consultou cada ficha, exportação de tudo o que existe sobre um aluno e
-  descarte que anonimiza ex-alunos sem perder a estatística.
-- **Dados reais nunca vão para o Git**: os modelos são limpos por um script antes de qualquer commit,
-  e todos os testes usam uma demonstração com dados fictícios.
+- **Login por pessoa**, com perfis, troca de senha obrigatória no primeiro acesso, bloqueio de tela
+  validado no servidor e cabeçalho CSP.
+- **Sessões no banco** (só o hash do token): reiniciar o servidor não desloga ninguém. Se ele cair,
+  aparece uma faixa de "sem conexão" e **o que foi digitado vira rascunho recuperável**.
+- **LGPD**: registro de quem consultou cada ficha, exportação de tudo sobre um aluno e descarte que
+  anonimiza ex-alunos sem perder a estatística.
+- **Dado real nunca vai para o Git**: os modelos são limpos por um script antes de qualquer commit, e
+  os testes usam uma demonstração com dados fictícios.
 
-## Resultado e impacto
+## Deu certo?
 
-- **Em uso por toda a secretaria.** Tarefas que levavam horas ou até dias, como emitir histórico
-  escolar, acompanhar pendências de documentos e montar planilhas de organização, hoje são
-  resolvidas em poucos minutos. Esse ganho ainda é o relato da equipe, não uma medição formal.
-- Versão **5.8.x** em evolução contínua, com cerca de **875 KB de JavaScript** escrito sem framework.
-- Medido com uma demonstração de ~530 alunos fictícios: a API responde em **menos de 30 ms** e
-  nenhuma tela passa de **0,4 s**. Listas que chegavam a 30 mil pixels de altura caíram para
-  cerca de 6 mil, com carregamento em partes.
-- Uma bateria de testes própria derruba o servidor de verdade, simula duas pessoas editando ao mesmo
-  tempo, restaura backups e confere as 30 telas do app.
+<Stats
+  items={[
+    { value: "100%", label: "da secretaria usando no dia a dia" },
+    { value: "< 30 ms", label: "de resposta da API, medido com ~530 alunos fictícios" },
+    { value: "0,4 s", label: "é o máximo que qualquer tela leva para abrir" },
+  ]}
+/>
 
-## O que eu faria diferente e próximos passos
+Tarefas como emitir histórico escolar, acompanhar pendências de documentos e montar planilhas de
+organização, que levavam horas ou dias, hoje saem em poucos minutos. Isso ainda é o relato da equipe,
+não uma medição formal. O sistema está na versão **5.8.x**, com cerca de **875 KB de JavaScript**
+sem framework, e uma bateria de testes própria que derruba o servidor de verdade, simula duas pessoas
+editando ao mesmo tempo, restaura backups e confere as 30 telas.
 
-**Faria o piloto antes.** Construí quatro etapas antes de ter um único módulo rodando com dado real.
-Hoje eu começaria por **um módulo só, em piloto de duas semanas**, porque é isso que prova valor e
-ganha a confiança de quem decide. Sem piloto, o resto é só código.
+## Se eu fizesse de novo
 
-Próximos passos, nesta ordem:
+**Faria um piloto antes.** Construí quatro etapas antes de ter um único módulo rodando com dado real.
+Hoje eu começaria por **um módulo só, num piloto de duas semanas**: é isso que prova valor e ganha a
+confiança de quem decide.
 
-1. **Medir o tempo** de cada tarefa antes e depois, para trocar o relato da equipe por números.
-2. Evoluir a partir do que a secretaria mais usa no dia a dia, um módulo de cada vez.
+Próximos passos: **medir o tempo** de cada tarefa antes e depois, para trocar o relato por números, e
+seguir evoluindo pelo que a secretaria mais usa.
 
-E o que eu decidi **não** fazer: reescrever em React (perderia meses e ganharia build e
-dependências), levar para a nuvem (dado de menor na internet multiplica a responsabilidade) e
-automatizar WhatsApp em massa (a API oficial é paga e a não oficial derruba o número da escola).
+E o que eu decidi **não** fazer: reescrever em React (meses perdidos para ganhar build e
+dependências), levar para a nuvem (dado de menor na internet) e automatizar WhatsApp em massa (a API
+oficial é paga e a não oficial derruba o número da escola).
 
 ## Links
 
-- Código: **interno**, por ser um sistema da escola com regras e modelos dela.
+- Código: **interno**, por ser um sistema da escola, com regras e modelos dela.

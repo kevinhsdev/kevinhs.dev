@@ -1,74 +1,126 @@
 <Tldr>
-  A blood bank system built **by a team of 3 at university**: inventory per blood type is kept **by
-  the database itself** through a MySQL trigger, and the donation compatibility rules live in the
-  Java model.
+  A blood bank system built **by a team of 3 at university**. The trick: what keeps the stock right
+  is **the database itself**, through a MySQL trigger, and the rules for who can donate to whom live
+  in a single Java method.
 </Tldr>
 
-## Context and problem
+## The problem
 
-A project for the **Object-Oriented Programming with JDBC** course at UMC, in 2026. The challenge was
-to model a blood bank's daily work: **registering donors, recording donations, tracking the stock of
-each blood type and serving patients**, while keeping the stock numbers always correct.
+A project for the **Object-Oriented Programming with JDBC** course at UMC, in 2026. The mission:
+model a blood bank's daily work, that is, **register donors, record donations, track the stock of
+each blood type and serve patients**.
 
-The tricky part is consistency: every recorded donation changes the stock. If that math depends on
-every screen remembering to update the stock, someday one of them forgets, and the number on screen
-no longer matches the blood that actually exists.
+The tricky part is the stock. Every donation changes the number of units. If that math depends on
+each screen remembering to update the stock, one day someone forgets, and the number on screen stops
+matching the blood that actually exists. In a blood bank, that's not just any bug.
 
-## My role
+<BeforeAfter
+  before={{
+    label: "Stock in the code",
+    time: "fragile",
+    steps: [
+      "The screen saves the donation",
+      "The screen has to remember to update the stock",
+      "Another screen saves a donation and forgets",
+      "The stock number goes wrong and nobody notices",
+    ],
+  }}
+  after={{
+    label: "Stock in the database",
+    time: "always right",
+    steps: [
+      "Any part of the system saves the donation",
+      "The MySQL trigger updates the stock right away",
+      "Java only reads the stock, never writes it",
+    ],
+  }}
+/>
 
-A **team of 3**. I was responsible for the **DAO layer** and the **MySQL triggers** that update the
-stock, across the Patient, Donor, Donation and Inventory modules.
+## Where I come in
 
-## Constraints
+It was a **team of 3**. I took the **DAO layer** and the **MySQL triggers** that update the stock, in
+the Patient, Donor, Donation and Stock modules.
+
+## The rules of the game
 
 - **Plain JDBC**, no ORM: the course was about understanding data access under the hood.
-- **Object-oriented design** as a grading criterion: models, responsibilities and clearly separated
-  layers.
-- A course deadline and work split between three people.
+- **Object orientation** was graded: models, responsibilities and well-separated layers.
+- A course deadline and the work split between three people.
 
-## Technical decisions and trade-offs
+## Tough calls
 
-| Decision                                                     | Alternative                                  | Why                                                                                                                                        |
-| ------------------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Stock updated by a **MySQL trigger**                         | Update the stock in Java after each donation | The rule lives in one place. Stock stays right even if another part of the system records a donation; `EstoqueDAO` only needs to **read**. |
-| **One DAO per entity** plus a `ConnectionFactory`            | SQL scattered across screens                 | Separate layers: screens don't know SQL, and the connection is configured in one place.                                                    |
-| **`PreparedStatement`** for every query                      | Building SQL by concatenating strings        | Typed parameters and protection against SQL injection.                                                                                     |
-| Compatibility as a **rule in the model** (switch expression) | A compatibility table in the database        | Donation rules are fixed, fit in one readable method and are easy to test.                                                                 |
+<Decision
+  question="Who updates the stock when a donation comes in?"
+  options={[
+    {
+      label: "Java, after saving each donation",
+      note: "Works... until someone saves a donation another way and forgets.",
+    },
+    { label: "A MySQL trigger", note: "The rule lives in one place and applies to every write." },
+  ]}
+  pick={1}
+  why="With the trigger, the stock stays right even if another part of the system saves a donation. The proof is in the code: EstoqueDAO has no write methods at all, only reads."
+/>
 
-## Architecture
+<Decision
+  question="Where do the blood compatibility rules live?"
+  options={[
+    {
+      label: "In a database table",
+      note: "Flexible, but it's one more table to maintain, and biology's rules don't change.",
+    },
+    {
+      label: "In a Java method, with a switch expression",
+      note: "Fits on one screen, reads well and is easy to test.",
+    },
+  ]}
+  pick={1}
+  why="Donation rules are fixed. A switch expression keeps them all in sight, and it's exactly the kind of rule worth testing."
+/>
+
+Two more groundwork choices: **one DAO per entity** with a `ConnectionFactory` (screens don't know
+SQL and the connection is configured in one place) and **`PreparedStatement` in every query**, with
+typed parameters and protection against SQL injection.
+
+## How it works inside
 
 <Diagram
   label="Layers"
   flow={[
-    { title: "Web pages", detail: "donors, donations, stock and compatibility" },
+    { title: "Web screens", detail: "registration, donation, stock and compatibility" },
     { title: "Models", detail: "Donor, Donation, Patient, Stock, Compatibility" },
     { title: "DAOs (JDBC)", detail: "one per entity, PreparedStatement" },
-    { title: "MySQL 8", detail: "a trigger keeps stock per blood type" },
+    { title: "MySQL 8", detail: "a trigger keeps the stock per type" },
   ]}
 />
 
-## Implementation highlights
+## Hands on
 
-### The database owns the stock
+Try the two main ideas: the compatibility table and the stock that updates itself.
 
-The evidence is in the code itself: `EstoqueDAO` has no method to insert or update, only to query.
-The `ESTOQUE` table is maintained by the trigger fired on every donation.
+<BloodMatch />
 
-```java title="src/DAO/EstoqueDAO.java (trimmed)"
+## Details I'm proud of
+
+### The database looks after the stock
+
+`EstoqueDAO` only knows how to query. What maintains the `ESTOQUE` table is the trigger fired on
+every donation. (The code is in Portuguese, as the course was.)
+
+```java title="src/DAO/EstoqueDAO.java (abridged)"
 public List<Estoque> consultarTodos() throws ClassNotFoundException, SQLException {
     Connection con = ConnectionFactory.getConnection();
     PreparedStatement comando = con.prepareStatement("select * from ESTOQUE");
     ResultSet rs = comando.executeQuery();
-    // ...builds the list of Estoque (blood type and amount)
+    // ...builds the list of Estoque (blood type and quantity)
 }
 ```
 
-### Readable blood compatibility
+### Compatibility at a glance
 
-The rules for who can donate to whom became a single method using Java switch expressions. The code
-is in Portuguese, as the course required.
+Who can donate to whom, in a single method with Java _switch expressions_.
 
-```java title="src/Model/Compatibilidade.java (trimmed)"
+```java title="src/Model/Compatibilidade.java (abridged)"
 return switch (tipoDoador) {
     case "O-"  -> true;                        // universal donor
     case "O+"  -> tipoPaciente.endsWith("+");  // every Rh+
@@ -80,21 +132,27 @@ return switch (tipoDoador) {
 };
 ```
 
-## Results and impact
+## Did it work?
 
-- Delivered for the course, with the **Patient, Donor, Donation and Inventory** modules and the
-  compatibility screen.
-- In practice, it's where I solidified **JDBC, the DAO pattern and layered design**, the foundation of
-  what I'm now studying with Spring Data JPA.
+<Stats
+  items={[
+    { value: "4", label: "modules delivered: Patient, Donor, Donation and Stock" },
+    { value: "1", label: "trigger that keeps the stock right on its own" },
+    { value: "0", label: "concatenated SQL: everything with PreparedStatement" },
+  ]}
+/>
 
-## What I'd do differently and next steps
+The system was delivered for the course, with the compatibility screen. And it's where I locked in
+**JDBC, the DAO pattern and layered design**, the base for what I'm studying now with Spring Data JPA.
 
-It was a team project. Looking at the code today, I'd change:
+## If I did it again
 
-- use `try-with-resources`, since some queries open a connection and never close it;
-- update a donation by its own `id`, not by `id_doador`, which changes every donation from the same
+Looking at the code today (and being honest with my past self), I'd change:
+
+- use `try-with-resources`, since some queries open the connection and never close it;
+- update a donation by its own `id`, not by `id_doador`, which changes every donation from that
   donor;
-- commit the database script (tables and trigger) next to the code;
+- version the database script (tables and trigger) with the code;
 - write tests for `Compatibilidade`, the easiest rule to test and the most expensive to get wrong.
 
 ## Links

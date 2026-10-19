@@ -17,7 +17,7 @@ import type { Locale } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { creativeButton } from "./hero";
 
-const hobbyIcons: Record<(typeof profile.hobbies)[number]["icon"], LucideIcon> = {
+export const hobbyIcons: Record<(typeof profile.hobbies)[number]["icon"], LucideIcon> = {
   music: Music,
   volleyball: Volleyball,
   dumbbell: Dumbbell,

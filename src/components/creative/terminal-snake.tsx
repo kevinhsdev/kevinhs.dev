@@ -2,6 +2,7 @@
 
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { earnAchievement } from "@/components/shared/visitor-achievements-data";
 import {
   useCallback,
   useEffect,
@@ -12,8 +13,7 @@ import {
 } from "react";
 
 /*
- * `./snake.exe`: a tiny Snake inside the footer terminal, only under the secret
- * arcade theme. Arrows/WASD on a keyboard; swipe on the board or the d-pad on a
+ * `./snake.exe`: a tiny Snake in a terminal, in the arcade theme's arcade room. Arrows/WASD on a keyboard; swipe on the board or the d-pad on a
  * phone. Walls and your own tail end the run; the best score stays in this
  * browser. It only takes the arrow keys while the board has focus, so the page
  * still scrolls normally around it.
@@ -23,6 +23,8 @@ const COLS = 24;
 const ROWS = 13;
 const CELL = 16; // canvas pixels per cell; CSS scales it up crisp
 const BEST_KEY = "kh:snake-best";
+/** Score that earns the arcade trophy. */
+const SNAKE_TROPHY = 100;
 
 type Cell = { x: number; y: number };
 type Status = "idle" | "playing" | "over";
@@ -132,6 +134,7 @@ export function TerminalSnake() {
     if (next.x === g.food.x && next.y === g.food.y) {
       g.score += 10;
       setScore(g.score);
+      if (g.score === SNAKE_TROPHY) earnAchievement("snaker");
       g.food = spawn(g.snake);
     } else {
       g.snake.pop();

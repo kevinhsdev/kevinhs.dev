@@ -183,7 +183,79 @@
     "read": "Read the case study",
     "sections": "More case studies",
     "outline": "On this page",
-    "reading": "Reading"
+    "reading": "Reading",
+    "demo": {
+      "decide": "So, what would you do?",
+      "mine": "my pick",
+      "yours": "your pick",
+      "same": "Great minds! 🤝",
+      "different": "Fair! But I went another way:",
+      "reveal": "Here's the way I went:",
+      "skip": "Skip and see the answer",
+      "classifier": {
+        "title": "Try the classifier",
+        "intro": "A simplified version of the rules, running right here in your browser. Pick a sample document or type anything.",
+        "input": "Text extracted from the PDF",
+        "scores": "Score per type",
+        "threshold": "line = minimum threshold ({n} points)",
+        "suggest": "Suggested name:",
+        "because": "Because I found:",
+        "unsure": "Hmm, I'm not sure.",
+        "unsureText": "No type passed the threshold, so the tool asks instead of guessing.",
+        "samples": {
+          "rg": "ID card (RG)",
+          "historico": "School transcript",
+          "atestado": "Medical note",
+          "vago": "Vague text"
+        },
+        "types": {
+          "rg": "ID card (RG)",
+          "historico": "School transcript",
+          "certidao": "Birth certificate",
+          "residencia": "Proof of address",
+          "atestado": "Medical note"
+        },
+        "files": {
+          "rg": "RG",
+          "historico": "HISTORICO_ESCOLAR",
+          "certidao": "CERTIDAO_NASCIMENTO",
+          "residencia": "COMPROVANTE_RESIDENCIA",
+          "atestado": "ATESTADO_MEDICO"
+        }
+      },
+      "conflict": {
+        "title": "Simulator: two people, one record",
+        "intro": "Change a field on Ana's screen and save. Then change one on your screen (which still has the old version) and save too. Try the same field and different fields.",
+        "you": "You",
+        "screen": "{name}'s screen",
+        "save": "Save",
+        "reload": "Reload",
+        "reset": "Start over",
+        "saved": "Saved.",
+        "merged": "Saved! Someone saved first, but a different field: only your field was sent and both people's work stayed.",
+        "conflict": "{name} changed \"{field}\" while you were editing. Reload to see the new version.",
+        "server": "On the server (v{version}):",
+        "fields": {
+          "phone": "Phone",
+          "group": "Class"
+        }
+      },
+      "blood": {
+        "title": "Try the compatibility",
+        "intro": "Click a cell to pick donor and patient. Then record a donation and watch the stock change on its own, like the trigger does in the database.",
+        "grid": "Who can donate to whom",
+        "donorShort": "donor",
+        "patientShort": "patient",
+        "yes": "compatible",
+        "no": "incompatible",
+        "can": "{donor} can donate to {patient}.",
+        "cannot": "{donor} can't donate to {patient}.",
+        "stockIntro": "Stock (sample units):",
+        "stock": "Stock per type",
+        "donate": "Record a {type} donation",
+        "trigger": "INSERT INTO DOACAO … → trigger: UPDATE ESTOQUE SET quantidade = quantidade + 1 WHERE tipo = ''{type}''"
+      }
+    }
   },
   "aboutPage": {
     "title": "About me",
@@ -229,47 +301,80 @@
     "dismiss": "Dismiss notification",
     "case": {
       "title": "Your trophies",
-      "note": "Explore the site to unlock them. Every locked trophy holds a hint.",
+      "note": "Scrolling won't cut it: each trophy is a small challenge, and the locked ones hold a hint.",
       "done": "Platinum! You've seen it all. Thanks for visiting.",
       "left": "{left} to go",
       "complete": "complete",
-      "locked": "Locked"
+      "locked": "Locked",
+      "arcade": "Arcade trophies",
+      "reset": "Start over",
+      "resetConfirm": "Erase everything (and switch the arcade off)?"
     },
     "items": {
-      "explorer": {
-        "title": "Explorer",
-        "desc": "Opened my projects.",
-        "hint": "Take a look at the projects."
+      "tourist": {
+        "title": "Tourist",
+        "desc": "Visited About, Now and a case study.",
+        "hint": "Visit three pages: About me, Now and a case study."
       },
-      "traveler": {
-        "title": "Time traveler",
-        "desc": "Went through my journey.",
-        "hint": "Get to know my journey."
+      "reader": {
+        "title": "Dedicated reader",
+        "desc": "Read a case study to the end.",
+        "hint": "Read a whole case study, all the way to the bottom."
       },
-      "curious": {
-        "title": "Curious",
-        "desc": "Wanted to know who I am.",
-        "hint": "Find out who I am."
+      "hacker": {
+        "title": "Hacker",
+        "desc": "Ran a command from the palette.",
+        "hint": "Open the command palette (Ctrl+K or ⌘K) and run a command."
       },
-      "endgame": {
-        "title": "Endgame",
-        "desc": "Made it to the contact.",
-        "hint": "Reach the end of the page."
+      "stack": {
+        "title": "Full stack",
+        "desc": "Opened every skills file.",
+        "hint": "Open every file in the skills/ folder."
       },
-      "present": {
-        "title": "Right now",
-        "desc": "Saw what I'm working on now.",
-        "hint": "See what I'm doing now."
+      "konami": {
+        "title": "Cheat code",
+        "desc": "Entered the Konami code.",
+        "hint": "↑ ↑ ↓ ↓ ← → ← → B A on a keyboard. On a phone: tap my name 7 times, fast."
       },
-      "theme": {
-        "title": "Master of light",
-        "desc": "Switched the site theme.",
-        "hint": "Try the other side."
+      "duality": {
+        "title": "Duality",
+        "desc": "Went to the other side and came back.",
+        "hint": "Switch the site's theme, then switch it back."
       },
       "polyglot": {
         "title": "Polyglot",
         "desc": "Read the site in two languages.",
-        "hint": "Read the site in another language."
+        "hint": "Read the site in the other language."
+      },
+      "collector": {
+        "title": "Collector",
+        "desc": "Found every hidden coin.",
+        "hint": "Coins are hidden around the arcade mode. Collect them all."
+      },
+      "boss": {
+        "title": "Boss slayer",
+        "desc": "Beat the Bug King at the contact form.",
+        "hint": "Face the boss at the end of the page."
+      },
+      "snaker": {
+        "title": "Snake charmer",
+        "desc": "Scored 100 in Snake.",
+        "hint": "Score 100 in the arcade room's Snake."
+      },
+      "cartographer": {
+        "title": "Cartographer",
+        "desc": "Visited every level on the map.",
+        "hint": "Open every level on the journey map."
+      },
+      "chatter": {
+        "title": "Good listener",
+        "desc": "Heard the NPC out.",
+        "hint": "Click the avatar and hear everything it has to say."
+      },
+      "invader": {
+        "title": "Code defender",
+        "desc": "Cleared a full wave in Bug Invaders.",
+        "hint": "Take down every bug in one wave of Bug Invaders in the arcade room."
       }
     },
     "platinum": {
@@ -283,7 +388,168 @@
       "note": "A secret theme: the whole site turns into an arcade. Switch it on and off anytime.",
       "theme": "Arcade theme",
       "on": "On",
-      "off": "Off"
+      "off": "Off",
+      "lockedTitle": "Platinum reward",
+      "lockedNote": "{left, plural, one {# trophy} other {# trophies}} to go to unlock a secret theme: the whole site turns into an arcade, with levels, a boss, minigames and more trophies.",
+      "locked": "Locked"
+    },
+    "legend": {
+      "title": "Legendary reward",
+      "lockedNote": "Get all {total} trophies, arcade ones included ({got}/{total}), to earn the Legend skin (a corrupted green mask, a crown and raining code) and a certificate with your name.",
+      "note": "You beat the whole site. The Legend skin is yours, and so is the certificate.",
+      "name": "Your name on the certificate",
+      "placeholder": "Legendary visitor",
+      "download": "Download PDF",
+      "equip": "Equip Legend skin",
+      "equipped": "Legend skin equipped",
+      "cert": {
+        "brand": "KEVINHS.DEV · PORTFOLIO",
+        "title": "Certificate of Achievement",
+        "kicker": "ARCADE LEGEND",
+        "lead": "This certificate is proudly presented to",
+        "body": "for unlocking all {total} trophies in Kevin Henrique's portfolio,",
+        "body2": "including the secrets hidden in arcade mode.",
+        "dateLabel": "Date of issue",
+        "sign": "Kevin Henrique",
+        "role": "Kevin Henrique · Arcade owner",
+        "id": "Certificate no. {id} · kevinhs.dev",
+        "file": "legend-certificate-kevinhs"
+      },
+      "preview": "Preview of the certificate with your name"
+    }
+  },
+  "arcade": {
+    "hud": {
+      "coin": "Insert coin",
+      "credit": "Credit"
+    },
+    "character": {
+      "title": "Character sheet",
+      "class": "Class",
+      "guild": "Guild",
+      "base": "Home base",
+      "quest": "Current quest",
+      "origin": "Origin",
+      "originText": "Started coding at {age}, {how}",
+      "inventory": "Inventory",
+      "languages": "Languages",
+      "sideQuests": "Side quests",
+      "tree": {
+        "title": "Skill tree",
+        "legend": "Legend",
+        "max": "Daily use",
+        "unlocked": "Unlocked",
+        "training": "Training"
+      },
+      "talkTo": "Talk to the character"
+    },
+    "saves": {
+      "title": "Save points",
+      "note": "Moments saved in 8-bit. Hover or tap a photo to load it in full resolution.",
+      "slot": "Save {n}"
+    },
+    "games": {
+      "title": "Arcade room",
+      "note": "A break to play. 100 points in Snake and a cleared wave in Bug Invaders earn arcade trophies."
+    },
+    "npc": {
+      "talk": "Talk",
+      "title": "Dialog",
+      "name": "Kevin.exe",
+      "next": "Next",
+      "close": "Close",
+      "lines": [
+        "Hey, traveler! I'm Kevin, or at least the version of him that runs in this arcade.",
+        "I study Software Engineering at UMC and have been working since I was 17.",
+        "Today I'm an apprentice in a school's office. There I built PDF Renamer and SEK, which the team uses every day.",
+        "I started coding at 15 with OneBitCode's courses. Never stopped.",
+        "My current quest: an internship. If you have an opening, the boss over at contact is waiting.",
+        "NPC tip: there are coins hidden around the site. Collect them all and something special shows up in the inventory."
+      ]
+    },
+    "coins": {
+      "label": "Grab coin",
+      "hud": "Coins"
+    },
+    "guitar": {
+      "lockedTitle": "Mystery item",
+      "lockedHint": "Collect the coins hidden around the site to unlock it ({got}/{total}).",
+      "title": "Superstrat guitar",
+      "desc": "Blue, white pickguard, HSS pickups and a maple neck. Unlocks the rock skin: pick the look in the wardrobe."
+    },
+    "boss": {
+      "name": "Bug King",
+      "hp": "Boss health",
+      "intro": "Fill in the form to beat the boss. Every valid field is a hit.",
+      "hurt": "Hit! {hp, plural, one {# hit} other {# hits}} to go.",
+      "beaten": "Boss defeated! Now just send it."
+    },
+    "levels": {
+      "note": "Pick a level. Each project is a world, with the power-ups (technologies) I used.",
+      "world": "World {n}",
+      "powerups": "Power-ups",
+      "play": "Play",
+      "code": "See code"
+    },
+    "map": {
+      "note": "The journey's map. Walk the levels (click or use the arrow keys) and visit them all to earn a trophy.",
+      "level": "Level",
+      "current": "In progress",
+      "progress": "Levels visited",
+      "hint": "← → to walk",
+      "goalLabel": "Final level",
+      "goalTitle": "Internship",
+      "goalText": "The castle is still locked: it's the next level, an internship in backend, DevOps/Cloud or applied AI. If you have the key, the boss over at contact is waiting.",
+      "goalCta": "Open the gate"
+    },
+    "credits": {
+      "title": "Credits",
+      "thanks": "Thanks for playing!",
+      "top": "Play again",
+      "roles": [
+        {
+          "role": "Direction, code and design",
+          "name": "{name}"
+        },
+        {
+          "role": "Main character",
+          "name": "Kevin.exe"
+        },
+        {
+          "role": "Final boss",
+          "name": "Bug King"
+        },
+        {
+          "role": "Soundtrack",
+          "name": "Your playlist"
+        },
+        {
+          "role": "Playtesters",
+          "name": "You, for making it this far"
+        }
+      ]
+    },
+    "gameOver": {
+      "sub": "This level doesn't exist. Pick a path below to continue."
+    },
+    "invaders": {
+      "score": "score",
+      "best": "best",
+      "wave": "wave",
+      "lives": "lives",
+      "record": "NEW HIGH SCORE!",
+      "label": "Bug Invaders game. The ship fires on its own: use the arrow keys or A/D to dodge; Enter to start.",
+      "start": "▶ ENTER or tap to play",
+      "hint": "arrows / A-D · on a phone, drag across the board"
+    },
+    "skins": {
+      "label": "Avatar wardrobe",
+      "hacker": "Hacker",
+      "rock": "Rock",
+      "legend": "Legend",
+      "equip": "Equip",
+      "equipped": "Equipped",
+      "locked": "Every trophy"
     }
   }
 }

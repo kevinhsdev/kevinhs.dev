@@ -25,10 +25,19 @@ export default async function NotFound() {
         />
         <p
           aria-hidden
+          data-arcade-hide
           className="font-display text-[clamp(8rem,38vw,30rem)] leading-[0.8] text-accent"
         >
           404
         </p>
+        {/* under the arcade theme, a lost page is a game over */}
+        <div data-arcade-only aria-hidden className="px-gameover">
+          <p className="font-display text-accent">GAME OVER</p>
+          <p className="px-gameover-sub">{t("arcade.gameOver.sub")}</p>
+          <p className="px-gameover-count">
+            CONTINUE? <span>9</span>
+          </p>
+        </div>
         <div className="flex max-w-2xl flex-col gap-4">
           <h1 className="font-display text-5xl sm:text-7xl">{t("notFound.title")}</h1>
           <p className="text-lg text-pretty text-muted">{t("notFound.description")}</p>
