@@ -11,6 +11,7 @@ import {
 import { profile } from "@/content";
 import type { Locale } from "@/i18n/routing";
 import { VisitorTrophies } from "@/components/shared/visitor-trophies";
+import { ContactBoss, Credits } from "./arcade";
 import { ZipFooter } from "./zip-footer";
 import { creativeButton } from "./hero";
 
@@ -87,6 +88,7 @@ export async function CreativeContact() {
             </span>
           </div>
           <div className="flex flex-col gap-5 p-5 sm:p-8">
+            <ContactBoss />
             <h3 className="text-lg font-semibold">{t("contact.orForm")}</h3>
             <ContactForm />
           </div>
@@ -101,6 +103,7 @@ export function CreativeFooter({ updatedAt }: { locale: Locale; updatedAt: Date 
   return (
     <>
       <VisitorTrophies />
+      <Credits />
       <ZipFooter year={updatedAt.getFullYear()} />
     </>
   );

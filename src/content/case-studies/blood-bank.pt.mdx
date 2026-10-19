@@ -1,41 +1,91 @@
 <Tldr>
-  Um sistema de banco de sangue feito **em equipe de 3 na faculdade**: o estoque por tipo sanguíneo
-  é mantido **pelo próprio banco de dados**, com uma trigger no MySQL, e as regras de
-  compatibilidade de doação ficam no modelo, em Java.
+  Um sistema de banco de sangue feito **em equipe de 3 na faculdade**. O truque: quem mantém o
+  estoque certo é **o próprio banco de dados**, com uma trigger no MySQL, e as regras de quem pode
+  doar para quem ficam num método Java só.
 </Tldr>
 
-## Contexto e problema
+## O problema
 
-Projeto da disciplina de **Programação Orientada a Objetos com JDBC** na UMC, em 2026. O desafio era
-modelar o dia a dia de um hemocentro: **cadastrar doadores, registrar doações, acompanhar o estoque
-de cada tipo sanguíneo e atender pacientes**, mantendo os números do estoque sempre corretos.
+Projeto da disciplina de **Programação Orientada a Objetos com JDBC** na UMC, em 2026. A missão:
+modelar o dia a dia de um hemocentro, ou seja, **cadastrar doadores, registrar doações, acompanhar o
+estoque de cada tipo sanguíneo e atender pacientes**.
 
-O ponto delicado é a consistência: cada doação registrada muda o estoque. Se essa conta depender de
-cada tela lembrar de atualizar o estoque, um dia alguém esquece, e o número na tela deixa de
-corresponder ao sangue que existe de fato.
+O ponto delicado é o estoque. Toda doação muda o número de bolsas. Se essa conta depender de cada
+tela lembrar de atualizar o estoque, um dia alguém esquece, e o número na tela deixa de bater com o
+sangue que existe de verdade. Num hemocentro, isso não é um bug qualquer.
 
-## Meu papel
+<BeforeAfter
+  before={{
+    label: "Estoque no código",
+    time: "frágil",
+    steps: [
+      "A tela grava a doação",
+      "A tela precisa lembrar de atualizar o estoque",
+      "Outra tela grava uma doação e esquece",
+      "O número do estoque fica errado sem ninguém perceber",
+    ],
+  }}
+  after={{
+    label: "Estoque no banco",
+    time: "sempre certo",
+    steps: [
+      "Qualquer parte do sistema grava a doação",
+      "A trigger do MySQL atualiza o estoque na mesma hora",
+      "O Java só lê o estoque, nunca escreve",
+    ],
+  }}
+/>
 
-Trabalho em **equipe de 3 pessoas**. Fiquei responsável pela **camada DAO** e pelas **triggers do
+## Onde eu entro
+
+Foi trabalho em **equipe de 3 pessoas**. Eu fiquei com a **camada DAO** e com as **triggers do
 MySQL** que atualizam o estoque, nos módulos de Paciente, Doador, Doação e Estoque.
 
-## Restrições
+## As regras do jogo
 
-- **JDBC puro**, sem ORM: o objetivo da disciplina era entender o acesso a dados por baixo.
-- **Orientação a objetos** como critério de avaliação: modelos, responsabilidades e camadas bem
-  separadas.
+- **JDBC puro**, sem ORM: a ideia da disciplina era entender o acesso a dados por baixo dos panos.
+- **Orientação a objetos** como critério de nota: modelos, responsabilidades e camadas bem separadas.
 - Prazo de disciplina e trabalho dividido entre três pessoas.
 
-## Decisões técnicas e trade-offs
+## Escolhas difíceis
 
-| Decisão                                                        | Alternativa                                       | Por quê                                                                                                                                   |
-| -------------------------------------------------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| Estoque atualizado por **trigger no MySQL**                    | Atualizar o estoque no Java depois de cada doação | A regra fica num lugar só. O estoque continua certo mesmo que outra parte do sistema grave uma doação; o `EstoqueDAO` só precisa **ler**. |
-| **Um DAO por entidade** e uma `ConnectionFactory`              | SQL espalhado pelas telas                         | Camadas separadas: as telas não conhecem SQL e a conexão é configurada num lugar só.                                                      |
-| **`PreparedStatement`** em todas as consultas                  | Montar o SQL concatenando texto                   | Parâmetros tipados e proteção contra SQL injection.                                                                                       |
-| Compatibilidade como **regra no modelo** (_switch expression_) | Uma tabela de compatibilidade no banco            | As regras de doação são fixas, cabem num método legível e são fáceis de testar.                                                           |
+<Decision
+  question="Quem atualiza o estoque quando chega uma doação?"
+  options={[
+    {
+      label: "O Java, depois de gravar cada doação",
+      note: "Funciona... até alguém gravar uma doação por outro caminho e esquecer.",
+    },
+    {
+      label: "Uma trigger no MySQL",
+      note: "A regra fica num lugar só e vale para qualquer gravação.",
+    },
+  ]}
+  pick={1}
+  why="Com a trigger, o estoque continua certo mesmo que outra parte do sistema grave uma doação. A prova está no código: o EstoqueDAO não tem nenhum método de escrita, só de leitura."
+/>
 
-## Arquitetura
+<Decision
+  question="Onde ficam as regras de compatibilidade sanguínea?"
+  options={[
+    {
+      label: "Numa tabela no banco",
+      note: "Flexível, mas é mais uma tabela para manter, e as regras da biologia não mudam.",
+    },
+    {
+      label: "Num método Java, com switch expression",
+      note: "Cabe numa tela, é legível e fácil de testar.",
+    },
+  ]}
+  pick={1}
+  why="As regras de doação são fixas. Um método com switch expression deixa tudo à vista, e é exatamente o tipo de regra que vale a pena testar."
+/>
+
+Duas outras decisões de base: **um DAO por entidade** com uma `ConnectionFactory` (as telas não
+conhecem SQL e a conexão é configurada num lugar só) e **`PreparedStatement` em todas as
+consultas**, com parâmetros tipados e proteção contra SQL injection.
+
+## Como funciona por dentro
 
 <Diagram
   label="Camadas"
@@ -47,12 +97,18 @@ MySQL** que atualizam o estoque, nos módulos de Paciente, Doador, Doação e Es
   ]}
 />
 
-## Destaques de implementação
+## Mão na massa
+
+Testa as duas ideias principais: a tabela de compatibilidade e o estoque que se atualiza sozinho.
+
+<BloodMatch />
+
+## Detalhes que eu curti
 
 ### O banco cuida do estoque
 
-A evidência está no próprio código: o `EstoqueDAO` não tem método para inserir ou atualizar, só para
-consultar. Quem mantém a tabela `ESTOQUE` é a trigger disparada a cada doação.
+O `EstoqueDAO` só sabe consultar. Quem mantém a tabela `ESTOQUE` é a trigger disparada a cada
+doação.
 
 ```java title="src/DAO/EstoqueDAO.java (resumido)"
 public List<Estoque> consultarTodos() throws ClassNotFoundException, SQLException {
@@ -63,9 +119,9 @@ public List<Estoque> consultarTodos() throws ClassNotFoundException, SQLExceptio
 }
 ```
 
-### Compatibilidade sanguínea legível
+### Compatibilidade numa olhada
 
-As regras de quem pode doar para quem viraram um único método, com _switch expressions_ do Java.
+Quem pode doar para quem, num único método com _switch expressions_ do Java.
 
 ```java title="src/Model/Compatibilidade.java (resumido)"
 return switch (tipoDoador) {
@@ -79,23 +135,28 @@ return switch (tipoDoador) {
 };
 ```
 
-## Resultado e impacto
+## Deu certo?
 
-- Sistema entregue na disciplina, com os módulos de **Paciente, Doador, Doação e Estoque** e a
-  tela de compatibilidade.
-- Na prática, foi onde consolidei **JDBC, o padrão DAO e a separação em camadas**, a base do que
-  estudo hoje com Spring Data JPA.
+<Stats
+  items={[
+    { value: "4", label: "módulos entregues: Paciente, Doador, Doação e Estoque" },
+    { value: "1", label: "trigger que mantém o estoque certo sozinha" },
+    { value: "0", label: "SQL concatenado: tudo com PreparedStatement" },
+  ]}
+/>
 
-## O que eu faria diferente e próximos passos
+O sistema foi entregue na disciplina, com a tela de compatibilidade. E foi onde eu consolidei
+**JDBC, o padrão DAO e a separação em camadas**, a base do que estudo hoje com Spring Data JPA.
 
-O projeto foi em equipe. Olhando o código hoje, eu mudaria:
+## Se eu fizesse de novo
 
-- usar `try-with-resources`, porque algumas consultas abrem a conexão e não a fecham;
+Olhando o código hoje (e sendo sincero com o meu eu do passado), eu mudaria:
+
+- usar `try-with-resources`, porque algumas consultas abrem a conexão e não fecham;
 - atualizar a doação pelo `id` dela, e não pelo `id_doador`, que altera todas as doações do mesmo
   doador;
 - versionar o script do banco (tabelas e trigger) junto com o código;
-- escrever testes para a `Compatibilidade`, que é a regra mais fácil de testar e a mais cara de
-  errar.
+- escrever testes para a `Compatibilidade`, a regra mais fácil de testar e a mais cara de errar.
 
 ## Links
 

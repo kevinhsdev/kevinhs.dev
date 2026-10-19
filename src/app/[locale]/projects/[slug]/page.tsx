@@ -151,6 +151,7 @@ export default async function CaseStudyPage({ params }: PageProps<"/[locale]/pro
           </div>
 
           <nav
+            id="case-end"
             aria-label={t("caseStudy.sections")}
             className="grid gap-px border-y border-border bg-border sm:grid-cols-2"
           >

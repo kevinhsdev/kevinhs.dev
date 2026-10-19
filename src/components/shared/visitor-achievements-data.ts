@@ -1,13 +1,3 @@
-import {
-  Clock,
-  Compass,
-  Eye,
-  Flag,
-  Languages,
-  Route,
-  SunMoon,
-  type LucideIcon,
-} from "lucide-react";
 import { pixelTakeover } from "@/components/shared/arcade-takeover";
 
 /*
@@ -15,27 +5,71 @@ import { pixelTakeover } from "@/components/shared/arcade-takeover";
  * (visitor-achievements.tsx) and the trophy case that counts them
  * (visitor-trophies.tsx). Unlocks live in localStorage; every access is
  * guarded so the site works the same where storage is blocked.
+ *
+ * They are small challenges, not "scrolled past it": each one asks the visitor
+ * to do something (finish a case study, use the palette, find a cheat code).
+ * The `arcade` ones only exist inside the secret arcade theme and don't count
+ * toward the platinum that unlocks it. Their icons are in trophy-icons.tsx.
  */
 
 export type VisitorAchievementId =
-  "explorer" | "traveler" | "curious" | "endgame" | "present" | "theme" | "polyglot";
+  | "tourist"
+  | "reader"
+  | "hacker"
+  | "stack"
+  | "konami"
+  | "duality"
+  | "polyglot"
+  | "collector"
+  | "boss"
+  | "snaker"
+  | "cartographer"
+  | "chatter"
+  | "invader";
 
 export const visitorAchievements: {
   id: VisitorAchievementId;
-  icon: LucideIcon;
-  /** unlocks when this section's top passes the middle of the screen */
+  /** unlocks when this element's top passes the middle of the screen */
   section?: string;
-  /** unlocks on a page whose path ends with this */
-  page?: string;
+  arcade?: true;
 }[] = [
-  { id: "explorer", icon: Compass, section: "projects" },
-  { id: "traveler", icon: Route, section: "experience" },
-  { id: "curious", icon: Eye, section: "about", page: "/about" },
-  { id: "endgame", icon: Flag, section: "contact" },
-  { id: "present", icon: Clock, page: "/now" },
-  { id: "theme", icon: SunMoon },
-  { id: "polyglot", icon: Languages },
+  { id: "tourist" },
+  { id: "reader", section: "case-end" },
+  { id: "hacker" },
+  { id: "stack" },
+  { id: "konami" },
+  { id: "duality" },
+  { id: "polyglot" },
+  { id: "collector", arcade: true },
+  { id: "boss", arcade: true },
+  { id: "snaker", arcade: true },
+  { id: "cartographer", arcade: true },
+  { id: "chatter", arcade: true },
+  { id: "invader", arcade: true },
 ];
+
+/** The ones that count toward the platinum. */
+export const mainAchievements = visitorAchievements.filter((a) => !a.arcade);
+export const arcadeAchievements = visitorAchievements.filter((a) => a.arcade);
+
+export const LOCALES_KEY = "kh:seen-locales";
+export const PAGES_KEY = "kh:seen-pages";
+
+/** Pages the tourist has to visit; a case study counts as one. */
+export const TOURIST_PAGES = ["/about", "/now", "/projects/"];
+
+/** Fired by any component that hands out a trophy (the palette, the skills files…). */
+const EARN_EVENT = "kh:earn";
+
+export function earnAchievement(id: VisitorAchievementId) {
+  window.dispatchEvent(new CustomEvent<VisitorAchievementId>(EARN_EVENT, { detail: id }));
+}
+
+export function onEarn(handler: (id: VisitorAchievementId) => void) {
+  const listener = (event: Event) => handler((event as CustomEvent<VisitorAchievementId>).detail);
+  window.addEventListener(EARN_EVENT, listener);
+  return () => window.removeEventListener(EARN_EVENT, listener);
+}
 
 const KEY = "kh:visitor-achievements";
 /** Fired on window after every unlock, so the trophy case updates live. */
@@ -83,6 +117,36 @@ export function subscribeUnlocked(onChange: () => void) {
 /** A string snapshot, so React can compare it by value. */
 export function unlockedSnapshot() {
   return readUnlocked().join(",");
+}
+
+/** Every trophy, arcade ones included: the legend skin and the certificate. */
+export function isLegend(snapshot: string) {
+  const got = new Set(snapshot.split(","));
+  return visitorAchievements.every((a) => got.has(a.id));
+}
+
+/**
+ * Starts the hunt over: every trophy, the pages and languages seen, the coins
+ * and the skin they unlocked. The arcade theme switches off too (it is the
+ * platinum's reward, and some trophies live outside it); best scores are kept.
+ */
+export function resetAchievements() {
+  if (arcadeSnapshot()) setArcade(false);
+  for (const key of [KEY, LOCALES_KEY, PAGES_KEY, "kh:coins", "kh:skin"])
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // nothing stored, nothing to clear
+    }
+  for (const event of [RESET_EVENT, EVENT, "kh:coins", "kh:skin"])
+    window.dispatchEvent(new Event(event));
+}
+
+const RESET_EVENT = "kh:reset";
+
+export function onReset(handler: () => void) {
+  window.addEventListener(RESET_EVENT, handler);
+  return () => window.removeEventListener(RESET_EVENT, handler);
 }
 
 /*

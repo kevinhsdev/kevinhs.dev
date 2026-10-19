@@ -3,6 +3,13 @@ import { CreativeHeader, CreativeHero, Marquee } from "@/components/creative/her
 import { CreativeMotion } from "@/components/creative/motion";
 import { PrintSummary } from "@/components/creative/print-summary";
 import { AboutTeaser } from "@/components/creative/about-teaser";
+import {
+  ArcadeRoom,
+  CharacterSheet,
+  JourneyMap,
+  LevelSelect,
+  SavePoints,
+} from "@/components/creative/arcade";
 import { Journey } from "@/components/creative/journey";
 import { Preloader } from "@/components/creative/preloader";
 import { SkillsExplorer } from "@/components/creative/skills-explorer";
@@ -25,6 +32,8 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     getTimelineEntries(locale),
     getTimelineKindLabels(locale),
   ]);
+
+  const journey = toJourney(entries);
 
   const nav = [
     { label: t("nav.projects"), href: "#projects" },
@@ -56,9 +65,11 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
           <CreativeHero locale={locale} />
           <Marquee locale={locale} />
           <Statement />
+          <CharacterSheet locale={locale} />
 
           <Block id="projects" title={t("nav.projects")}>
-            <div className="flex flex-col gap-24">
+            <LevelSelect locale={locale} />
+            <div data-arcade-hide className="flex flex-col gap-24">
               <StackedProjects projects={featuredProjects} locale={locale} />
               <div className="flex flex-col gap-6">
                 <h3 className="font-mono text-xs tracking-widest text-muted uppercase">
@@ -68,22 +79,38 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
               </div>
             </div>
           </Block>
+          <ArcadeRoom />
 
           <Block id="experience" title={t("nav.experience")}>
-            <Journey
-              entries={toJourney(entries)}
-              labels={{
-                kinds: kindLabels,
-                inProgress: t("timeline.inProgress"),
-                done: t("timeline.done"),
-                region: t("nav.experience"),
-              }}
+            <JourneyMap
+              levels={journey.map((entry) => ({
+                id: entry.id,
+                type: entry.kind,
+                title: entry.title,
+                org: entry.org,
+                period: entry.period,
+                kind: kindLabels[entry.kind],
+                ongoing: entry.ongoing,
+                highlights: entry.highlights.slice(0, 2),
+              }))}
             />
+            <div data-arcade-hide>
+              <Journey
+                entries={journey}
+                labels={{
+                  kinds: kindLabels,
+                  inProgress: t("timeline.inProgress"),
+                  done: t("timeline.done"),
+                  region: t("nav.experience"),
+                }}
+              />
+            </div>
           </Block>
 
           <Block id="about" title={t("nav.about")}>
             <AboutTeaser locale={locale} />
           </Block>
+          <SavePoints locale={locale} />
 
           <Block id="skills" title={t("nav.skills")}>
             <SkillsExplorer

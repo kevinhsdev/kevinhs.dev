@@ -1,15 +1,20 @@
 "use client";
 
-import { Gamepad2, Lock, Trophy } from "lucide-react";
+import { Gamepad2, Lock, RotateCcw, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useSyncExternalStore, type CSSProperties } from "react";
+import { useState, useSyncExternalStore, type CSSProperties } from "react";
+import { TrophyIcon } from "@/components/shared/trophy-icons";
+import { LegendReward } from "@/components/shared/legend-reward";
+import { PlatinumTrophy } from "@/components/shared/trophy-icons-modern";
 import {
+  arcadeAchievements,
   arcadeSnapshot,
+  mainAchievements,
+  resetAchievements,
   setArcade,
   subscribeArcade,
   subscribeUnlocked,
   unlockedSnapshot,
-  visitorAchievements,
 } from "@/components/shared/visitor-achievements-data";
 import "@/styles/visitor-achievements.css";
 
@@ -53,12 +58,82 @@ function PlatinumReward() {
   );
 }
 
+/** What the platinum unlocks, shown greyed out while trophies are missing. */
+function LockedReward({ left }: { left: number }) {
+  const t = useTranslations("visitorAchievements.reward");
+  return (
+    <div className="vt-reward is-locked">
+      <span className="vt-reward-cup">
+        <PlatinumTrophy locked />
+        <Lock aria-hidden className="size-4" />
+      </span>
+      <div>
+        <h3>{t("lockedTitle")}</h3>
+        <p>{t("lockedNote", { left })}</p>
+      </div>
+      <div className="vt-switch is-locked" aria-hidden>
+        <span className="vt-switch-icon">
+          <Gamepad2 className="size-5" />
+        </span>
+        <span className="vt-switch-text">
+          <b>{t("theme")}</b>
+          <small>{t("locked")}</small>
+        </span>
+        <Lock className="size-4" />
+      </div>
+    </div>
+  );
+}
+
+/** Starts the hunt over, after a second click to confirm. */
+function ResetButton() {
+  const t = useTranslations("visitorAchievements.case");
+  const [sure, setSure] = useState(false);
+  return (
+    <button
+      type="button"
+      className="vt-reset"
+      onClick={() => {
+        if (!sure) return setSure(true);
+        resetAchievements();
+        setSure(false);
+      }}
+      onBlur={() => setSure(false)}
+    >
+      <RotateCcw aria-hidden className="size-4" />
+      {sure ? t("resetConfirm") : t("reset")}
+    </button>
+  );
+}
+
 export function VisitorTrophies() {
   const t = useTranslations("visitorAchievements");
   const snapshot = useSyncExternalStore(subscribeUnlocked, unlockedSnapshot, () => "");
   const got = new Set(snapshot ? snapshot.split(",") : []);
-  const total = visitorAchievements.length;
-  const left = total - got.size;
+  const total = mainAchievements.length;
+  const count = mainAchievements.filter((a) => got.has(a.id)).length;
+  const left = total - count;
+  const arcadeCount = arcadeAchievements.filter((a) => got.has(a.id)).length;
+
+  const list = (items: typeof mainAchievements) => (
+    <ul className="vt-list">
+      {items.map(({ id }) => {
+        const on = got.has(id);
+        return (
+          <li key={id} className={on ? "is-on" : undefined} tabIndex={0}>
+            <span className="vt-badge">
+              {on ? <TrophyIcon id={id} /> : <Lock aria-hidden className="size-4" />}
+            </span>
+            <span className="vt-name">{on ? t(`items.${id}.title`) : "???"}</span>
+            <span className="vt-tip" role="tooltip">
+              <b>{on ? t(`items.${id}.title`) : t("case.locked")}</b>
+              {on ? t(`items.${id}.desc`) : t(`items.${id}.hint`)}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
 
   return (
     <section
@@ -66,7 +141,7 @@ export function VisitorTrophies() {
       className="vt"
       aria-labelledby="vt-title"
       data-print="hide"
-      style={{ "--p": got.size / total } as CSSProperties}
+      style={{ "--p": count / total } as CSSProperties}
     >
       <div className="vt-head">
         <span className={left === 0 ? "vt-cup is-done" : "vt-cup"}>
@@ -78,7 +153,7 @@ export function VisitorTrophies() {
         </div>
         <p className="vt-count">
           <span>
-            <b>{got.size}</b>/{total}
+            <b>{count}</b>/{total}
           </span>
           <small>{left === 0 ? t("case.complete") : t("case.left", { left })}</small>
         </p>
@@ -86,28 +161,17 @@ export function VisitorTrophies() {
       <span className="vt-bar" aria-hidden>
         <i />
       </span>
-      <ul className="vt-list">
-        {visitorAchievements.map(({ id, icon: Icon }) => {
-          const on = got.has(id);
-          return (
-            <li key={id} className={on ? "is-on" : undefined} tabIndex={0}>
-              <span className="vt-badge">
-                {on ? (
-                  <Icon aria-hidden className="size-5" />
-                ) : (
-                  <Lock aria-hidden className="size-4" />
-                )}
-              </span>
-              <span className="vt-name">{on ? t(`items.${id}.title`) : "???"}</span>
-              <span className="vt-tip" role="tooltip">
-                <b>{on ? t(`items.${id}.title`) : t("case.locked")}</b>
-                {on ? t(`items.${id}.desc`) : t(`items.${id}.hint`)}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-      {left === 0 && <PlatinumReward />}
+      {list(mainAchievements)}
+      {/* trophies that only exist inside the arcade theme */}
+      <div data-arcade-only className="vt-arcade">
+        <h3>
+          {t("case.arcade")} <small>{`${arcadeCount}/${arcadeAchievements.length}`}</small>
+        </h3>
+        {list(arcadeAchievements)}
+        <LegendReward />
+      </div>
+      {left === 0 ? <PlatinumReward /> : <LockedReward left={left} />}
+      {got.size > 0 && <ResetButton />}
     </section>
   );
 }

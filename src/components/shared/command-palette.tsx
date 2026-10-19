@@ -15,6 +15,7 @@ import {
   useRegisteredNavigation,
 } from "@/components/shared/command-menu";
 import { copyEmail } from "@/components/shared/ctas";
+import { earnAchievement } from "@/components/shared/visitor-achievements-data";
 import { useLocaleSwitch } from "@/components/shared/locale-toggle";
 import { profile } from "@/content/profile";
 import { useRouter } from "@/i18n/navigation";
@@ -68,6 +69,7 @@ export function CommandPalette() {
   function run(action: () => void) {
     changeOpen(false);
     action();
+    earnAchievement("hacker");
   }
 
   const cvHref = (locale === "en" && profile.cv.en) || profile.cv.pt;

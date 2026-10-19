@@ -183,7 +183,79 @@
     "read": "Ler estudo de caso",
     "sections": "Mais estudos de caso",
     "outline": "Nesta página",
-    "reading": "Leitura"
+    "reading": "Leitura",
+    "demo": {
+      "decide": "E aí, o que você faria?",
+      "mine": "minha escolha",
+      "yours": "sua escolha",
+      "same": "Pensamos igual! 🤝",
+      "different": "Boa! Mas eu fui por outro caminho:",
+      "reveal": "Fui por este caminho:",
+      "skip": "Pular e ver a resposta",
+      "classifier": {
+        "title": "Teste o classificador",
+        "intro": "Uma versão simplificada das regras, rodando aqui no seu navegador. Escolha um documento de exemplo ou escreva o que quiser.",
+        "input": "Texto extraído do PDF",
+        "scores": "Pontuação por tipo",
+        "threshold": "linha = limiar mínimo ({n} pontos)",
+        "suggest": "Nome sugerido:",
+        "because": "Porque encontrei:",
+        "unsure": "Hmm, não tenho certeza.",
+        "unsureText": "Nenhum tipo passou do limiar, então a ferramenta pergunta em vez de chutar.",
+        "samples": {
+          "rg": "RG",
+          "historico": "Histórico escolar",
+          "atestado": "Atestado médico",
+          "vago": "Texto vago"
+        },
+        "types": {
+          "rg": "RG",
+          "historico": "Histórico escolar",
+          "certidao": "Certidão de nascimento",
+          "residencia": "Comprovante de residência",
+          "atestado": "Atestado médico"
+        },
+        "files": {
+          "rg": "RG",
+          "historico": "HISTORICO_ESCOLAR",
+          "certidao": "CERTIDAO_NASCIMENTO",
+          "residencia": "COMPROVANTE_RESIDENCIA",
+          "atestado": "ATESTADO_MEDICO"
+        }
+      },
+      "conflict": {
+        "title": "Simulador: duas pessoas, uma ficha",
+        "intro": "Mude um campo na tela da Ana e salve. Depois mude na sua tela (que ainda tem a versão antiga) e salve também. Teste com o mesmo campo e com campos diferentes.",
+        "you": "Você",
+        "screen": "Tela de {name}",
+        "save": "Salvar",
+        "reload": "Recarregar",
+        "reset": "Recomeçar",
+        "saved": "Salvo.",
+        "merged": "Salvo! Alguém gravou antes, mas em outro campo: só o seu campo foi enviado e o trabalho dos dois ficou.",
+        "conflict": "{name} alterou \"{field}\" enquanto você editava. Recarregue para ver a versão nova.",
+        "server": "No servidor (v{version}):",
+        "fields": {
+          "phone": "Telefone",
+          "group": "Turma"
+        }
+      },
+      "blood": {
+        "title": "Teste a compatibilidade",
+        "intro": "Clique numa célula para escolher doador e paciente. Depois registre uma doação e veja o estoque mudar sozinho, como a trigger faz no banco.",
+        "grid": "Quem pode doar para quem",
+        "donorShort": "doador",
+        "patientShort": "paciente",
+        "yes": "compatível",
+        "no": "incompatível",
+        "can": "{donor} pode doar para {patient}.",
+        "cannot": "{donor} não pode doar para {patient}.",
+        "stockIntro": "Estoque (bolsas de exemplo):",
+        "stock": "Estoque por tipo",
+        "donate": "Registrar doação de {type}",
+        "trigger": "INSERT INTO DOACAO … → trigger: UPDATE ESTOQUE SET quantidade = quantidade + 1 WHERE tipo = ''{type}''"
+      }
+    }
   },
   "aboutPage": {
     "title": "Sobre mim",
@@ -229,47 +301,80 @@
     "dismiss": "Fechar notificação",
     "case": {
       "title": "Seus troféus",
-      "note": "Explore o site para desbloquear. Cada troféu bloqueado guarda uma dica.",
+      "note": "Não basta rolar a página: cada troféu é um pequeno desafio, e os bloqueados guardam uma dica.",
       "done": "Platinado! Você viu tudo por aqui. Obrigado pela visita.",
       "left": "faltam {left}",
       "complete": "completo",
-      "locked": "Bloqueado"
+      "locked": "Bloqueado",
+      "arcade": "Troféus do arcade",
+      "reset": "Refazer conquistas",
+      "resetConfirm": "Apagar tudo (e desligar o arcade)?"
     },
     "items": {
-      "explorer": {
-        "title": "Explorador",
-        "desc": "Abriu os meus projetos.",
-        "hint": "Dê uma olhada nos projetos."
+      "tourist": {
+        "title": "Turista",
+        "desc": "Visitou o Sobre, o Agora e um case study.",
+        "hint": "Visite três páginas: Sobre mim, Agora e um case study."
       },
-      "traveler": {
-        "title": "Viajante do tempo",
-        "desc": "Percorreu a minha trajetória.",
-        "hint": "Conheça a minha trajetória."
+      "reader": {
+        "title": "Leitor dedicado",
+        "desc": "Leu um case study até o fim.",
+        "hint": "Leia um case study inteiro, até o final da página."
       },
-      "curious": {
-        "title": "Curioso",
-        "desc": "Quis saber quem eu sou.",
-        "hint": "Descubra quem eu sou."
+      "hacker": {
+        "title": "Hacker",
+        "desc": "Executou um comando pela paleta.",
+        "hint": "Abra a paleta de comandos (Ctrl+K ou ⌘K) e execute um comando."
       },
-      "endgame": {
-        "title": "Fim de jogo",
-        "desc": "Chegou até o contato.",
-        "hint": "Chegue até o fim da página."
+      "stack": {
+        "title": "Full stack",
+        "desc": "Abriu todos os arquivos de skills.",
+        "hint": "Abra cada arquivo da pasta skills/."
       },
-      "present": {
-        "title": "No presente",
-        "desc": "Viu no que estou trabalhando agora.",
-        "hint": "Veja o que estou fazendo agora."
+      "konami": {
+        "title": "Código secreto",
+        "desc": "Digitou o código Konami.",
+        "hint": "↑ ↑ ↓ ↓ ← → ← → B A no teclado. No celular: 7 toques rápidos no meu nome."
       },
-      "theme": {
-        "title": "Mestre da luz",
-        "desc": "Trocou o tema do site.",
-        "hint": "Experimente o outro lado."
+      "duality": {
+        "title": "Dualidade",
+        "desc": "Foi para o outro lado e voltou.",
+        "hint": "Troque o tema do site e depois volte para o original."
       },
       "polyglot": {
         "title": "Poliglota",
         "desc": "Leu o site em dois idiomas.",
         "hint": "Leia o site em outro idioma."
+      },
+      "collector": {
+        "title": "Colecionador",
+        "desc": "Juntou todas as moedas escondidas.",
+        "hint": "Há moedas escondidas pelo modo arcade. Junte todas."
+      },
+      "boss": {
+        "title": "Chefão derrotado",
+        "desc": "Derrotou o Bug Rei no contato.",
+        "hint": "Enfrente o chefão no fim da página."
+      },
+      "snaker": {
+        "title": "Encantador de serpentes",
+        "desc": "Fez 100 pontos no Snake.",
+        "hint": "Faça 100 pontos no Snake do fliperama."
+      },
+      "cartographer": {
+        "title": "Cartógrafo",
+        "desc": "Visitou todas as fases do mapa.",
+        "hint": "Abra todas as fases do mapa da jornada."
+      },
+      "chatter": {
+        "title": "Bom de papo",
+        "desc": "Ouviu o NPC até o fim.",
+        "hint": "Clique no avatar e ouça tudo o que ele tem a dizer."
+      },
+      "invader": {
+        "title": "Defensor do código",
+        "desc": "Limpou uma onda inteira no Bug Invaders.",
+        "hint": "Derrube todos os bugs de uma onda no Bug Invaders do fliperama."
       }
     },
     "platinum": {
@@ -283,7 +388,168 @@
       "note": "Um tema secreto: o site inteiro vira um fliperama. Ligue e desligue quando quiser.",
       "theme": "Tema arcade",
       "on": "Ligado",
-      "off": "Desligado"
+      "off": "Desligado",
+      "lockedTitle": "Recompensa da platina",
+      "lockedNote": "{left, plural, one {Falta # troféu} other {Faltam # troféus}} para liberar um tema secreto: o site inteiro vira um fliperama, com fases, chefão, minigames e mais troféus.",
+      "locked": "Bloqueado"
+    },
+    "legend": {
+      "title": "Recompensa lendária",
+      "lockedNote": "Complete todos os {total} troféus, os do arcade também ({got}/{total}), para ganhar a skin Lenda (máscara verde corrompida, coroa e chuva de código) e um certificado com o seu nome.",
+      "note": "Você zerou o site. A skin Lenda é sua, e o certificado também.",
+      "name": "Seu nome no certificado",
+      "placeholder": "Visitante lendário",
+      "download": "Baixar PDF",
+      "equip": "Equipar skin Lenda",
+      "equipped": "Skin Lenda equipada",
+      "cert": {
+        "brand": "KEVINHS.DEV · PORTFÓLIO",
+        "title": "Certificado de Conquista",
+        "kicker": "LENDA DO FLIPERAMA",
+        "lead": "Este certificado é concedido a",
+        "body": "por desbloquear todos os {total} troféus do portfólio de Kevin Henrique,",
+        "body2": "incluindo os segredos escondidos no modo arcade.",
+        "dateLabel": "Data de emissão",
+        "sign": "Kevin Henrique",
+        "role": "Kevin Henrique · Dono do fliperama",
+        "id": "Certificado nº {id} · kevinhs.dev",
+        "file": "certificado-lenda-kevinhs"
+      },
+      "preview": "Prévia do certificado com o seu nome"
+    }
+  },
+  "arcade": {
+    "hud": {
+      "coin": "Insira uma ficha",
+      "credit": "Créditos"
+    },
+    "character": {
+      "title": "Ficha do personagem",
+      "class": "Classe",
+      "guild": "Guilda",
+      "base": "Base",
+      "quest": "Missão atual",
+      "origin": "Origem",
+      "originText": "Começou a programar aos {age}, {how}",
+      "inventory": "Inventário",
+      "languages": "Idiomas",
+      "sideQuests": "Missões secundárias",
+      "tree": {
+        "title": "Árvore de habilidades",
+        "legend": "Legenda",
+        "max": "Uso diário",
+        "unlocked": "Desbloqueada",
+        "training": "Treinando"
+      },
+      "talkTo": "Falar com o personagem"
+    },
+    "saves": {
+      "title": "Save points",
+      "note": "Momentos salvos em 8 bits. Passe o mouse ou toque numa foto para carregá-la em alta resolução.",
+      "slot": "Save {n}"
+    },
+    "games": {
+      "title": "Fliperama",
+      "note": "Uma pausa para jogar. 100 pontos no Snake e uma onda limpa no Bug Invaders valem troféus do arcade."
+    },
+    "npc": {
+      "talk": "Falar",
+      "title": "Diálogo",
+      "name": "Kevin.exe",
+      "next": "Próximo",
+      "close": "Fechar",
+      "lines": [
+        "Opa, viajante! Eu sou o Kevin, ou pelo menos a versão dele que roda neste arcade.",
+        "Estudo Engenharia de Software na UMC e trabalho desde os 17.",
+        "Hoje sou Jovem Aprendiz na secretaria de uma escola. Lá criei o PDF Renamer e o SEK, que a equipe usa todo dia.",
+        "Comecei a programar aos 15, com os cursos da OneBitCode. Nunca mais parei.",
+        "Minha missão atual: um estágio. Se você tem uma vaga, o chefão lá no contato está esperando.",
+        "Dica de NPC: tem moedas escondidas pelo site. Junte todas e algo especial aparece no inventário."
+      ]
+    },
+    "coins": {
+      "label": "Pegar moeda",
+      "hud": "Moedas"
+    },
+    "guitar": {
+      "lockedTitle": "Item misterioso",
+      "lockedHint": "Junte as moedas escondidas pelo site para desbloquear ({got}/{total}).",
+      "title": "Guitarra superstrato",
+      "desc": "Azul, escudo branco, captadores HSS e braço de maple. Libera a skin rock: escolha o visual no guarda-roupa."
+    },
+    "boss": {
+      "name": "Rei dos Bugs",
+      "hp": "Vida do chefão",
+      "intro": "Preencha o formulário para derrotar o chefão. Cada campo válido é um golpe.",
+      "hurt": "Acertou! Faltam {hp, plural, one {# golpe} other {# golpes}}.",
+      "beaten": "Chefão derrotado! Agora é só enviar."
+    },
+    "levels": {
+      "note": "Escolha uma fase. Cada projeto é um mundo, com os power-ups (tecnologias) que usei.",
+      "world": "Mundo {n}",
+      "powerups": "Power-ups",
+      "play": "Jogar",
+      "code": "Ver código"
+    },
+    "map": {
+      "note": "O mapa da jornada. Ande pelas fases (clique ou use as setas) e visite todas para ganhar um troféu.",
+      "level": "Fase",
+      "current": "Em andamento",
+      "progress": "Fases visitadas",
+      "hint": "← → para andar",
+      "goalLabel": "Fase final",
+      "goalTitle": "Estágio",
+      "goalText": "O castelo ainda está fechado: é a próxima fase, um estágio em backend, DevOps/Cloud ou IA aplicada. Se você tem a chave, o chefão do contato está esperando.",
+      "goalCta": "Abrir o portão"
+    },
+    "credits": {
+      "title": "Créditos",
+      "thanks": "Obrigado por jogar!",
+      "top": "Jogar de novo",
+      "roles": [
+        {
+          "role": "Direção, código e design",
+          "name": "{name}"
+        },
+        {
+          "role": "Personagem principal",
+          "name": "Kevin.exe"
+        },
+        {
+          "role": "Chefão final",
+          "name": "Rei dos Bugs"
+        },
+        {
+          "role": "Trilha sonora",
+          "name": "Sua playlist"
+        },
+        {
+          "role": "Testadores",
+          "name": "Você, que chegou até aqui"
+        }
+      ]
+    },
+    "gameOver": {
+      "sub": "Esta fase não existe. Escolha um caminho abaixo para continuar."
+    },
+    "invaders": {
+      "score": "pontos",
+      "best": "recorde",
+      "wave": "onda",
+      "lives": "vidas",
+      "record": "NOVO RECORDE!",
+      "label": "Jogo Bug Invaders. A nave atira sozinha: use as setas ou A/D para desviar; Enter para começar.",
+      "start": "▶ ENTER ou toque para jogar",
+      "hint": "setas / A-D · no celular, arraste o dedo no tabuleiro"
+    },
+    "skins": {
+      "label": "Guarda-roupa do avatar",
+      "hacker": "Hacker",
+      "rock": "Rock",
+      "legend": "Lenda",
+      "equip": "Equipar",
+      "equipped": "Equipado",
+      "locked": "Todos os troféus"
     }
   }
 }

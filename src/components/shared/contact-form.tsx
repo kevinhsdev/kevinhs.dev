@@ -3,6 +3,7 @@
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition, type FormEvent } from "react";
+import { reportForm } from "@/components/shared/arcade-state";
 import { profile } from "@/content/profile";
 import { sendContact } from "@/lib/contact-action";
 import { notify } from "@/lib/toast";
@@ -50,7 +51,13 @@ export function ContactForm({ className }: { className?: string }) {
   const isInvalid = (name: string) => invalid.includes(name) || undefined;
 
   return (
-    <form onSubmit={onSubmit} noValidate className={cn("flex flex-col gap-4", className)}>
+    <form
+      onSubmit={onSubmit}
+      // the arcade theme's boss takes damage as the fields fill in
+      onInput={(event) => reportForm(event.currentTarget)}
+      noValidate
+      className={cn("flex flex-col gap-4", className)}
+    >
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1.5 text-sm">
           {t("name")}

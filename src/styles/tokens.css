@@ -42,20 +42,20 @@
   --paper-ink: #0a1430;
 }
 
-/* arcade, light: a Game Boy LCD */
+/* arcade, light: a sunny 8-bit day (cream paper, brick red, sky blue, indigo ink) */
 html[data-arcade] {
-  --background: #d4dcb4;
-  --surface: #e4ead0;
-  --foreground: #0f2a0f;
-  --muted: #2f4d2a;
-  --border: #a9b787;
-  --accent: #18471a;
-  --accent-contrast: #e4ead0;
-  --link: #1d4f1d;
-  --positive: #145214;
-  --danger: #8a1c1c;
-  --paper: #e4ead0;
-  --paper-ink: #0f2a0f;
+  --background: #f4ecdc;
+  --surface: #fffaf0;
+  --foreground: #1c1b3d;
+  --muted: #4a4770;
+  --border: #dccfb4;
+  --accent: #c42a1f;
+  --accent-contrast: #ffffff;
+  --link: #1a56c4;
+  --positive: #1b6e30;
+  --danger: #a8121e;
+  --paper: #fffaf0;
+  --paper-ink: #1c1b3d;
 }
 
 /* arcade, dark: a neon cabinet */

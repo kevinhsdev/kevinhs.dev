@@ -1,51 +1,116 @@
 <Tldr>
-  An **offline, multi-user school management system with zero external dependencies**, built on my
-  own in 4 stages to replace scattered spreadsheets with a single place. Today the **whole school
-  office uses it**.
+  I swapped a pile of loose spreadsheets for a school management system that is **offline,
+  multi-user and has zero external dependencies**. I built it on my own, in 4 stages, and today
+  **the whole school office uses it**.
 </Tldr>
 
-## Context and problem
+## The problem
 
-I work as an apprentice in the administrative office of a school with **around 535 students**, from
-preschool to high school. Day-to-day work ran on **loose Excel spreadsheets and Word documents**,
-spread across several systems: the academic system (a desktop app), the admissions tool, the state's
-digital school records and the cafeteria system.
+I'm an apprentice in the office of a school with **around 535 students**, from preschool to high
+school. Day-to-day work ran on **loose Excel spreadsheets and Word documents**, spread across several
+systems: the academic one (a desktop app), the admissions tool, the state's digital school records,
+the cafeteria system.
 
-In practice, every task meant hunting for the right spreadsheet, copying data from one place to
-another and assembling documents by hand. Re-enrollment, missing documents, contracts, official
-letters, scholarships, billing checks and pickup authorizations all lived in different files, and
-none of them knew about the others.
+Re-enrollment, missing documents, contracts, official letters, scholarships, billing, pickup
+authorizations... each lived in a different file, and none knew the others existed. Every task
+started with a hunt for the right spreadsheet.
 
-## My role
+<BeforeAfter
+  before={{
+    label: "Before",
+    time: "hours (or days)",
+    steps: [
+      "Figure out which spreadsheet has the information",
+      "Copy data from one system to another",
+      "Build the document by hand in Word",
+      "Check nobody edited the same spreadsheet at the same time",
+    ],
+  }}
+  after={{
+    label: "After",
+    time: "a few minutes",
+    steps: [
+      "Open SEK in the browser of any office PC",
+      "Search the student: everything is in one place",
+      "Generate the official document, ready, from its template",
+    ],
+  }}
+/>
+
+## Where I come in
 
 A **personal project I started on my own**, built solo: requirements, architecture, code, tests,
-documentation and installation. I use **Claude Code as a pair programmer**, with a living handoff
-document (decisions, pitfalls, roadmap) so that each session picks up exactly where the last one
-stopped.
+docs and installation. I use **Claude Code as a pair programmer**, with a living handoff document
+(decisions, pitfalls, roadmap) so each session picks up where the last one stopped.
 
-## Constraints
+## The rules of the game
+
+This setup had more restrictions than a speedrun:
 
 - **No IT staff** and regular Windows PCs, with no guarantee of being allowed to install software.
 - **It has to work offline**: the school network isn't reliable.
-- **Data about minors**: anything privacy-related (Brazil's LGPD) outweighs any convenience.
-- **Several people at once**: one PC acts as the server and the others connect through the
-  browser.
-- **Integration through exports only**: there's no guaranteed access to the academic system's
-  database, so data comes in through the `.xlsx` files it already exports.
-- **Whoever maintains it may not be a developer**: installing and updating must take two clicks.
+- **Data about minors**: privacy (Brazil's LGPD) outweighs any convenience.
+- **Several people at once**: one PC becomes the server and the others connect through the browser.
+- **Integration through exports only**: with no guaranteed access to the academic system's database,
+  data comes in through the `.xlsx` files it already exports.
+- **Whoever maintains it may not code**: installing and updating must take two clicks.
 
-## Technical decisions and trade-offs
+## Tough calls
 
-| Decision                                          | Alternative                             | Why                                                                                                                                                |
-| ------------------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Local** web app: one PC is the server           | Cloud / SaaS                            | Minors' data stays off the internet, there's no subscription, and everything works offline.                                                        |
-| **Portable Node.js, no npm, no dependencies**     | npm + a framework (React, Express)      | It runs with two clicks and no build step. There are no packages to update, break or be compromised.                                               |
-| Built-in **`node:sqlite`** database in WAL mode   | MySQL / PostgreSQL                      | A single file and no database server to install; hot backups with `VACUUM INTO`.                                                                   |
-| Import the academic system's **`.xlsx` exports**  | Read its MySQL database directly        | Database access isn't guaranteed, and exporting is something the office already knows how to do. The `.xlsx` reader is hand-written, no libraries. |
-| **One-button updates** via `git pull --ff-only`   | An installer or copying files by hand   | Non-developers update it themselves: the app shows what changed, backs up, applies and restarts. It refuses if there are local changes.            |
-| **Optimistic concurrency** (a version per record) | Locking a record while someone edits it | Nobody gets blocked; a conflict only shows up when it actually happens, with a name and a time.                                                    |
+Some of these go against what every tutorial tells you. Try guessing before you open the answer.
 
-## Architecture
+<Decision
+  question="Where should the system run?"
+  options={[
+    {
+      label: "In the cloud, as a SaaS",
+      note: "Convenient, but minors' data on the internet multiplies the responsibility, there's a subscription and no offline mode.",
+    },
+    {
+      label: "Locally: one school PC becomes the server",
+      note: "Data stays off the internet, costs nothing and works even when the network is down.",
+    },
+  ]}
+  pick={1}
+  why="With children's data and a flaky network, local wins by a mile. The other PCs connect through the browser, as if it were a website."
+/>
+
+<Decision
+  question="Which stack?"
+  options={[
+    {
+      label: "npm + React + Express",
+      note: "The default path, but it brings a build step, hundreds of packages and updates that break.",
+    },
+    {
+      label: "Portable Node.js, no npm, no dependencies",
+      note: "Opens with two clicks. No packages to update, break or be compromised.",
+    },
+  ]}
+  pick={1}
+  why="Whoever maintains this may not be a developer. Zero dependencies means zero surprises: the database is the built-in node:sqlite (one file, WAL mode) and I even wrote the .xlsx reader by hand."
+/>
+
+<Decision
+  question="Two people open the same record. Now what?"
+  options={[
+    {
+      label: "Lock the record while someone edits it",
+      note: "Safe, but someone goes to lunch and the record stays stuck.",
+    },
+    {
+      label: "Optimistic concurrency: a version per record",
+      note: "Nobody gets blocked; a conflict only shows up when it actually happens.",
+    },
+  ]}
+  pick={1}
+  why="Real conflicts are rare; locks are annoying every day. With a version per record, the server only complains when someone actually stepped on someone else's work, and says who and when."
+/>
+
+And updating? One button. The app runs `git pull --ff-only`, shows what changed, backs up first,
+applies and restarts. If there are local changes, it refuses. Two clicks, as promised.
+
+## How it works inside
 
 <Diagram
   label="Main flow"
@@ -62,35 +127,25 @@ stopped.
   ]}
 />
 
-The server is a framework-free Node.js process. Routes live in per-area modules (`rotas/*.js`) and
-receive a shared context. **Every change goes through an audit log**, and official documents are
-generated from `.xlsx` templates filled in by the code itself.
+No framework on the server: routes live in per-area modules (`rotas/*.js`) and get a shared context.
+**Every change goes through an audit log**, and official documents come out of `.xlsx` templates
+filled in by the code itself.
 
-## Implementation highlights
+## Hands on
 
-### Encrypted backups that travel on a USB drive
+This is the part that causes the most headaches in a multi-user system. Try it: two screens, one
+record.
 
-Backups are taken while the system is running (`VACUUM INTO`) and, when a password is set, they are
-encrypted with **AES-256-GCM**: a key derived with `scrypt`, a random salt and IV, and a marker at
-the start to recognize the file. Restoring happens in two steps: the app validates the backup,
-schedules the swap and only replaces the database on the next startup, keeping a copy of the old one.
+<ConflictDemo />
 
-```js title="app/lib/backup.js"
-function cifrar(dados, senha) {
-  const sal = crypto.randomBytes(16);
-  const iv = crypto.randomBytes(12);
-  const chave = crypto.scryptSync(senha, sal, 32);
-  const c = crypto.createCipheriv("aes-256-gcm", chave, iv);
-  const corpo = Buffer.concat([c.update(dados), c.final()]);
-  return Buffer.concat([MARCA, sal, iv, c.getAuthTag(), corpo]);
-}
-```
+## Details I'm proud of
 
-### Two people editing the same record
+### The conflict, in the real code
 
-The screen sends the version it loaded. If someone else saved in the meantime, the server answers
-**409** saying who and when. On the client, only the changed fields are sent: if each person edited
-a different field, both changes are kept.
+The screen sends the version it loaded. If someone else saved afterwards, the server answers **409**
+with the name and time. In the browser, only the changed fields are sent, so if each person edited a
+different field, both changes stay. (The code is in Portuguese on purpose: it's made by and for a
+Brazilian school office.)
 
 ```js title="app/server.js"
 function conferirVersao(atual, b, u) {
@@ -108,50 +163,63 @@ function conferirVersao(atual, b, u) {
 }
 ```
 
-The codebase is written in Portuguese on purpose: it's maintained by and for a Brazilian school
-office.
+### An encrypted backup that fits in your pocket
+
+The backup runs with the system open (`VACUUM INTO`) and, with a password set, comes out encrypted
+with **AES-256-GCM**: a key derived with `scrypt`, a random salt and IV, and a marker at the start to
+recognize the file. Restoring takes two steps: validate, schedule, and only swap the database on the
+next startup, keeping a copy of the old one.
+
+```js title="app/lib/backup.js"
+function cifrar(dados, senha) {
+  const sal = crypto.randomBytes(16);
+  const iv = crypto.randomBytes(12);
+  const chave = crypto.scryptSync(senha, sal, 32);
+  const c = crypto.createCipheriv("aes-256-gcm", chave, iv);
+  const corpo = Buffer.concat([c.update(dados), c.final()]);
+  return Buffer.concat([MARCA, sal, iv, c.getAuthTag(), corpo]);
+}
+```
 
 ### What else protects the data
 
-- **Per-person login** with roles (admin and apprentice), a forced password change on first login,
-  a server-enforced screen lock and a Content Security Policy.
-- **Sessions stored in the database** (only the token hash): restarting the server logs nobody out.
-  If it goes down, the screen shows an "offline" banner and **what was typed is kept** as a
-  recoverable draft.
-- **Privacy (LGPD)**: a log of who opened each student record, an export of everything stored about
-  a student, and disposal that anonymizes former students while keeping the statistics.
-- **Real data never reaches Git**: templates are scrubbed by a script before any commit, and every
-  test runs against a demo with fictional data.
+- **Per-person login** with roles, a forced password change on first login, a server-enforced screen
+  lock and a Content Security Policy.
+- **Sessions in the database** (only the token hash): restarting the server logs nobody out. If it
+  goes down, an "offline" banner shows up and **whatever was typed becomes a recoverable draft**.
+- **Privacy (LGPD)**: a log of who opened each record, an export of everything about a student, and
+  disposal that anonymizes former students while keeping the statistics.
+- **Real data never reaches Git**: templates are scrubbed by a script before any commit, and tests
+  run against a demo with fictional data.
 
-## Results and impact
+## Did it work?
 
-- **Used by the whole school office.** Tasks that used to take hours or even days, such as issuing
-  school transcripts, tracking missing documents and building organization spreadsheets, now take a
-  few minutes. That gain is what the team reports, not a formal measurement yet.
-- Version **5.8.x**, continuously evolving, with about **875 KB of JavaScript** written without a
-  framework.
-- Measured with a demo of ~530 fictional students: the API answers in **under 30 ms** and no screen
-  takes more than **0.4 s**. Lists that reached 30,000 pixels in height dropped to about 6,000 with
-  progressive loading.
-- A home-grown test suite takes the server down for real, simulates two people editing at once,
-  restores backups and checks all 30 screens of the app.
+<Stats
+  items={[
+    { value: "100%", label: "of the office using it day to day" },
+    { value: "< 30 ms", label: "API response, measured with ~530 fictional students" },
+    { value: "0.4 s", label: "is the most any screen takes to open" },
+  ]}
+/>
 
-## What I'd do differently and next steps
+Tasks like issuing school transcripts, tracking missing documents and building organization
+spreadsheets, which took hours or days, now take a few minutes. That's still what the team reports,
+not a formal measurement. The system is on version **5.8.x**, with about **875 KB of JavaScript** and
+no framework, plus a home-grown test suite that takes the server down for real, simulates two people
+editing at once, restores backups and checks all 30 screens.
 
-**I'd run the pilot first.** I built four stages before a single module was running on real data.
-Today I'd start with **one module in a two-week pilot**, because that's what proves value and earns
-the trust of whoever decides. Without a pilot, the rest is just code.
+## If I did it again
 
-Next steps, in this order:
+**I'd run a pilot first.** I built four stages before a single module ran on real data. Today I'd
+start with **one module in a two-week pilot**: that's what proves value and earns the trust of
+whoever decides.
 
-1. **Measure the time** each task takes before and after, to replace the team's account with
-   numbers.
-2. Keep evolving from what the office uses most, one module at a time.
+Next steps: **measure the time** each task takes before and after, to turn the team's account into
+numbers, and keep evolving from what the office uses most.
 
-And what I decided **not** to do: rewrite it in React (months lost, plus a build step and
-dependencies), move it to the cloud (minors' data on the internet multiplies the responsibility) and
-automate bulk WhatsApp messages (the official API is paid, and unofficial ones get the school's
-number banned).
+And what I decided **not** to do: rewrite it in React (months lost to gain a build step and
+dependencies), move it to the cloud (minors' data on the internet) and automate bulk WhatsApp
+messages (the official API is paid, and unofficial ones get the school's number banned).
 
 ## Links
 

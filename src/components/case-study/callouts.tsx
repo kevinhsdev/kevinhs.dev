@@ -10,6 +10,23 @@ export function Tldr({ children }: { children: ReactNode }) {
   );
 }
 
+/** The headline numbers of a result, big. */
+export function Stats({ items }: { items: { value: string; label: string }[] }) {
+  return (
+    <dl className="my-8 grid gap-3 sm:grid-cols-3">
+      {items.map((item) => (
+        <div
+          key={item.label}
+          className="flex flex-col-reverse gap-1 rounded-3xl border border-border bg-surface p-5"
+        >
+          <dt className="text-sm leading-snug text-muted">{item.label}</dt>
+          <dd className="font-display text-5xl text-accent">{item.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
 /** Marks text Kevin still has to confirm; styled like every other TODO(kevin). */
 export function Review({ children }: { children: ReactNode }) {
   return (

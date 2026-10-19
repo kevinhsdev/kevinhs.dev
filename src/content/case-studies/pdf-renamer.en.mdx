@@ -1,70 +1,144 @@
 <Tldr>
-  A document classifier that runs in the browser and **tripled the school office's capacity**: from
-  ~100 to ~300 documents a day. Processing a class went from 3 days to 1 at most.
+  I built a tool that reads scanned PDFs and suggests the right name for each one. Result: the
+  office went from **~100 to ~300 documents a day**, and a class that took 3 days now takes 1 at
+  most.
 </Tldr>
 
-## Context and problem
+## The problem
 
-Students' digital records arrive as scanned PDFs with names like `scan_0412.pdf`. For each one the
-routine was the same: **open it, read it, figure out the type, type the standard name, pick the
-student's folder and save**. A class has about **200 documents**, so organizing a whole class took
-**3 days**.
+Picture opening a PDF called `scan_0412.pdf`, reading until you figure out it's an ID card, typing
+`RG_2026.pdf`, finding the student's folder and saving. Now do that **200 times**, roughly one class.
+That was **3 days** of work.
 
-Time wasn't the only problem. Hand-typed names drift ("Ficha medica", "FICHA MÉDICA",
-"ficha_saude"), and a file saved in the wrong folder disappears from the student's record.
+And it wasn't just slow. Hand-typed names get messy ("Ficha medica", "FICHA MÉDICA",
+"ficha_saude"), and a file saved in the wrong folder simply vanishes from the student's record.
 
-## My role
+<BeforeAfter
+  before={{
+    label: "Before",
+    time: "3 days",
+    steps: [
+      "Open the scanned PDF",
+      "Read until you know what document it is",
+      "Type the standard name (and hope there's no typo)",
+      "Find the student's folder in Windows",
+      "Save, close and repeat ~200 times",
+    ],
+  }}
+  after={{
+    label: "After",
+    time: "1 day max",
+    steps: [
+      "Drop the batch of PDFs into the tool",
+      "Check the suggested name (or pick from the list)",
+      "Confirm: the file goes straight to the right folder",
+    ],
+  }}
+/>
 
-Sole author: I spotted the bottleneck while working in the office myself, designed the flow, built
-the tool and followed its adoption. The team **uses it every day**.
+## Where I come in
 
-## Constraints
+I work in that office, so I felt the problem first-hand. I did it all on my own: spotted the
+bottleneck, designed the flow, wrote the code and followed how it was used. Today the team uses it
+**every day**.
 
-- **No software installs**: it had to run in the browser on the school's PCs.
-- **Local files**: records live in Windows folders, not on a server.
-- **Scanned documents**: many PDFs have no searchable text, just the image.
-- **Non-developer users**: document types and rules vary by department, so adjusting them couldn't
-  depend on me.
+## The rules of the game
 
-## Technical decisions and trade-offs
+No easy way out here. I had four limits to respect:
 
-| Decision                                                             | Alternative                     | Why                                                                                                    |
-| -------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Weighted keyword rules** in an editable dictionary                 | A machine-learning model        | There was no labeled data to train on. Rules are explainable, and the office adjusts them from the UI. |
-| Read the **PDF's text first**, OCR only when there's none            | OCR every document              | Digital PDFs are classified instantly; slower OCR is reserved for scans.                               |
-| Read only the **first 2 pages**                                      | The whole document              | The type is almost always in the header, and in a batch every second counts.                           |
-| A **minimum confidence threshold**                                   | Always suggest some type        | When the score is low, the tool asks instead of being confidently wrong.                               |
-| **File System Access API** writes straight into the student's folder | Download and move files by hand | Removes two steps per document. Firefox falls back to a regular download.                              |
-| Remember the folder with **IndexedDB**                               | Pick the folder every time      | The folder permission survives between sessions.                                                       |
+- **No installing software**: it had to run in the school computers' browser.
+- **Files are local**: student records live in Windows folders, not on a server.
+- **Lots of PDFs are just images**: scanned, with no searchable text.
+- **The users don't code**: document types change by department, so tuning it couldn't depend on me.
 
-## Architecture
+## Tough calls
+
+Every tool is a pile of decisions. Here are the ones that mattered most. Try guessing my pick
+before you see the answer.
+
+<Decision
+  question="How do you tell what kind of document each PDF is?"
+  options={[
+    {
+      label: "Train a machine learning model",
+      note: "Sounds modern, but it needs thousands of labelled documents. I had none.",
+    },
+    {
+      label: "Weighted keyword rules",
+      note: "Explainable, tunable by the office itself, and works from day one.",
+    },
+  ]}
+  pick={1}
+  why="With no labelled data to train on, weighted rules are the honest choice. Every suggestion can be explained: 'found REGISTRO GERAL, +3'. The team edits the keywords in the interface, without me touching the code."
+/>
+
+<Decision
+  question="OCR (reading text from images) is slow. When should it run?"
+  options={[
+    {
+      label: "On every document, just in case",
+      note: "Simple, but it would slow the whole batch.",
+    },
+    {
+      label: "Only when the PDF has no text",
+      note: "Digital PDFs are classified instantly; OCR is only for scans.",
+    },
+  ]}
+  pick={1}
+  why="I first try the text the PDF already has. Only if there's nothing do I call OCR. And I read just the first 2 pages, because the type is almost always in the header, and in a batch every second counts."
+/>
+
+<Decision
+  question="And when the tool isn't sure?"
+  options={[
+    { label: "Always suggest the top-scoring type", note: "Fast, but wrong with full confidence." },
+    {
+      label: "Require a minimum score",
+      note: "Below the threshold, it asks instead of guessing.",
+    },
+  ]}
+  pick={1}
+  why="Being confidently wrong is worse than asking. A wrong name hides the document; a question costs two seconds."
+/>
+
+Two smaller choices that still make a daily difference: the **File System Access API** saves
+straight into the student's folder (Firefox falls back to a normal download), and **IndexedDB**
+remembers the chosen folder, so nobody has to find it again every session.
+
+## How it works inside
 
 <Diagram
-  label="One document's journey"
+  label="A document's journey"
   flow={[
     { title: "Batch of PDFs", detail: "drag and drop; queue with progress" },
-    { title: "PDF.js", detail: "renders and extracts the text" },
+    { title: "PDF.js", detail: "shows the document and extracts its text" },
     { title: "Classifier", detail: "rules + editable dictionary" },
     { title: "Suggested name", detail: "type + year, standardized" },
-    { title: "Student's folder", detail: "direct write, duplicate check" },
+    { title: "Student's folder", detail: "direct write, checks duplicates" },
   ]}
-  asideLabel="Support"
+  asideLabel="Behind the scenes"
   aside={[
-    { title: "OCR (Tesseract.js)", detail: "only for PDFs without a text layer" },
+    { title: "OCR (Tesseract.js)", detail: "only for PDFs without text" },
     { title: "IndexedDB and localStorage", detail: "folder, profiles and settings" },
     { title: "CSV history", detail: "everything that was renamed" },
   ]}
 />
 
-## Implementation highlights
+## Hands on
 
-### A classifier you can explain
+Enough reading: play with a simplified version of the classifier. Notice the **short "RG"** (Brazil's
+ID card): it only counts as a whole word, otherwise it would match inside other words.
 
-The text is normalized (accents stripped, upper case) and each document type adds up the weights of
-the keywords it finds. **Short terms must match a whole word**, so "RG" (Brazil's ID card) isn't
-found inside another word. The winning type is only suggested above the threshold.
+<ClassifierDemo />
 
-```js title="js/script.js (trimmed)"
+## Details I'm proud of
+
+### The classifier fits on one screen
+
+The text is normalized (no accents, all caps), each type adds up the weights of the words it found,
+and the winner is only suggested if it passes the threshold. That's it. No magic.
+
+```js title="js/script.js (abridged)"
 function scoreKeyword(text, kw) {
   // termos curtos exigem palavra inteira (evita "RG" casar dentro de outra palavra)
   if (kw.length <= 3) return new RegExp("\\b" + kw + "\\b").test(text);
@@ -87,35 +161,39 @@ function classify(text) {
 }
 ```
 
-The built-in rules live alongside the ones the team creates in the UI: a department adds a keyword
-with a weight and it takes effect immediately, without me touching the code.
+The default rules live alongside the ones the team creates: a department adds a word with a weight
+and it applies right away.
 
-### Built for daily use
+### Built for people who use it all day
 
-- **Duplicates**: if the name already exists in the folder, the tool asks what to do and suggests a
-  free numbered name.
-- **Keyboard**: shortcuts to confirm, skip and move on, so hands never leave the keyboard mid-batch.
-- **Exportable CSV history** of everything that was renamed.
+- **Duplicates**: if the name already exists in the folder, the tool asks and suggests a free number.
+- **Keyboard**: shortcuts to confirm, skip and navigate, without leaving the keyboard mid-batch.
+- **CSV history** of everything that was renamed.
 
-### Reading with AI
+### And there's AI too
 
-In the version the office uses, the whole PDF is sent to the **Anthropic API (Claude)**, which reads
-the document and suggests the name. When there's no suggestion, the person picks the type from a
-ready-made list, and the file stays open in the viewer to be checked. The public repository shows
-classification with OCR and rules; the API integration isn't in it.
+In the version the office uses, the whole PDF goes to the **Anthropic API (Claude)**, which reads the
+document and suggests the name. If there's no suggestion, the person picks the type from a list and
+the file stays open to check. The public repository shows the OCR-and-rules version; the API
+integration isn't in it.
 
-## Results and impact
+## Did it work?
 
-- **3× more documents a day**: from ~100 to ~300.
-- **A class of ~200 documents went from 3 days to 1 at most.**
-- Standard names and files in the right folder, which **reduced filing errors** across 545
-  students' records.
+<Stats
+  items={[
+    { value: "3×", label: "more documents per day (from ~100 to ~300)" },
+    { value: "3 → 1", label: "days to organize a class of ~200 documents" },
+    { value: "545", label: "student records with standard names, in the right folder" },
+  ]}
+/>
 
-## What I'd do differently and next steps
+Fewer lost files, fewer crooked names, and a team that stopped dreading re-enrollment season.
 
-`script.js` holds about a thousand lines in one file; I'd split it into modules (classifier, files,
-viewer). I'd also build a set of fictional PDFs to **measure the classifier's accuracy** on every
-rule change instead of checking by hand.
+## If I did it again
+
+`script.js` has about a thousand lines in one file. It works, but I'd split it into modules
+(classifier, files, viewer). And I'd build a set of fake PDFs to **measure the hit rate** after every
+rule change, instead of eyeballing it.
 
 ## Links
 
