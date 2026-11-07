@@ -1,0 +1,58 @@
+/* The verbatim components in the site palette: only their variables and a few overrides. */
+
+/* Card Fan: borders, arrows and dots from the foreground token, in either theme. */
+.about-fan.cf-root[data-theme] {
+  --cf-card-border: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --cf-card-shadow: 0 15px 35px color-mix(in srgb, var(--background) 60%, #000 40%);
+  --cf-arrow-border: var(--border);
+  --cf-arrow-border-hover: var(--accent);
+  --cf-arrow-bg: color-mix(in srgb, var(--surface) 80%, transparent);
+  --cf-arrow-color: var(--muted);
+  --cf-arrow-color-hover: var(--accent);
+  --cf-arrow-ring: color-mix(in srgb, var(--accent) 12%, transparent);
+  --cf-dot: color-mix(in srgb, var(--foreground) 18%, transparent);
+  --cf-dot-active: var(--accent);
+}
+
+/* Holo Card: the site's blues and surface. */
+.about .about-holo.hc {
+  --hc-accent: var(--accent);
+  --hc-accent-text: var(--accent-strong);
+  --hc-border: var(--border);
+  --hc-fg: var(--foreground);
+  --hc-muted: var(--muted);
+}
+
+/* Interactive Selector: rounded cards with a token border, accent when open. */
+.about-events.isel {
+  max-width: none;
+}
+.about-events .isel__list {
+  gap: 10px;
+  height: 520px;
+}
+.about-events .isel__option {
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.about-events .isel__option[aria-checked="true"] {
+  border-color: var(--accent);
+}
+@container (max-width: 559.98px) {
+  .about-events .isel__list {
+    height: 600px;
+  }
+}
+@media (hover: hover) {
+  .about-events .isel__option[aria-checked="false"]:hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  }
+}
+/* No icons for events: drop the empty circle. */
+.about-events .isel__icon {
+  display: none;
+}
+/* The fan's outer cards spill past the screen on phones. */
+.about-photos {
+  overflow-x: clip;
+}

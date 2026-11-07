@@ -1,0 +1,30 @@
+/* The AI Prompt Box as a plain message field: site palette, no AI-chat extras. */
+.contact-box .apb-root {
+  --apb-bg: color-mix(in srgb, var(--background) 55%, transparent);
+  --apb-border: color-mix(in srgb, var(--foreground) 14%, transparent);
+  --apb-text: var(--foreground);
+  --apb-placeholder: var(--muted);
+  --apb-icon: var(--muted);
+  --apb-icon-hover: var(--foreground);
+  --apb-busy: var(--accent);
+  --apb-divider: var(--accent);
+  --apb-button: var(--accent);
+  --apb-button-icon: var(--accent-contrast);
+  --apb-tip-bg: var(--surface);
+  --apb-tip-border: var(--border);
+  --apb-tip-text: var(--foreground);
+  --apb-ring: var(--accent);
+  width: 100%;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+/* modes, clip and attachments are for a chat, not a message */
+.contact-box .apb-tools,
+.contact-box .apb-files {
+  display: none;
+}
+/* with the box empty the round button would be a (fake) microphone: inert until there is text */
+.contact-box .apb-send[data-state="voice"] {
+  opacity: 0.35;
+  pointer-events: none;
+}

@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "title": "Kevin Henrique · Engenharia de Software",
+    "description": "Estudante de Engenharia de Software buscando estágio em backend (Java/Spring), DevOps/Cloud e IA aplicada. Construo software que uma equipe real usa todos os dias."
+  },
+  "nav": {
+    "home": "Início",
+    "journey": "Trajetória",
+    "projects": "Projetos",
+    "skills": "Habilidades",
+    "contact": "Contato",
+    "about": "Sobre",
+    "skip": "Pular para o conteúdo"
+  },
+  "menu": {
+    "open": "Abrir menu",
+    "close": "Fechar menu",
+    "navigation": "Navegação",
+    "label": "Menu"
+  },
+  "theme": {
+    "toggle": "Alternar tema claro/escuro"
+  },
+  "locale": {
+    "switch": "Ver em inglês",
+    "short": "EN"
+  },
+  "cta": {
+    "downloadCv": "Baixar CV",
+    "downloadCvLang": "Baixar CV ({lang})",
+    "linkedin": "LinkedIn",
+    "instagram": "Instagram",
+    "github": "GitHub",
+    "copyEmail": "Copiar e-mail",
+    "emailCopied": "E-mail copiado",
+    "emailCopyFailed": "Não consegui copiar. O e-mail é {email}",
+    "dock": "Atalhos de contato"
+  },
+  "hero": {
+    "role1": "Engenharia de Software",
+    "role2": "Backend · Cloud · IA aplicada",
+    "hello": "Olá, eu sou",
+    "cargo": "Estudante de<br></br>Engenharia de Software",
+    "links": "Redes e contato",
+    "availability": "remoto, híbrido ou presencial",
+    "numbers": "Números reais dos projetos",
+    "bar": {
+      "group": "Agentes montando a página",
+      "scanning": "Escaneando a página…",
+      "agents": "agentes",
+      "layers": "camadas",
+      "builtBy": "Montada por",
+      "agentsIn": "agentes em",
+      "tour": "Tour",
+      "touring": "Em tour",
+      "speed": "Velocidade dos agentes: {v}×",
+      "redo": "Montar a página de novo"
+    }
+  },
+  "journey": {
+    "title": "Trajetória",
+    "saoPaulo": "São Paulo",
+    "malta": "Malta · St. Julian's",
+    "spain": "Madrid · planejado",
+    "usa": "Cambridge · planejado",
+    "flight": "São Paulo → Malta",
+    "plans": "Próximos destinos",
+    "plansText": "Madrid, pelo espanhol, e Cambridge, nos Estados Unidos, para levar o inglês adiante.",
+    "outro": "O próximo destino é o seu time.",
+    "outroCta": "Vamos conversar",
+    "photos": "Fotos de Malta",
+    "previous": "Foto anterior",
+    "next": "Próxima foto",
+    "status": "Foto {i} de {n}",
+    "school": "Onde tudo começou",
+    "schoolYears": "12 anos como aluno",
+    "present": "hoje"
+  },
+  "projects": {
+    "title": "Projetos",
+    "featured": "Em destaque",
+    "other": "Outros projetos",
+    "open": "Ver projeto",
+    "repo": "Código",
+    "demo": "Demo",
+    "privateCode": "Código interno (sistema da escola)",
+    "status": {
+      "in-use": "Em uso diário",
+      "live": "No ar",
+      "evolving": "Em evolução contínua",
+      "in-development": "Em desenvolvimento",
+      "academic": "Projeto acadêmico"
+    }
+  },
+  "skills": {
+    "title": "Habilidades",
+    "daily": "O que uso no dia a dia",
+    "tiers": {
+      "daily": "Uso no dia a dia",
+      "experienced": "Tenho experiência",
+      "learning": "Estudando agora",
+      "concepts": "Conceitos"
+    }
+  },
+  "contact": {
+    "title": "Vamos conversar",
+    "intro": "Procuro estágio em backend, DevOps/Cloud ou IA aplicada. Remoto, híbrido ou presencial, no Brasil ou no exterior. O caminho mais rápido é o e-mail.",
+    "orForm": "Ou mande uma mensagem por aqui",
+    "name": "Nome",
+    "email": "Seu e-mail",
+    "message": "Mensagem",
+    "placeholder": "Escreva sua mensagem…",
+    "send": "Enviar",
+    "sending": "Enviando…",
+    "sent": "Mensagem enviada. Respondo em breve.",
+    "invalid": "Confira os campos: nome, e-mail válido e uma mensagem de pelo menos 10 caracteres.",
+    "unconfigured": "O envio direto não está configurado. Abrindo seu app de e-mail…",
+    "failed": "Não foi possível enviar. Abrindo seu app de e-mail…",
+    "honeypot": "Deixe este campo em branco"
+  },
+  "project": {
+    "back": "Todos os projetos",
+    "problem": "O problema",
+    "built": "O que construí",
+    "metrics": "Números",
+    "stack": "Stack",
+    "links": "Links",
+    "video": "Vídeo de apresentação do {title}",
+    "videoNote": "em português",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "role": "Papel",
+    "year": "Ano",
+    "team": "Equipe de {count}",
+    "solo": "Individual"
+  },
+  "about": {
+    "title": "Sobre mim",
+    "description": "Quem é Kevin Henrique: como começou a programar, o que faz hoje e o que gosta fora da tela.",
+    "photos": "Fora da tela",
+    "certificates": "Certificados",
+    "certificatesIntro": "Cursos e certificações concluídos. Clique numa pasta para abrir.",
+    "languages": "Idiomas",
+    "courses": "Cursos",
+    "items": "{n} itens",
+    "events": "Eventos",
+    "eventsIntro": "Meetups e palestras onde fui aprender e conhecer gente da área.",
+    "studying": "Estudando agora",
+    "skills": "Todas as habilidades",
+    "card": "Cartão de visita",
+    "previous": "Anterior",
+    "next": "Próximo"
+  },
+  "footer": {
+    "rights": "© {year} Kevin Henrique da Silva",
+    "top": "Voltar ao topo"
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "title": "Kevin Henrique · Software Engineering",
+    "description": "Software Engineering student looking for an internship in backend (Java/Spring), DevOps/Cloud and applied AI. I build software a real team uses every day."
+  },
+  "nav": {
+    "home": "Home",
+    "journey": "Journey",
+    "projects": "Projects",
+    "skills": "Skills",
+    "contact": "Contact",
+    "about": "About",
+    "skip": "Skip to content"
+  },
+  "menu": {
+    "open": "Open menu",
+    "close": "Close menu",
+    "navigation": "Navigation",
+    "label": "Menu"
+  },
+  "theme": {
+    "toggle": "Toggle light/dark theme"
+  },
+  "locale": {
+    "switch": "View in Portuguese",
+    "short": "PT"
+  },
+  "cta": {
+    "downloadCv": "Download CV",
+    "downloadCvLang": "Download CV ({lang})",
+    "linkedin": "LinkedIn",
+    "instagram": "Instagram",
+    "github": "GitHub",
+    "copyEmail": "Copy e-mail",
+    "emailCopied": "E-mail copied",
+    "emailCopyFailed": "Couldn't copy. The e-mail is {email}",
+    "dock": "Contact shortcuts"
+  },
+  "hero": {
+    "role1": "Software Engineering",
+    "role2": "Backend · Cloud · Applied AI",
+    "hello": "Hi, I'm",
+    "cargo": "Software Engineering<br></br>student",
+    "links": "Socials and contact",
+    "availability": "remote, hybrid or on-site",
+    "numbers": "Real project numbers",
+    "bar": {
+      "group": "Agents building the page",
+      "scanning": "Scanning the page…",
+      "agents": "agents",
+      "layers": "layers",
+      "builtBy": "Built by",
+      "agentsIn": "agents in",
+      "tour": "Tour",
+      "touring": "Touring",
+      "speed": "Agent speed: {v}×",
+      "redo": "Build the page again"
+    }
+  },
+  "journey": {
+    "title": "Journey",
+    "saoPaulo": "São Paulo",
+    "malta": "Malta · St. Julian's",
+    "spain": "Madrid · planned",
+    "usa": "Cambridge · planned",
+    "flight": "São Paulo → Malta",
+    "plans": "Next destinations",
+    "plansText": "Madrid, for Spanish, and Cambridge, in the United States, to take my English further.",
+    "outro": "The next destination is your team.",
+    "outroCta": "Let's talk",
+    "photos": "Photos from Malta",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "status": "Photo {i} of {n}",
+    "school": "Where it all started",
+    "schoolYears": "12 years as a student",
+    "present": "present"
+  },
+  "projects": {
+    "title": "Projects",
+    "featured": "Featured",
+    "other": "Other projects",
+    "open": "View project",
+    "repo": "Code",
+    "demo": "Demo",
+    "privateCode": "Internal code (school system)",
+    "status": {
+      "in-use": "In daily use",
+      "live": "Live",
+      "evolving": "Continuously evolving",
+      "in-development": "In development",
+      "academic": "Academic project"
+    }
+  },
+  "skills": {
+    "title": "Skills",
+    "daily": "What I use every day",
+    "tiers": {
+      "daily": "Daily use",
+      "experienced": "Experienced",
+      "learning": "Learning now",
+      "concepts": "Concepts"
+    }
+  },
+  "contact": {
+    "title": "Let's talk",
+    "intro": "I'm looking for an internship in backend, DevOps/Cloud or applied AI. Remote, hybrid or on-site, in Brazil or abroad. E-mail is the fastest way.",
+    "orForm": "Or send a message here",
+    "name": "Name",
+    "email": "Your e-mail",
+    "message": "Message",
+    "placeholder": "Write your message…",
+    "send": "Send",
+    "sending": "Sending…",
+    "sent": "Message sent. I'll reply soon.",
+    "invalid": "Check the fields: name, a valid e-mail and a message of at least 10 characters.",
+    "unconfigured": "Direct sending isn't set up. Opening your e-mail app…",
+    "failed": "Couldn't send. Opening your e-mail app…",
+    "honeypot": "Leave this field empty"
+  },
+  "project": {
+    "back": "All projects",
+    "problem": "The problem",
+    "built": "What I built",
+    "metrics": "Numbers",
+    "stack": "Stack",
+    "links": "Links",
+    "video": "{title} presentation video",
+    "videoNote": "in Portuguese",
+    "previous": "Previous",
+    "next": "Next",
+    "role": "Role",
+    "year": "Year",
+    "team": "Team of {count}",
+    "solo": "Solo"
+  },
+  "about": {
+    "title": "About me",
+    "description": "Who Kevin Henrique is: how he started coding, what he does today and what he enjoys off-screen.",
+    "photos": "Off-screen",
+    "certificates": "Certificates",
+    "certificatesIntro": "Finished courses and certifications. Click a folder to open it.",
+    "languages": "Languages",
+    "courses": "Courses",
+    "items": "{n} items",
+    "events": "Events",
+    "eventsIntro": "Meetups and talks where I went to learn and meet people in the field.",
+    "studying": "Learning now",
+    "skills": "All skills",
+    "card": "Business card",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "footer": {
+    "rights": "© {year} Kevin Henrique da Silva",
+    "top": "Back to top"
+  }
+}

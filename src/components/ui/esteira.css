@@ -1,0 +1,53 @@
+/* Esteira: the prompt's layout, in the site palette (surface cards, border tokens). */
+.esteira {
+  position: relative;
+  display: grid;
+  gap: 22px;
+  padding: 8px 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.esteira__row {
+  display: flex;
+  gap: 22px;
+  width: max-content;
+  will-change: transform;
+}
+.esteira__slot {
+  flex: none;
+  display: flex;
+}
+.esteira-card {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 420px;
+  height: 270px;
+  padding: 26px 28px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--surface), var(--background));
+  transition:
+    border-color 0.2s var(--ease-out-quint),
+    transform 0.2s var(--ease-out-quint),
+    box-shadow 0.2s var(--ease-out-quint);
+  content-visibility: auto;
+  contain-intrinsic-size: 420px 270px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .esteira-card:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+    transform: translateY(-4px);
+    box-shadow: 0 14px 34px rgb(0 0 0 / 0.25);
+  }
+}
+@media (max-width: 900px) {
+  .esteira-card {
+    width: 300px;
+    height: 210px;
+    padding: 20px 22px;
+    contain-intrinsic-size: 300px 210px;
+  }
+}

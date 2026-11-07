@@ -1,0 +1,283 @@
+/*
+ * The globe journey: one pinned screen. The globe sits behind, the two scenes (SP photos,
+ * Malta polaroids) open over it through an iris, the titles sit bottom-left on their own clock.
+ */
+.jr {
+  --cx: 62%;
+  --pad: clamp(1.25rem, 5vw, 4.5rem);
+  --g: min(78svh, 46vw);
+  position: relative;
+  height: 100svh;
+  overflow: clip;
+  background: var(--background);
+  isolation: isolate;
+}
+
+/* Drawn at the zoomed-in size (2.4×) and scaled down by render(s), so the zoom stays crisp. */
+.jr-globe {
+  position: absolute;
+  top: 50%;
+  left: var(--cx);
+  width: calc(var(--g) * 2.4);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  scale: 0.25;
+  will-change: scale;
+}
+.jg-root,
+.jg-stage {
+  position: absolute;
+  inset: 0;
+}
+.jg-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+/* labels: counter-scaled so they keep their size at any zoom */
+.jg-label {
+  display: none;
+  position: absolute;
+  margin-bottom: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  transform-origin: 50% 100%;
+  scale: calc(2.4 / var(--gz, 1));
+  transition:
+    opacity 0.6s,
+    filter 0.6s;
+}
+/* plans and outro: Spain sits right next to Malta, so Malta's label steps aside */
+.jr:is([data-chapter="plans"], [data-chapter="outro"]) .jg-label[data-id="malta"] {
+  visibility: hidden;
+}
+@supports (position-anchor: --a) {
+  .jg-label {
+    display: block;
+    bottom: anchor(top);
+    left: anchor(center);
+    translate: -50% 0;
+  }
+}
+
+/* Scenes: full screen, opened by clip-path from render(s). */
+.jr-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  visibility: hidden;
+  clip-path: circle(0% at var(--cx) 50%);
+  background: var(--surface);
+}
+
+.jr-photos {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.jr-photo {
+  position: absolute;
+  width: min(15vw, 26svh);
+  transition:
+    scale 0.7s var(--ease-out-quint),
+    opacity 0.5s ease,
+    filter 0.5s ease;
+  opacity: 0.55;
+  filter: grayscale(0.7);
+}
+.jr-photo[data-active="true"] {
+  z-index: 1;
+  opacity: 1;
+  filter: none;
+  scale: 1.06;
+}
+.jr-photo[data-i="0"] {
+  top: 9%;
+  left: 44%;
+  rotate: -4deg;
+}
+.jr-photo[data-i="1"] {
+  top: 21%;
+  left: 66%;
+  rotate: 3deg;
+}
+.jr-photo[data-i="2"] {
+  top: 50%;
+  left: 53%;
+  rotate: -1.5deg;
+}
+.jr-photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 18px 50px -20px rgb(0 0 0 / 0.55);
+}
+.jr-pin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font: 500 0.75rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.jr-pin i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* bottom inset keeps the carousel's arrows clear of the CTA dock */
+.jr-polaroid {
+  position: absolute;
+  inset: 6svh 0 13svh 38%;
+}
+
+/* The polaroids carry their own handwritten caption; the chapter title says the rest. */
+.jr-polaroid .pl-cap {
+  visibility: hidden;
+}
+
+/* Titles: bottom-left, above the scenes. */
+.jr-titles {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  bottom: 14svh;
+  width: min(34rem, 38vw);
+  pointer-events: none;
+}
+.jr-title {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  visibility: hidden;
+}
+.jr-kicker {
+  margin: 0 0 0.75rem;
+  font: 500 0.8rem/1.2 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.jr-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5.2vw, 5.4rem);
+  font-weight: 400;
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.jr-line {
+  margin: 1rem 0 0;
+  max-width: 28rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.jr-cta {
+  display: inline-flex;
+  align-items: center;
+  height: 3rem;
+  margin-top: 1.5rem;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 600;
+  pointer-events: auto;
+}
+
+/* Phone: globe centered at 90vw, photos in a row up top, titles at the bottom. */
+@media (max-width: 760px) {
+  .jr {
+    --cx: 50%;
+    --g: 90vw;
+  }
+  /* above the CTA dock */
+  .jr-titles {
+    width: auto;
+    right: var(--pad);
+    bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+  .jr-heading {
+    font-size: clamp(2.1rem, 10vw, 2.9rem);
+  }
+  .jr-line {
+    font-size: 0.95rem;
+  }
+  .jr-photo {
+    top: 12svh !important;
+    width: 28vw;
+  }
+  .jr-photo[data-i="0"] {
+    left: 5vw;
+  }
+  .jr-photo[data-i="1"] {
+    left: 36vw;
+  }
+  .jr-photo[data-i="2"] {
+    left: 67vw;
+  }
+  .jr-pin {
+    font-size: 0.6rem;
+  }
+  .jr-polaroid {
+    inset: 8svh 0 auto;
+    height: 52svh;
+  }
+}
+
+/* Reduced motion: no pin; the chapters stack and every title is shown. */
+.jr[data-static="true"] {
+  height: auto;
+  padding: 12svh var(--pad);
+  display: grid;
+  gap: 4rem;
+}
+.jr[data-static="true"] .jr-globe {
+  position: relative;
+  inset: auto;
+  translate: none;
+  scale: none;
+  width: min(36rem, 90vw);
+  justify-self: center;
+}
+.jr[data-static="true"] .jr-scene {
+  position: relative;
+  inset: auto;
+  visibility: visible;
+  clip-path: none;
+  background: none;
+  min-height: 60svh;
+}
+.jr[data-static="true"] .jr-titles {
+  position: static;
+  width: auto;
+  display: grid;
+  gap: 3rem;
+  order: -1;
+}
+.jr[data-static="true"] .jr-title {
+  position: static;
+  visibility: visible;
+}

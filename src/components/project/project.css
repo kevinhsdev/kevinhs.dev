@@ -1,0 +1,45 @@
+/* Case studies: sections numbered by a counter, so the MDX stays plain markdown. */
+.case-study {
+  counter-reset: section;
+}
+.case-study .case-h2 {
+  counter-increment: section;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 4.5rem 0 1.25rem;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.case-study .case-h2:first-of-type {
+  margin-top: 0;
+}
+.case-study .case-h2::before {
+  content: counter(section, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  translate: 0 -0.2em;
+}
+.case-study :not(pre) > code {
+  border-radius: 0.375rem;
+  background: var(--surface);
+  padding: 0.1em 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+.case-study pre {
+  margin: 1.75rem 0;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+  padding: 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}

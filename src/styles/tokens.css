@@ -1,0 +1,69 @@
+/*
+ * Design tokens. Light is :root, dark is .dark (next-themes puts it on <html>), and
+ * [data-accent="red"] swaps only the accent for the red variant. Shader palettes live
+ * here too and are read at runtime, so a token change recolours every canvas.
+ * tests/unit/contrast.test.ts parses this file and checks WCAG AA.
+ */
+
+:root {
+  --background: #eef2f9;
+  --surface: #ffffff;
+  --foreground: #0a1430;
+  --muted: #4f5b75;
+  --border: #d3dbea;
+  --accent: #1f4fd6;
+  --accent-strong: #1c3a9e;
+  --accent-soft: #d6e4ff;
+  --accent-contrast: #ffffff;
+  --danger: #b91c1c;
+  /* Shader stages are dark islands in both themes. */
+  --nebula-1: #1d4dff;
+  --nebula-2: #4d8dff;
+  --nebula-3: #d6e4ff;
+  --nebula-4: #1c3a9e;
+  --nebula-back: #05070f;
+  --fluxo-light: #ffc4b4;
+  --fluxo-rim: #ff4f45;
+  --fluxo-blue: #3524e8;
+  --fluxo-deep: #0e0e30;
+  --tipos-1: #4d8dff;
+  --tipos-2: #d6e4ff;
+  --tipos-3: #1c3a9e;
+  --tipos-4: #04070f;
+  --stage-ink: #eef2fb;
+  --stage-muted: #c4c8d4;
+}
+
+.dark {
+  --background: #070d1f;
+  --surface: #0e1730;
+  --foreground: #eef2fb;
+  --muted: #8e9ab5;
+  --border: #1c2847;
+  --accent: #4d8dff;
+  --accent-strong: #7aa8ff;
+  --accent-soft: #14244f;
+  --accent-contrast: #070d1f;
+  --danger: #f87171;
+}
+
+[data-accent="red"] {
+  --accent: #c8102e;
+  --accent-strong: #9e0c24;
+  --accent-soft: #fbd9de;
+  --accent-contrast: #ffffff;
+  --nebula-1: #ff1d3d;
+  --nebula-2: #ff4d5e;
+  --nebula-4: #9e1c2a;
+  --fluxo-blue: #e8243a;
+  --tipos-1: #ff4d5e;
+  --tipos-3: #9e1c2a;
+}
+
+.dark[data-accent="red"],
+[data-accent="red"] .dark {
+  --accent: #ff4d5e;
+  --accent-strong: #ff7a87;
+  --accent-soft: #3a1018;
+  --accent-contrast: #070d1f;
+}

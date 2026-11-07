@@ -1,0 +1,130 @@
+/* Filme horizontal: one pinned screen; the track moves sideways with the scroll. */
+.pf {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100svh;
+  overflow: clip;
+  padding: 6.5rem 0 2.5rem;
+}
+.pf-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 clamp(1.25rem, 5vw, 4.5rem) 1.5rem;
+}
+.pf-viewport {
+  flex: 1;
+  min-height: 0;
+}
+.pf-track {
+  display: flex;
+  gap: clamp(1rem, 2.5vw, 2rem);
+  height: 100%;
+  width: max-content;
+  margin: 0;
+  padding: 0 clamp(1.25rem, 5vw, 4.5rem);
+  list-style: none;
+  will-change: transform;
+}
+.pf-panel {
+  width: min(78vw, 72rem);
+  height: 100%;
+}
+.pf-panel--others {
+  width: min(52vw, 40rem);
+}
+.pf-card {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  align-items: center;
+  gap: clamp(1.5rem, 3vw, 3rem);
+  height: 100%;
+  padding: clamp(1rem, 2vw, 1.5rem);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: var(--surface);
+  transition: border-color 0.4s ease;
+}
+.pf-panel[data-active="true"] .pf-card {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.pf-card--others {
+  display: block;
+  overflow-y: auto;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+}
+.pf-visual {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--background);
+}
+.pf-parallax {
+  position: absolute;
+  inset: 0;
+  transform: scale(1.18);
+  will-change: transform;
+}
+.pf-text {
+  padding-right: clamp(0.5rem, 2vw, 1.5rem);
+}
+.pf-bar {
+  height: 2px;
+  margin: 1.5rem clamp(1.25rem, 5vw, 4.5rem) 0;
+  background: var(--border);
+}
+.pf-bar > i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* phone: panels stack the poster over the text */
+@media (max-width: 760px) {
+  .pf {
+    padding: 5.5rem 0 6.5rem; /* the CTA dock sits at the bottom */
+  }
+  .pf-panel,
+  .pf-panel--others {
+    width: 86vw;
+  }
+  .pf-card {
+    grid-template-columns: 1fr;
+    grid-template-rows: 38% minmax(0, 1fr);
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .pf-text {
+    overflow: hidden;
+  }
+  .pf-text h3 {
+    font-size: 2.1rem;
+  }
+  .pf-text strong {
+    font-size: 3rem;
+  }
+  .pf-text p.mt-4 {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+  }
+  .pf-text .mt-8 {
+    margin-top: 0.6rem;
+  }
+}
+
+/* reduced motion: no pin, the track scrolls sideways by hand with snap */
+.pf[data-static="true"] .pf-viewport {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.pf[data-static="true"] .pf-panel {
+  scroll-snap-align: center;
+}
+.pf[data-static="true"] .pf-bar {
+  display: none;
+}
