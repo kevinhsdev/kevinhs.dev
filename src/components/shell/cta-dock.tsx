@@ -1,12 +1,12 @@
 "use client";
 
-import { Check, Copy, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, type ReactNode } from "react";
 import { LiquidGlassDock } from "@/components/ui/liquid-glass-dock";
 import { profile } from "@/content/profile";
-import { InstagramIcon, LinkedInIcon } from "./brand-icons";
-import { useCopyEmail, useCvLabel } from "./ctas";
+import { GitHubIcon, InstagramIcon, LinkedInIcon } from "./brand-icons";
+import { useCvLabel } from "./ctas";
 
 /** The glyph alone on a 64 frame, so the glass reads through; accent on hover. */
 function Glyph({ children }: { children: ReactNode }) {
@@ -29,7 +29,6 @@ function Glyph({ children }: { children: ReactNode }) {
 export function CtaDock({ watch = ["hero", "contact"] }: { watch?: string[] }) {
   const t = useTranslations("cta");
   const cv = useCvLabel();
-  const email = useCopyEmail();
   const [visible, setVisible] = useState(false);
   const key = watch.join(",");
 
@@ -63,6 +62,7 @@ export function CtaDock({ watch = ["hero", "contact"] }: { watch?: string[] }) {
         {
           title: cv.label,
           href: cv.href,
+          download: true,
           icon: (
             <Glyph>
               <Download x={20} y={20} width={24} height={24} />
@@ -90,15 +90,12 @@ export function CtaDock({ watch = ["hero", "contact"] }: { watch?: string[] }) {
           ),
         },
         {
-          title: email.label,
-          onClick: () => void email.copy(),
+          title: t("github"),
+          href: profile.links.github,
+          external: true,
           icon: (
             <Glyph>
-              {email.copied ? (
-                <Check x={20} y={20} width={24} height={24} />
-              ) : (
-                <Copy x={20} y={20} width={24} height={24} />
-              )}
+              <GitHubIcon x={21} y={21} width={22} height={22} />
             </Glyph>
           ),
         },

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import PolaroidLineCarousel from "@/components/ui/polaroid-line-carousel";
+import { useEffect, useMemo, useRef } from "react";
 import type { GalleryPhoto } from "@/content";
 import {
+  distanceKm,
   greatCircle,
   journeyState,
   MALTA,
@@ -17,7 +17,7 @@ import { createPin } from "@/motion/pin";
 import { prefersReduced } from "@/motion/reduced";
 import { scrollToTarget } from "@/motion/smooth";
 import { Title, switcher } from "@/motion/title";
-import { JourneyGlobe, type GlobeView } from "./journey-globe";
+import { JourneyGlobe, type GlobeCard, type GlobeLabel, type GlobeView } from "./journey-globe";
 
 type Photo = Omit<GalleryPhoto, "alt" | "caption"> & { alt: string; caption: string };
 
@@ -27,143 +27,106 @@ export type JourneyData = {
   sp: Photo[];
   malta: Photo[];
   globe: { sp: string; malta: string; spain: string; usa: string };
-  carousel: { label: string; previous: string; next: string; status: string };
 };
 
-/** What the globe draws for a state: the cities, the arcs so far, and the travelling dot. */
-function globeView(st: JourneyState): GlobeView {
-  const markers: GlobeView["markers"] = [
-    { id: "sp", location: SP, size: 0.04 },
-    { id: "malta", location: MALTA, size: 0.04 },
-  ];
-  const arcs: GlobeView["arcs"] = [];
+const SP_MALTA_KM = distanceKm(SP, MALTA);
+
+/** What the globe shows for a state: where it faces, the cities, the arcs so far, the card. */
+function globeView(st: JourneyState, still = false): GlobeView {
   const { spMalta, planned } = st.arc;
-  if (spMalta > 0) {
-    arcs.push({ id: "sp-malta", from: SP, to: MALTA });
-    if (spMalta < 1)
-      markers.push({ id: "plane", location: greatCircle(SP, MALTA, spMalta), size: 0.06 });
-  }
+  const late = st.chapter === "plans" || st.chapter === "outro";
+  const flying = spMalta > 0 && spMalta < 1;
+  const markers: GlobeView["markers"] = [{ at: SP, size: 4, live: true }];
+  if (st.show.malta) markers.push({ at: MALTA, size: 4, live: true });
+  if (flying) markers.push({ at: greatCircle(SP, MALTA, spMalta), size: 5, plane: true });
+  const arcs: GlobeView["arcs"] = [];
+  if (spMalta > 0) arcs.push({ from: SP, to: MALTA, t: spMalta, trail: flying });
   if (planned > 0) {
-    markers.push(
-      { id: "spain", location: SPAIN, size: 0.03 },
-      { id: "usa", location: USA, size: 0.03 },
-    );
-    arcs.push(
-      { id: "malta-spain", from: MALTA, to: SPAIN },
-      { id: "malta-usa", from: MALTA, to: USA },
-    );
+    markers.push({ at: SPAIN, size: 3.5 }, { at: USA, size: 3.5 });
+    arcs.push({ from: MALTA, to: SPAIN, t: planned }, { from: MALTA, to: USA, t: planned });
   }
-  return { phi: st.globe.phi, theta: st.globe.theta, markers, arcs };
+  return {
+    lat: st.globe.lat,
+    lon: st.globe.lon,
+    zoom: st.globe.scale,
+    still,
+    markers,
+    arcs,
+    labels: {
+      sp: true,
+      malta: st.show.malta && !late,
+      spain: planned > 0.6,
+      usa: planned > 0.6,
+    },
+    card: st.card,
+    cardProgress: st.cardProgress,
+    landing: st.landing,
+    km: flying ? SP_MALTA_KM * spMalta : null,
+  };
 }
 
 export function JourneyStage({ data }: { data: JourneyData }) {
   const root = useRef<HTMLElement>(null);
   const view = useRef<GlobeView>(globeView(journeyState(0)));
 
+  // Madrid and Cambridge sit close in the last frames: one label each side, never on top.
+  const labels = useMemo<GlobeLabel[]>(
+    () => [
+      { id: "sp", text: data.globe.sp, at: SP, side: "top" },
+      { id: "malta", text: data.globe.malta, at: MALTA, side: "top" },
+      { id: "spain", text: data.globe.spain, at: SPAIN, side: "right" },
+      { id: "usa", text: data.globe.usa, at: USA, side: "left" },
+    ],
+    [data.globe],
+  );
+  // SP's three photos come out of São Paulo, Malta's six out of Malta (see journeyState.card)
+  const cards = useMemo<GlobeCard[]>(
+    () => [
+      ...data.sp.map((p) => ({ ...p, at: SP })),
+      ...data.malta.map((p) => ({ ...p, at: MALTA })),
+    ],
+    [data.sp, data.malta],
+  );
+
   useEffect(() => {
     const el = root.current;
     if (!el) return;
-    const globe = el.querySelector<HTMLElement>(".jr-globe")!;
-    const scenes = {
-      sp: el.querySelector<HTMLElement>(".jr-scene--sp")!,
-      malta: el.querySelector<HTMLElement>(".jr-scene--malta")!,
-    };
-    const photos = [...el.querySelectorAll<HTMLElement>(".jr-photo")];
 
     if (prefersReduced()) {
       // Reduced motion: no pin; the chapters stack, the globe holds one frame with the arc drawn.
       el.dataset.static = "true";
-      view.current = globeView(journeyState(4.6));
+      view.current = globeView(journeyState(4.6), true);
       return;
     }
 
     const show = switcher(
       [...el.querySelectorAll<HTMLElement>(".jr-title")].map((t) => new Title(t)),
     );
-
     const render = (s: number) => {
       const st = journeyState(s);
       view.current = globeView(st);
-      globe.style.scale = String(st.globe.scale / 2.4);
-      globe.style.setProperty("--gz", String(st.globe.scale));
-      for (const key of ["sp", "malta"] as const) {
-        const on = st.scene === key ? st.iris : 0;
-        scenes[key].style.clipPath = `circle(${on * 75}% at var(--cx) 50%)`;
-        scenes[key].style.visibility = on > 0 ? "visible" : "hidden";
-      }
-      // SP photos: the one the current title is about is lit (titles 1–3 → photos 0–2).
-      const active = st.titleIndex !== null ? st.titleIndex - 1 : -1;
-      photos.forEach((p, i) => (p.dataset.active = String(i === active)));
       el.dataset.chapter = st.chapter;
+      el.style.setProperty("--s", String(s));
       show(st.titleIndex);
     };
-
     const pin = createPin({ el, screens: SCREENS, render });
     return () => pin.kill();
   }, []);
 
-  const statusTpl = data.carousel.status;
   return (
     // The wrapper is React's: ScrollTrigger wraps the pinned section in a spacer div.
     <div>
-      <section ref={root} id="journey" className="jr" aria-labelledby="journey-title">
+      <section ref={root} id="journey" className="jr dark" aria-labelledby="journey-title">
         <h2 id="journey-title" className="sr-only">
           {data.title}
         </h2>
-        <div className="jr-globe">
-          <JourneyGlobe
-            view={view}
-            labels={[
-              { id: "sp", text: data.globe.sp },
-              { id: "malta", text: data.globe.malta },
-              { id: "spain", text: data.globe.spain },
-              { id: "usa", text: data.globe.usa },
-            ]}
-          />
-        </div>
-
-        <div className="jr-scene jr-scene--sp">
-          <ul className="jr-photos">
-            {data.sp.map((p, i) => (
-              <li key={p.id} className="jr-photo" data-i={i} data-active="false">
-                {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size collage tiles */}
-                <img
-                  src={p.src}
-                  alt={p.alt}
-                  width={p.width}
-                  height={p.height}
-                  loading="lazy"
-                  style={{ objectPosition: p.focus }}
-                />
-                <span className="jr-pin">
-                  <i aria-hidden />
-                  {p.caption}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="jr-scene jr-scene--malta">
-          <div className="jr-polaroid">
-            <PolaroidLineCarousel
-              slides={data.malta.map((p) => ({ image: p.src, title: p.caption, alt: p.alt }))}
-              height="100%"
-              autoplay={0}
-              string="var(--muted)"
-              background="transparent"
-              ink="var(--foreground)"
-              ariaLabel={data.carousel.label}
-              labels={{
-                previous: data.carousel.previous,
-                next: data.carousel.next,
-                status: (i, n, title) =>
-                  statusTpl.replace("{i}", String(i)).replace("{n}", String(n)) +
-                  (title ? `: ${title}` : ""),
-              }}
-            />
-          </div>
-        </div>
+        {/* how far through the journey: fills with the scroll (--s, 0..SCREENS) */}
+        <div
+          className="jr-progress"
+          aria-hidden
+          style={{ "--screens": SCREENS } as React.CSSProperties}
+        />
+        <JourneyGlobe view={view} labels={labels} cards={cards} />
 
         <div className="jr-titles">
           {data.titles.map((t, i) => (

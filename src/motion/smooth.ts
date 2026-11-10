@@ -28,8 +28,8 @@ export function stopSmooth() {
 export const getSmooth = () => lenis;
 
 /** Scrolls to an element or y through Lenis when it runs, natively otherwise. */
-export function scrollToTarget(target: HTMLElement | number) {
-  if (lenis) return lenis.scrollTo(target);
+export function scrollToTarget(target: HTMLElement | number, immediate = false) {
+  if (lenis) return lenis.scrollTo(target, { immediate });
   const top = typeof target === "number" ? target : target.getBoundingClientRect().top + scrollY;
-  window.scrollTo({ top, behavior: prefersReduced() ? "auto" : "smooth" });
+  window.scrollTo({ top, behavior: immediate || prefersReduced() ? "auto" : "smooth" });
 }

@@ -4,11 +4,12 @@ import { Check, Copy, Download } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, type ReactNode } from "react";
 import { toast } from "sonner";
+import { MetalButton } from "@/components/ui/mercurio";
 import { profile } from "@/content/profile";
 import type { Locale } from "@/i18n/routing";
 import { cvHref } from "@/lib/ctas";
 import { cn } from "@/lib/utils";
-import { InstagramIcon, LinkedInIcon } from "./brand-icons";
+import { GitHubIcon, InstagramIcon, LinkedInIcon } from "./brand-icons";
 
 /** `compact` shows the icon only; the label stays for screen readers and as a tooltip. */
 type CtaProps = { className?: string; compact?: boolean };
@@ -26,6 +27,16 @@ export function CvButton({ className, compact }: CtaProps) {
       <Download aria-hidden className="size-4" />
       <span className={cn(compact && "sr-only")}>{label}</span>
     </a>
+  );
+}
+
+/** The CV download as a Mercúrio button (the hero's primary CTA). */
+export function MetalCvButton({ className }: { className?: string }) {
+  const { href, label } = useCvLabel();
+  return (
+    <MetalButton href={href} className={className}>
+      {label}
+    </MetalButton>
   );
 }
 
@@ -70,6 +81,18 @@ export function InstagramButton(props: CtaProps) {
       href={profile.links.instagram}
       label={t("instagram")}
       icon={<InstagramIcon className="size-4" />}
+    />
+  );
+}
+
+export function GitHubButton(props: CtaProps) {
+  const t = useTranslations("cta");
+  return (
+    <External
+      {...props}
+      href={profile.links.github}
+      label={t("github")}
+      icon={<GitHubIcon className="size-4" />}
     />
   );
 }

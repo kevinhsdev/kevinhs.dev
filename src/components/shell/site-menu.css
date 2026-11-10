@@ -1,0 +1,402 @@
+/* Full-screen menu: muted photo grid on the left, the sections stacked in the right half. */
+html:has(.sm[open]) {
+  overflow: hidden;
+}
+.sm {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--foreground);
+  background: transparent;
+}
+.sm::backdrop {
+  background: transparent;
+}
+.sm-panel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 1rem;
+  padding: max(1rem, env(safe-area-inset-top)) 1.25rem max(1.25rem, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  /* contour lines, like a topographic map, in the accent */
+  background:
+    repeating-radial-gradient(
+      ellipse 60% 45% at 78% 30%,
+      transparent 0 3.4rem,
+      color-mix(in srgb, var(--accent) 9%, transparent) 3.4rem calc(3.4rem + 1px)
+    ),
+    repeating-radial-gradient(
+      ellipse 50% 60% at 15% 90%,
+      transparent 0 4rem,
+      color-mix(in srgb, var(--accent) 7%, transparent) 4rem calc(4rem + 1px)
+    ),
+    var(--background);
+  animation: sm-in 0.7s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+.sm[data-closing] .sm-panel {
+  animation: sm-out 0.55s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+@keyframes sm-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes sm-out {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+/* top bar: stacked name on the left, toggles and a square close button on the right */
+.sm-top {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+/* the same mark and name as the header, so the menu opens "inside" it */
+.sm-brand {
+  display: inline-flex;
+  gap: 0.6rem;
+  align-items: center;
+  height: 2.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.sm-brand-mark {
+  width: auto;
+  height: 1.1rem;
+  color: var(--accent);
+}
+.sm-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+.sm-toggles {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.15rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+.sm-close {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--background);
+  background: var(--accent);
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+.sm-close:hover {
+  color: var(--background);
+  background: var(--foreground);
+}
+
+.sm-photos {
+  display: none;
+}
+
+/* right half: the sections, a small badge, then where to find me */
+.sm-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1rem, 3.5vh, 2rem);
+  min-height: 0;
+  padding-bottom: clamp(0.5rem, 3vh, 2rem);
+  text-align: center;
+}
+.sm-side nav {
+  margin-top: auto;
+}
+.sm-list {
+  display: grid;
+  justify-items: center;
+}
+.sm-list li {
+  /* each word comes down from an ellipse that opens over it */
+  animation: sm-word 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(0.3s + var(--i) * 0.06s);
+}
+@keyframes sm-word {
+  from {
+    translate: 0 1.25rem;
+    clip-path: ellipse(30% 0% at 50% 0%);
+  }
+  to {
+    clip-path: ellipse(120% 140% at 50% 0%);
+  }
+}
+.sm-link {
+  position: relative;
+  display: inline-block;
+  font-size: clamp(2.6rem, 11vw, 4rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.sm-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 0.2rem;
+  border-radius: 0.25rem;
+}
+/* the word rolls up and a copy in the accent takes its place */
+.sm-roll {
+  display: grid;
+  overflow: hidden;
+  padding-block: 0.04em;
+}
+.sm-roll > span {
+  grid-area: 1 / 1;
+  transition: translate 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.sm-roll > span + span {
+  color: var(--accent);
+  translate: 0 150%;
+}
+.sm-link:hover .sm-roll > span,
+.sm-link:focus-visible .sm-roll > span {
+  translate: 0 -150%;
+}
+.sm-link:hover .sm-roll > span + span,
+.sm-link:focus-visible .sm-roll > span + span {
+  translate: 0 0;
+}
+.sm-link[aria-current] .sm-roll > span:first-child {
+  opacity: 0.55;
+}
+/* the current page, struck through with a wavy line */
+.sm-wave {
+  position: absolute;
+  left: -2%;
+  top: 50%;
+  width: 104%;
+  height: 0.3em;
+  translate: 0 -50%;
+  overflow: visible;
+  pointer-events: none;
+}
+.sm-wave path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: sm-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.8s forwards;
+}
+@keyframes sm-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.sm-badge {
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  animation: sm-fade 0.6s ease 0.7s both;
+}
+.sm-mark {
+  width: auto;
+  height: 1.75rem;
+  color: var(--accent);
+}
+.sm-badge p,
+.sm-find,
+.sm-where {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  font: 600 0.66rem/1.4 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.sm-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #3ddc84;
+  box-shadow: 0 0 0 0.25rem rgb(61 220 132 / 0.2);
+}
+
+.sm-foot {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  margin-top: auto;
+  animation: sm-fade 0.6s ease 0.8s both;
+}
+.sm-find {
+  color: var(--foreground);
+}
+.sm-socials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.75rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.sm-socials a {
+  transition: color 0.2s;
+}
+.sm-socials a:hover {
+  color: var(--accent);
+}
+@keyframes sm-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .sm-panel {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    padding-inline: 2rem;
+    column-gap: 3vw;
+  }
+  .sm-link {
+    font-size: clamp(2.4rem, 7.2vh, 5rem);
+  }
+  .sm-side {
+    padding-top: 0;
+  }
+  .sm-foot,
+  .sm-side nav {
+    margin-top: 0;
+  }
+}
+
+/* ---- section photos (desktop): three columns drifting after the pointer ---- */
+@media (min-width: 900px) {
+  /* the photos take the whole left half, top to bottom, under the top bar: nothing cuts them
+     but the screen's edge */
+  .sm-top {
+    position: relative;
+    z-index: 2;
+    grid-row: 1;
+  }
+  .sm-side {
+    grid-row: 2;
+    grid-column: 2;
+  }
+  /* big photos in two columns, sized by the width like Lando's: taller than the screen, they
+     run past the top and the bottom, and the pointer brings the rest into view */
+  .sm-photos {
+    display: flex;
+    grid-row: 1 / -1;
+    grid-column: 1;
+    gap: 3.5vw;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    margin: calc(-1 * max(1rem, env(safe-area-inset-top))) 0
+      calc(-1 * max(1.25rem, env(safe-area-inset-bottom)));
+    overflow: hidden;
+    animation: sm-fade 0.8s ease 0.3s both;
+  }
+  /* the columns follow the pointer up and down only, the second one further */
+  .sm-col {
+    display: grid;
+    flex: none;
+    gap: 3.5vw;
+    width: 21vw;
+    translate: 0 calc(var(--my, 0) * -14vh);
+    transition: translate 1.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .sm-col:nth-child(2) {
+    margin-top: 16vw;
+    translate: 0 calc(var(--my, 0) * -24vh);
+  }
+  .sm-ph {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    animation: sm-photo 0.9s cubic-bezier(0.76, 0, 0.24, 1) 0.25s both;
+  }
+  .sm-ph img {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: grayscale(1) contrast(0.95) brightness(0.7);
+    transition:
+      filter 0.5s ease,
+      scale 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .sm-ph::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: color-mix(in srgb, var(--accent) 25%, transparent);
+    mix-blend-mode: multiply;
+    transition: opacity 0.5s ease;
+  }
+  .sm-ph[data-on] img,
+  .sm-ph:hover img {
+    filter: none;
+    scale: 1.04;
+  }
+  .sm-ph[data-on]::after,
+  .sm-ph:hover::after {
+    opacity: 0;
+  }
+}
+@keyframes sm-photo {
+  from {
+    clip-path: inset(100% 0 0 0 round 0.75rem);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0.75rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sm-panel,
+  .sm[data-closing] .sm-panel,
+  .sm-list li,
+  .sm-badge,
+  .sm-foot,
+  .sm-photos,
+  .sm-ph {
+    animation: none;
+  }
+  .sm-wave path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* short screens: drop the badge so the links and the footer keep clear of the bottom */
+@media (max-height: 760px) {
+  .sm-badge {
+    display: none;
+  }
+}

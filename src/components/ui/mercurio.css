@@ -61,6 +61,11 @@
   .metal-btn:hover .metal-btn__orb svg:first-child { transform: translateX(calc(var(--orb) / 2 + 50% + 2px)); }
   .metal-btn:hover .metal-btn__orb svg + svg { transform: translateX(0); }
 }
+.metal-btn--down .metal-btn__orb svg + svg { transform: translateY(calc(var(--orb) / -2 - 50% - 2px)); }
+@media (hover: hover) {
+  .metal-btn--down:hover .metal-btn__orb svg:first-child { transform: translateY(calc(var(--orb) / 2 + 50% + 2px)); }
+  .metal-btn--down:hover .metal-btn__orb svg + svg { transform: translateY(0); }
+}
 @media (prefers-reduced-motion: reduce) {
   .metal-btn, .metal-btn__metal, .metal-btn__orb svg { transition: none; }
 }

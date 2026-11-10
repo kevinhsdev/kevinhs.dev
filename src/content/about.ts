@@ -12,6 +12,51 @@ export const about = {
     pt: "Estudo Engenharia de Software na UMC e trabalho desde os 17. Hoje sou Jovem Aprendiz na secretaria de uma escola, onde vi problemas reais e construí as soluções que a equipe usa todo dia.",
     en: "I study Software Engineering at UMC and have been working since I was 17. Today I'm an apprentice in a school's office, where I found real problems and built the tools the team uses every day.",
   },
+  headline: {
+    pt: "Vejo um problema de perto e construo a solução.",
+    en: "I see a problem up close and build the fix.",
+  },
+  chapters: [
+    {
+      label: { pt: "O começo", en: "Where it started" },
+      text: {
+        pt: "Comecei a programar aos 15, com os cursos da OneBitCode, e fui construindo pequenos projetos. Estudei 12 anos no Luterano e, aos 17, mergulhei de vez na tecnologia.",
+        en: "I started coding at 15 with OneBitCode's courses and kept building small projects. I spent 12 years at the Luterano school, and at 17 I went all in on technology.",
+      },
+    },
+    {
+      label: { pt: "Hoje", en: "Today" },
+      text: {
+        pt: "Estudo Engenharia de Software na UMC e sou Jovem Aprendiz na secretaria de uma escola. Lá vi problemas reais e construí o KIRI e o SEK, que a equipe usa todos os dias.",
+        en: "I study Software Engineering at UMC and I'm an apprentice in a school's office. There I found real problems and built KIRI and SEK, which the team uses every day.",
+      },
+    },
+    {
+      label: { pt: "O próximo passo", en: "What's next" },
+      text: {
+        pt: "Quero crescer em IA aplicada, em especial em Harness Engineering: as ferramentas, o contexto e as instruções que fazem um agente trabalhar bem. Uso o Claude Code todos os dias.",
+        en: "I want to grow in applied AI, especially Harness Engineering: the tools, context and instructions that make an agent work well. I use Claude Code every day.",
+      },
+    },
+  ],
+  facts: [
+    {
+      value: "15",
+      label: { pt: "anos quando comecei a programar", en: "years old when I started coding" },
+    },
+    {
+      value: "12",
+      label: { pt: "anos como aluno do Luterano", en: "years as a Luterano student" },
+    },
+    {
+      value: "17",
+      label: { pt: "anos quando comecei a trabalhar", en: "years old when I started working" },
+    },
+    {
+      value: "2",
+      label: { pt: "sistemas meus em uso diário", en: "systems of mine in daily use" },
+    },
+  ],
   intro: [
     {
       pt: "Sou proativo: quando vejo um problema real, prefiro construir a solução a esperar por ela. Estudo todos os dias, entre desafios de lógica no Beecrowd e no LeetCode, a preparação para a AWS e dois bootcamps, e aprendo muito ouvindo quem já passou pelos mesmos erros.",
@@ -22,8 +67,8 @@ export const about = {
       en: "I started coding at 15 with OneBitCode's courses and kept building small projects over the years. At 17, when I finished high school, I went all in on technology.",
     },
     {
-      pt: "O que me mantém no software é ver uma solução sair do editor e entrar no dia a dia de alguém, como aconteceu com o PDF Renamer e o SEK. Hoje, o que mais me atrai é a IA aplicada, em especial o Harness Engineering: as ferramentas, o contexto e as instruções em volta de um modelo que fazem um agente trabalhar bem. É a área em que quero crescer, e por isso estudo IA moderna, de LLMs a agentes, e uso o Claude Code todos os dias.",
-      en: "What keeps me in software is watching a fix leave the editor and become part of someone's day, as it did with PDF Renamer and SEK. Today, what draws me most is applied AI, especially Harness Engineering: the tools, context and instructions around a model that make an agent work well. It's the field I want to grow in, which is why I study modern AI, from LLMs to agents, and use Claude Code every day.",
+      pt: "O que me mantém no software é ver uma solução sair do editor e entrar no dia a dia de alguém, como aconteceu com o KIRI e o SEK. Hoje, o que mais me atrai é a IA aplicada, em especial o Harness Engineering: as ferramentas, o contexto e as instruções em volta de um modelo que fazem um agente trabalhar bem. É a área em que quero crescer, e por isso estudo IA moderna, de LLMs a agentes, e uso o Claude Code todos os dias.",
+      en: "What keeps me in software is watching a fix leave the editor and become part of someone's day, as it did with KIRI and SEK. Today, what draws me most is applied AI, especially Harness Engineering: the tools, context and instructions around a model that make an agent work well. It's the field I want to grow in, which is why I study modern AI, from LLMs to agents, and use Claude Code every day.",
     },
   ],
   themes: [
@@ -31,7 +76,7 @@ export const about = {
       id: "code",
       title: { pt: "No código", en: "In code" },
       photos: ["adesivos", "notebook", "umc", "cna"],
-      projects: ["sek", "pdf-renamer"],
+      projects: ["sek", "kiri"],
       text: [
         {
           pt: "Na secretaria, encontrei o problema que mudou meu jeito de estudar: documentos classificados e renomeados à mão, turma por turma. Construí uma ferramenta que faz isso sozinha, e ela entrou na rotina da equipe. Depois, por iniciativa própria, construí o sistema de gestão que hoje a secretaria inteira usa.",

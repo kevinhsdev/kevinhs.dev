@@ -33,6 +33,8 @@ export interface LiquidGlassDockItem {
   href?: string
   /** O link abre numa aba nova. */
   external?: boolean
+  /** O link baixa o arquivo (portfolio: the CV). */
+  download?: boolean
   /** Sem href, o clique faz do ícone um botão. */
   onClick?: React.MouseEventHandler<HTMLElement>
 }
@@ -94,7 +96,7 @@ export function LiquidGlassDock({ items, label = "Apps", className, style, ...pr
 }
 
 function DockIcon({ item }: { item: LiquidGlassDockItem }) {
-  const { title, icon, href, external, onClick } = item
+  const { title, icon, href, external, download, onClick } = item
   if (href) {
     return (
       <a
@@ -103,6 +105,7 @@ function DockIcon({ item }: { item: LiquidGlassDockItem }) {
         aria-label={title}
         title={title}
         onClick={onClick}
+        download={download || undefined}
         {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
       >
         {icon}

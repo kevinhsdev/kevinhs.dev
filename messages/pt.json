@@ -16,7 +16,8 @@
     "open": "Abrir menu",
     "close": "Fechar menu",
     "navigation": "Navegação",
-    "label": "Menu"
+    "label": "Menu",
+    "find": "Onde me encontrar"
   },
   "theme": {
     "toggle": "Alternar tema claro/escuro"
@@ -55,6 +56,12 @@
       "touring": "Em tour",
       "speed": "Velocidade dos agentes: {v}×",
       "redo": "Montar a página de novo"
+    },
+    "numbersKicker": "Em uso de verdade",
+    "n": {
+      "pdfDocs": "mais documentos processados por dia (de ~100 para ~300)",
+      "pdfDays": "dias para processar os documentos de uma turma",
+      "sekStudents": "alunos cobertos pelo sistema da escola"
     }
   },
   "journey": {
@@ -78,6 +85,8 @@
   },
   "projects": {
     "title": "Projetos",
+    "count": "{n, plural, one {projeto} other {projetos}}",
+    "soon": "Em breve",
     "featured": "Em destaque",
     "other": "Outros projetos",
     "open": "Ver projeto",
@@ -94,13 +103,13 @@
   },
   "skills": {
     "title": "Habilidades",
-    "daily": "O que uso no dia a dia",
     "tiers": {
       "daily": "Uso no dia a dia",
       "experienced": "Tenho experiência",
       "learning": "Estudando agora",
       "concepts": "Conceitos"
-    }
+    },
+    "all": "Tudo com que trabalho"
   },
   "contact": {
     "title": "Vamos conversar",
@@ -116,7 +125,32 @@
     "invalid": "Confira os campos: nome, e-mail válido e uma mensagem de pelo menos 10 caracteres.",
     "unconfigured": "O envio direto não está configurado. Abrindo seu app de e-mail…",
     "failed": "Não foi possível enviar. Abrindo seu app de e-mail…",
-    "honeypot": "Deixe este campo em branco"
+    "honeypot": "Deixe este campo em branco",
+    "presetsTitle": "Começar com",
+    "presets": {
+      "opportunity": {
+        "label": "Oportunidade",
+        "text": "Oi, Kevin! Vi seu portfólio e adoraria conversar sobre uma vaga em engenharia de dados/software. Você toparia uma call rápida?"
+      },
+      "project": {
+        "label": "Projeto",
+        "text": "Oi, Kevin! Tenho um projeto/desafio técnico em mente e gostaria de conversar sobre escopo, arquitetura e sua disponibilidade."
+      },
+      "general": {
+        "label": "Geral",
+        "text": "Oi, Kevin! Gostei do seu trabalho e queria me conectar com você."
+      }
+    },
+    "chat": {
+      "status": "Aberto a estágio",
+      "hi": "Oi! Que bom que você chegou até aqui.",
+      "orHere": "Ou me manda uma mensagem aqui embaixo.",
+      "ask": "Me conta: é sobre uma oportunidade, um projeto ou só um oi?",
+      "today": "Hoje",
+      "typing": "digitando…",
+      "idTitle": "Pra eu conseguir te responder:",
+      "now": "agora"
+    }
   },
   "project": {
     "back": "Todos os projetos",
@@ -127,32 +161,90 @@
     "links": "Links",
     "video": "Vídeo de apresentação do {title}",
     "videoNote": "em português",
+    "screenshot": "Tela inicial do {title}",
     "previous": "Anterior",
     "next": "Próximo",
     "role": "Papel",
     "year": "Ano",
     "team": "Equipe de {count}",
-    "solo": "Individual"
+    "solo": "Individual",
+    "teamLabel": "Equipe",
+    "statusLabel": "Status",
+    "stackCount": "{count} tecnologias",
+    "contents": "Neste estudo",
+    "play": "Assistir à apresentação",
+    "nextProject": "Próximo projeto"
   },
   "about": {
     "title": "Sobre mim",
+    "hand": "quem sou eu",
     "description": "Quem é Kevin Henrique: como começou a programar, o que faz hoje e o que gosta fora da tela.",
     "photos": "Fora da tela",
     "certificates": "Certificados",
-    "certificatesIntro": "Cursos e certificações concluídos. Clique numa pasta para abrir.",
+    "certificatesIntro": "Abra uma pasta para ver os certificados dela.",
     "languages": "Idiomas",
-    "courses": "Cursos",
     "items": "{n} itens",
-    "events": "Eventos",
-    "eventsIntro": "Meetups e palestras onde fui aprender e conhecer gente da área.",
     "studying": "Estudando agora",
+    "nowKicker": "Hoje",
     "skills": "Todas as habilidades",
-    "card": "Cartão de visita",
-    "previous": "Anterior",
-    "next": "Próximo"
+    "more": "Conheça minha história",
+    "endTitle": "Vamos conversar",
+    "endText": "Baixe o currículo ou me mande uma mensagem.",
+    "endContact": "Ir para o contato",
+    "certificate": "Certificado",
+    "story": "Minha história",
+    "inProgress": "Em andamento",
+    "scroll": "Role para explorar",
+    "sport": "vôlei",
+    "morePhotos": "Mais fotos",
+    "chapter": "Capítulo",
+    "ch1": "Comecei a programar aos 15, com os cursos da OneBitCode.",
+    "ch2": "Engenharia de Software na UMC. Na secretaria de uma escola, criei o KIRI e o SEK.",
+    "ch3": "IA aplicada e Harness Engineering. Aprendo em eventos e uso o Claude Code todo dia.",
+    "maltaText": "Me adaptei a um lugar novo e pratiquei o inglês.",
+    "statementE": "Estudo *todos* *os* *dias.* Construo *o* *que* a equipe usa.",
+    "malta": "malta",
+    "music": "música",
+    "updated": "Atualizado em {date}",
+    "hobbies": "Hobbies",
+    "heroHello": "Por trás do código,",
+    "dragHint": "arraste as fotos ↗",
+    "dio": "DIO",
+    "alura": "Alura",
+    "events": "Eventos",
+    "certOpen": "Abrir original",
+    "certPrev": "Anterior",
+    "certNext": "Próximo",
+    "certClose": "Fechar",
+    "certNoPreview": "Sem arquivo digital",
+    "live": "Ao vivo",
+    "track": "Na pista",
+    "garage": "Na garagem"
   },
   "footer": {
     "rights": "© {year} Kevin Henrique da Silva",
-    "top": "Voltar ao topo"
+    "top": "Voltar ao topo",
+    "navigate": "Navegação",
+    "elsewhere": "Onde me encontrar",
+    "built": "Feito do zero com Next.js · código aberto no GitHub"
+  },
+  "cv": {
+    "kicker": "Currículo",
+    "title": "Meu currículo",
+    "intro": "Experiência, projetos, formação e idiomas. Escolha o idioma e baixe em PDF.",
+    "langs": {
+      "pt": "Português",
+      "en": "Inglês",
+      "es": "Espanhol"
+    },
+    "choose": "Idioma do currículo",
+    "download": "Baixar PDF",
+    "open": "Abrir em nova aba",
+    "preview": "Prévia da primeira página do currículo em {lang}"
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "text": "Esse endereço não existe ou mudou de lugar.",
+    "back": "Voltar para o início"
   }
 }

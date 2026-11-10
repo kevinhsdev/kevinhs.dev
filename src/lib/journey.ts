@@ -41,8 +41,8 @@ export function toAngles([lat, lon]: LatLon): [phi: number, theta: number] {
 }
 
 const scale = monotone([
-  [0, 0.6],
-  [0.8, 1],
+  [0, 1.1],
+  [0.8, 1.5],
   [1.2, 2.4],
   [3.3, 2.4],
   [3.6, 1.5],
@@ -51,8 +51,8 @@ const scale = monotone([
   [6.6, 2.4],
   [7, 1.3],
   [7.9, 1.2],
-  [8.6, 0.75],
-  [SCREENS, 0.75],
+  [8.6, 1],
+  [SCREENS, 1],
 ]);
 
 const [spPhi, spTheta] = toAngles(SP);
@@ -80,15 +80,6 @@ export function journeyState(input: number) {
   const s = clamp(input, 0, SCREENS);
   const chapter = CHAPTERS.find(([, end]) => s < end)?.[0] ?? "outro";
 
-  const inSp = s >= 1.1 && s < 3.4;
-  const inMalta = s >= 4.7 && s < 6.8;
-  const scene: "globe" | "sp" | "malta" = inSp ? "sp" : inMalta ? "malta" : "globe";
-  const iris = inSp
-    ? Math.min(range(s, 1.1, 1.5), 1 - range(s, 3.1, 3.4))
-    : inMalta
-      ? Math.min(range(s, 4.7, 5), 1 - range(s, 6.5, 6.8))
-      : 0;
-
   // [index into TITLES, from, to]; null in the gaps (iris transitions)
   const slots: [number, number, number][] = [
     [0, 0.15, 1.05],
@@ -100,14 +91,38 @@ export function journeyState(input: number) {
     [6, 6.85, 7.85],
     [7, 8.05, SCREENS + 1],
   ];
-  const titleIndex = slots.find(([, a, b]) => s >= a && s < b)?.[0] ?? null;
+  const slot = slots.find(([, a, b]) => s >= a && s < b);
+  const titleIndex = slot?.[0] ?? null;
 
+  // the photo card on the globe: SP's three go with titles 1–3, then Malta's six in turn
+  const card =
+    titleIndex !== null && titleIndex >= 1 && titleIndex <= 3
+      ? titleIndex - 1
+      : s >= 5 && s < 6.5
+        ? 3 + Math.min(5, Math.floor(range(s, 5, 6.5) * 6))
+        : null;
+
+  // how far the shown photo is through its turn, for the bar on top of it
+  const malta = range(s, 5, 6.5) * 6;
+  const cardProgress =
+    card === null ? 0 : card < 3 ? range(s, slot![1], slot![2]) : Math.min(1, malta - (card - 3));
+
+  const { phi, theta } = angles(s);
   return {
     chapter,
-    globe: { ...angles(s), scale: scale(s) },
-    scene,
-    iris,
+    // the point facing the viewer, in degrees (from cobe's angles; see toAngles)
+    globe: {
+      lat: (theta * 180) / Math.PI,
+      lon: ((1.5 * Math.PI - phi) * 180) / Math.PI,
+      scale: scale(s),
+    },
+    card,
+    cardProgress,
+    // Malta stays a surprise until the flight
+    show: { malta: s >= 4.5 },
     arc: { spMalta: inOutCubic(range(s, 3.4, 4.5)), planned: inOutCubic(range(s, 6.9, 7.7)) },
+    // the ring Malta sends out as the plane lands
+    landing: range(s, 4.5, 5.1),
     titleIndex,
   };
 }
@@ -131,4 +146,13 @@ export function greatCircle(a: LatLon, b: LatLon, t: number): LatLon {
   const kb = Math.sin(t * w) / Math.sin(w);
   const [x, y, z] = [0, 1, 2].map((i) => ka * p[i]! + kb * q[i]!) as [number, number, number];
   return [Math.atan2(z, Math.hypot(x, y)) / r, Math.atan2(y, x) / r];
+}
+
+/** Great-circle distance in km (mean Earth radius 6371 km). */
+export function distanceKm([lat1, lon1]: LatLon, [lat2, lon2]: LatLon) {
+  const r = Math.PI / 180;
+  const h =
+    Math.sin(((lat2 - lat1) * r) / 2) ** 2 +
+    Math.cos(lat1 * r) * Math.cos(lat2 * r) * Math.sin(((lon2 - lon1) * r) / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
 }

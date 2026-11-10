@@ -13,9 +13,9 @@ export function splitMetric(value: string): [string, number, string, number] | n
   return [pre, Number(num.replace(",", ".")), post, decimals];
 }
 
-/** The project's numbers; each counts up from 0 the first time the list enters the screen. */
-export function Metrics({ items }: { items: { value: string; label: string }[] }) {
-  const ref = useRef<HTMLDListElement>(null);
+/** Counts every `[data-value]` inside the element up from 0 the first time it enters the screen. */
+export function useCountUp<T extends HTMLElement>() {
+  const ref = useRef<T>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el || prefersReduced()) return;
@@ -51,18 +51,24 @@ export function Metrics({ items }: { items: { value: string; label: string }[] }
       paint(1);
     };
   }, []);
+  return ref;
+}
+
+/** The project's numbers; each counts up from 0 the first time the list enters the screen. */
+export function Metrics({ items }: { items: { value: string; label: string }[] }) {
+  const ref = useCountUp<HTMLDListElement>();
   return (
     <dl
       ref={ref}
-      className="grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
+      className="pj-metrics grid gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4"
     >
       {items.map((m) => (
-        <div key={m.label} className="flex flex-col gap-3 bg-background p-6 sm:p-8">
+        <div key={m.label} className="flex flex-col gap-4 bg-background p-6 sm:p-10">
           <dt className="order-2 text-sm text-muted">{m.label}</dt>
           <dd
             data-value={m.value}
             aria-label={m.value}
-            className="order-1 font-display text-6xl leading-none text-accent tabular-nums sm:text-7xl"
+            className="order-1 font-display text-[clamp(4rem,8vw,8rem)] leading-[0.85] text-accent tabular-nums"
           >
             {m.value}
           </dd>

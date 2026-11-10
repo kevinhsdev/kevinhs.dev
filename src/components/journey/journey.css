@@ -1,47 +1,79 @@
 /*
- * The globe journey: one pinned screen. The globe sits behind, the two scenes (SP photos,
- * Malta polaroids) open over it through an iris, the titles sit bottom-left on their own clock.
+ * The globe journey: one pinned screen. The Earth turns and zooms behind (journey-globe.tsx),
+ * the photo cards come out of their places on it, the titles sit bottom-left on their own clock.
  */
 .jr {
   --cx: 62%;
   --pad: clamp(1.25rem, 5vw, 4.5rem);
-  --g: min(78svh, 46vw);
   position: relative;
   height: 100svh;
   overflow: clip;
   background: var(--background);
+  color: var(--foreground);
   isolation: isolate;
 }
-
-/* Drawn at the zoomed-in size (2.4×) and scaled down by render(s), so the zoom stays crisp. */
-.jr-globe {
+/* space behind the globe (the section is dark in both themes): two tiles of stars drifting
+   a little with the scroll (--s, set by journey-stage) */
+.jr::before {
+  content: "";
   position: absolute;
-  top: 50%;
-  left: var(--cx);
-  width: calc(var(--g) * 2.4);
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  scale: 0.25;
-  will-change: scale;
+  inset: -20% 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(1px 1px at 8% 12%, #fff, transparent),
+    radial-gradient(1px 1px at 31% 47%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 52% 9%, #fff, transparent),
+    radial-gradient(1px 1px at 74% 63%, #fff, transparent),
+    radial-gradient(1px 1px at 91% 28%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 19% 81%, #fff, transparent),
+    radial-gradient(1px 1px at 63% 88%, #fff, transparent),
+    radial-gradient(1px 1px at 22% 33%, #cfe0ff, transparent),
+    radial-gradient(1px 1px at 68% 21%, #cfe0ff, transparent),
+    radial-gradient(1.5px 1.5px at 87% 72%, #fff, transparent),
+    radial-gradient(1px 1px at 44% 66%, #cfe0ff, transparent);
+  background-size:
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    670px 610px,
+    670px 610px,
+    670px 610px,
+    670px 610px;
+  opacity: 0.5;
+  translate: 0 calc(var(--s, 0) * -1.6vh);
 }
-.jg-root,
-.jg-stage {
+
+/* the distance flown, by the plane */
+.jg-label.jg-km {
+  background: color-mix(in srgb, var(--background) 70%, transparent);
+  color: var(--foreground);
+  backdrop-filter: blur(6px);
+  font-variant-numeric: tabular-nums;
+  transform: translate(14px, 10px);
+}
+
+/* The globe fills the screen; its canvases draw the sphere where the scroll puts it. */
+.jr-globe {
   position: absolute;
   inset: 0;
 }
 .jg-canvas {
-  display: block;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 1.2s ease;
 }
-/* labels: counter-scaled so they keep their size at any zoom */
+
+/* labels: placed on their city every frame; the side keeps neighbours apart */
 .jg-label {
-  display: none;
   position: absolute;
-  margin-bottom: 10px;
+  top: 0;
+  left: 0;
+  z-index: 1;
   padding: 3px 8px;
   border-radius: 999px;
   background: var(--foreground);
@@ -51,108 +83,80 @@
   text-transform: uppercase;
   white-space: nowrap;
   pointer-events: none;
-  transform-origin: 50% 100%;
-  scale: calc(2.4 / var(--gz, 1));
+  opacity: 0;
+  filter: blur(6px);
   transition:
-    opacity 0.6s,
-    filter 0.6s;
+    opacity 0.5s,
+    filter 0.5s;
 }
-/* plans and outro: Spain sits right next to Malta, so Malta's label steps aside */
-.jr:is([data-chapter="plans"], [data-chapter="outro"]) .jg-label[data-id="malta"] {
-  visibility: hidden;
+.jg-label[data-on="true"] {
+  opacity: 1;
+  filter: none;
 }
-@supports (position-anchor: --a) {
-  .jg-label {
-    display: block;
-    bottom: anchor(top);
-    left: anchor(center);
-    translate: -50% 0;
-  }
+.jg-label[data-side="top"] {
+  transform: translate(-50%, calc(-100% - 12px));
+}
+.jg-label[data-side="right"] {
+  transform: translate(12px, -50%);
+}
+.jg-label[data-side="left"] {
+  transform: translate(calc(-100% - 12px), -50%);
 }
 
-/* Scenes: full screen, opened by clip-path from render(s). */
-.jr-scene {
+/* the photo cards: placed next to their marker every frame, one at a time */
+.jr-cards {
   position: absolute;
   inset: 0;
   z-index: 1;
-  visibility: hidden;
-  clip-path: circle(0% at var(--cx) 50%);
-  background: var(--surface);
-}
-
-.jr-photos {
-  position: absolute;
-  inset: 0;
   margin: 0;
   padding: 0;
   list-style: none;
+  pointer-events: none;
 }
-.jr-photo {
+.jg-card {
   position: absolute;
-  width: min(15vw, 26svh);
+  top: 0;
+  left: 0;
+  width: clamp(150px, 15vw, 230px);
+  opacity: 0;
+  scale: 0.92;
+  transform-origin: 0 100%;
   transition:
-    scale 0.7s var(--ease-out-quint),
-    opacity 0.5s ease,
-    filter 0.5s ease;
-  opacity: 0.55;
-  filter: grayscale(0.7);
+    opacity 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    scale 0.45s cubic-bezier(0.23, 1, 0.32, 1);
 }
-.jr-photo[data-active="true"] {
-  z-index: 1;
+.jg-card[data-on="true"] {
   opacity: 1;
-  filter: none;
-  scale: 1.06;
+  scale: 1;
 }
-.jr-photo[data-i="0"] {
-  top: 9%;
-  left: 44%;
-  rotate: -4deg;
-}
-.jr-photo[data-i="1"] {
-  top: 21%;
-  left: 66%;
-  rotate: 3deg;
-}
-.jr-photo[data-i="2"] {
-  top: 50%;
-  left: 53%;
-  rotate: -1.5deg;
-}
-.jr-photo img {
+.jg-card img {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  height: auto;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
-  border-radius: 14px;
-  box-shadow: 0 18px 50px -20px rgb(0 0 0 / 0.55);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  box-shadow: 0 24px 50px -22px rgb(0 0 0 / 0.7);
 }
-.jr-pin {
+.jg-cap {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.75rem;
-  font: 500 0.75rem/1 var(--font-mono);
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 78%, transparent);
+  backdrop-filter: blur(8px);
+  font: 500 0.7rem/1 var(--font-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--muted);
 }
-.jr-pin i {
-  width: 0.5rem;
-  height: 0.5rem;
+.jg-cap i {
+  width: 0.45rem;
+  height: 0.45rem;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
-}
-
-/* bottom inset keeps the carousel's arrows clear of the CTA dock */
-.jr-polaroid {
-  position: absolute;
-  inset: 6svh 0 13svh 38%;
-}
-
-/* The polaroids carry their own handwritten caption; the chapter title says the rest. */
-.jr-polaroid .pl-cap {
-  visibility: hidden;
 }
 
 /* Titles: bottom-left, above the scenes. */
@@ -207,11 +211,10 @@
   pointer-events: auto;
 }
 
-/* Phone: globe centered at 90vw, photos in a row up top, titles at the bottom. */
+/* Phone: globe centered, cards next to their place, titles at the bottom. */
 @media (max-width: 760px) {
   .jr {
     --cx: 50%;
-    --g: 90vw;
   }
   /* above the CTA dock */
   .jr-titles {
@@ -225,25 +228,8 @@
   .jr-line {
     font-size: 0.95rem;
   }
-  .jr-photo {
-    top: 12svh !important;
-    width: 28vw;
-  }
-  .jr-photo[data-i="0"] {
-    left: 5vw;
-  }
-  .jr-photo[data-i="1"] {
-    left: 36vw;
-  }
-  .jr-photo[data-i="2"] {
-    left: 67vw;
-  }
-  .jr-pin {
-    font-size: 0.6rem;
-  }
-  .jr-polaroid {
-    inset: 8svh 0 auto;
-    height: 52svh;
+  .jg-card {
+    width: 38vw;
   }
 }
 
@@ -257,18 +243,20 @@
 .jr[data-static="true"] .jr-globe {
   position: relative;
   inset: auto;
-  translate: none;
-  scale: none;
   width: min(36rem, 90vw);
+  aspect-ratio: 1;
   justify-self: center;
 }
-.jr[data-static="true"] .jr-scene {
-  position: relative;
-  inset: auto;
-  visibility: visible;
-  clip-path: none;
-  background: none;
-  min-height: 60svh;
+.jr[data-static="true"] .jr-cards {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.jr[data-static="true"] .jg-card {
+  position: static;
+  opacity: 1;
+  scale: 1;
 }
 .jr[data-static="true"] .jr-titles {
   position: static;
@@ -280,4 +268,57 @@
 .jr[data-static="true"] .jr-title {
   position: static;
   visibility: visible;
+}
+
+/* how far through the journey, along the top of the pinned screen */
+.jr-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  height: 3px;
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+  pointer-events: none;
+}
+.jr-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: left;
+  scale: calc(var(--s, 0) / var(--screens)) 1;
+}
+
+/* story bars on top of each photo: done, filling (--p, from journey-globe), still to come */
+.jg-bars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0.5rem;
+}
+.jg-bars i {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 22%, transparent);
+}
+.jg-bars i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--foreground);
+  transform-origin: left;
+  scale: 0 1;
+}
+.jg-bars i[data-state="done"]::after {
+  scale: 1 1;
+}
+.jg-bars i[data-state="now"]::after {
+  scale: var(--p, 0) 1;
+}
+.jr[data-static="true"] .jr-progress,
+.jr[data-static="true"] .jg-bars {
+  display: none;
 }

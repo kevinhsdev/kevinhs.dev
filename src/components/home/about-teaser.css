@@ -1,0 +1,246 @@
+/*
+ * About teaser: three lines light up one by one while photos land around them like prints on
+ * a desk. JS writes --p (0..1); each line and print has --b, the beat it belongs to.
+ */
+.abv {
+  --p: 0;
+  --w: 1;
+  --cta: clamp(0, (var(--p) - 0.8) * 6, 1);
+}
+.abv-stage {
+  border-radius: 2rem;
+}
+.abv-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  align-items: center;
+  padding: 2.5rem 1.5rem;
+}
+.abv-kicker {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-hand), cursive;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  line-height: 1;
+  color: var(--accent-strong);
+  rotate: -4deg;
+}
+.abv-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 2.5rem;
+  padding: 0.85rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--stage-ink) 25%, transparent);
+  border-radius: 999px;
+  font-weight: 600;
+  color: var(--stage-ink);
+  /* sits on the shader's bright patches too */
+  background: color-mix(in srgb, var(--nebula-back) 70%, transparent);
+  backdrop-filter: blur(8px);
+  opacity: var(--cta);
+  translate: 0 calc((1 - var(--cta)) * 1rem);
+  transition:
+    border-color 0.25s,
+    color 0.25s;
+}
+.abv-cta:hover {
+  border-color: var(--accent-strong);
+  color: var(--accent-strong);
+}
+
+/* ── the lines ── */
+.abc-center {
+  position: relative;
+  z-index: 1;
+  max-width: 44rem;
+  margin-inline: auto;
+  text-align: center;
+  pointer-events: none;
+}
+/* a soft pool of dark behind the words, so they read on the shader's bright patches */
+.abc-center::before {
+  content: "";
+  position: absolute;
+  inset: -20% -15%;
+  z-index: -1;
+  background: radial-gradient(closest-side, var(--nebula-back) 55%, transparent);
+  opacity: 0.85;
+}
+.abc-center a {
+  pointer-events: auto;
+}
+.abv-headline {
+  font: 400 clamp(2rem, 3.9vw, 3.8rem) / 1.08 var(--font-display);
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--stage-ink);
+}
+.abv-headline > span {
+  --lit: clamp(0, (var(--p) - 0.08 - var(--b) * 0.25) / 0.15, 1);
+  --m: clamp(0, (var(--p) - 0.17 - var(--b) * 0.25) / 0.1, 1);
+  /* a filter, not opacity: the dim words are a passing state, the lines are read in full */
+  filter: opacity(calc(0.14 + var(--lit) * 0.86));
+}
+.abv-headline mark {
+  position: relative;
+  /* one box, so the stroke can't land on the next line when it wraps */
+  display: inline-block;
+  background: none;
+  color: var(--accent-strong);
+}
+/* the number gets a stroke under it once its line is lit */
+.abv-headline mark::after {
+  content: "";
+  position: absolute;
+  left: -0.05em;
+  right: -0.05em;
+  bottom: -0.1em;
+  height: 0.12em;
+  border-radius: 999px;
+  background: var(--accent);
+  transform-origin: left;
+  scale: var(--m) 1;
+  rotate: -2deg;
+}
+
+/* ── the prints ── */
+.abc-prints {
+  display: flex;
+  justify-content: center;
+}
+.abc-prints span {
+  /* 0 → 1 as it falls onto the desk, a beat after its line lights up */
+  --a: clamp(0, (var(--p) - 0.1 - var(--b) * 0.25 - var(--j) * 0.06) / 0.12, 1);
+  --lift: calc(1 - var(--a));
+  width: 3.6rem;
+  /* on phones they overlap a little, a small pile */
+  margin-inline: -0.15rem;
+  padding: 0.3rem 0.3rem 0.25rem;
+  background: #f4f3ee;
+  border-radius: 0.2rem;
+  /* lifted: big soft shadow; landed: a tight one */
+  box-shadow: 0 calc(0.5rem + var(--lift) * 3rem) calc(1rem + var(--lift) * 3rem)
+    rgb(0 0 0 / calc(0.5 - var(--lift) * 0.2));
+  rotate: calc(var(--r) * (1 + var(--lift) * 2.5));
+  scale: calc(1 + var(--lift) * 0.25);
+  translate: 0 calc(var(--lift) * -40vh);
+  filter: opacity(min(var(--a) * 3, 1));
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    z-index 0s 0.35s;
+}
+.abc-prints span[data-wide] {
+  width: 5.4rem;
+}
+.abc-prints img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.abc-prints em {
+  display: block;
+  margin-top: 0.3rem;
+  font: 500 0.55rem/1 var(--font-mono);
+  font-style: normal;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: #3a3a40;
+}
+
+/* the shader sinks into the same dark Contact starts with, so the seam has nothing to show */
+.abv-stage::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  z-index: -1;
+  height: 30%;
+  background: linear-gradient(transparent, var(--nebula-back));
+  pointer-events: none;
+}
+
+/* and rises out of it at the top */
+.abv-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 22%;
+  background: linear-gradient(var(--nebula-back), transparent);
+  pointer-events: none;
+}
+
+/* ── the seam: a window that opens as the block comes up and closes as it leaves ── */
+.abv-stage {
+  clip-path: inset(calc(var(--w) * 6%) calc(var(--w) * 8%) round 2rem);
+}
+@media (min-width: 640px) {
+  .abv-inner {
+    padding: 3rem;
+  }
+}
+@media (min-width: 1024px) {
+  .abv {
+    height: 210vh;
+  }
+  .abv-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    border-radius: 0;
+    clip-path: inset(calc(var(--w) * 14vh) calc(var(--w) * 16vw) round calc(var(--w) * 4rem));
+    /* the stage spans the screen though the section is a 7xl column */
+    margin-inline: calc(50% - 50vw);
+  }
+  .abv-inner {
+    height: 100%;
+    max-width: 90rem;
+    margin-inline: auto;
+    padding: 0 2rem;
+  }
+  .abc-prints {
+    position: absolute;
+    /* clear of the header at the top */
+    inset: 14vh 2rem 6vh;
+    display: block;
+  }
+  .abc-prints span {
+    position: absolute;
+    left: var(--x);
+    margin: 0;
+    top: var(--y);
+    width: clamp(9rem, 12vw, 13rem);
+    padding: 0.55rem 0.55rem 0.5rem;
+    /* after landing, a slow drift with the scroll: nearer prints move more */
+    translate: 0 calc(var(--lift) * -60vh + (0.6 - var(--p)) * (3vh + var(--j) * 4vh));
+  }
+  .abc-prints span[data-wide] {
+    width: clamp(12rem, 17vw, 18rem);
+  }
+  .abc-prints em {
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+  }
+  /* pick one up: it straightens and comes to the top */
+  .abc-prints span:hover {
+    z-index: 2;
+    transform: rotate(calc(var(--r) * -1)) scale(1.08);
+    transition:
+      transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+      z-index 0s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .abv {
+    height: auto;
+  }
+  .abv-stage {
+    position: relative;
+    height: auto;
+  }
+  .abc-prints span {
+    transition: none;
+  }
+}

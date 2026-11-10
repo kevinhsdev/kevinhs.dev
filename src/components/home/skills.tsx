@@ -1,10 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { Reveal } from "@/components/motion/reveal";
-import { Esteira } from "@/components/ui/esteira";
-import { pick, projects, skills } from "@/content";
+import { pick, skills } from "@/content";
 import type { Locale } from "@/i18n/routing";
+import { SkillsView, type Skill } from "./skills-view";
 
-/** Logo file in public/skills for each daily skill; `dark` when a dark-theme variant exists. */
+/** Logo file in public/skills, keyed by the pt name; `dark` when a dark-theme variant exists. */
 const LOGOS: Record<string, { file: string; dark?: boolean }> = {
   Java: { file: "java" },
   "Spring Boot": { file: "springboot" },
@@ -13,71 +13,61 @@ const LOGOS: Record<string, { file: string; dark?: boolean }> = {
   JavaScript: { file: "javascript" },
   Dart: { file: "dart" },
   "Claude / Claude Code": { file: "claude" },
+  HTML: { file: "html" },
+  CSS: { file: "css" },
+  Python: { file: "python" },
+  Flutter: { file: "flutter", dark: true },
+  "Node.js": { file: "nodejs" },
+  SQLite: { file: "sqlite", dark: true },
+  Docker: { file: "docker", dark: true },
+  Postman: { file: "postman" },
+  Maven: { file: "maven" },
+  IntelliJ: { file: "intellij" },
+  "VS Code": { file: "vscode" },
+  AWS: { file: "aws", dark: true },
+  "Spring Data JPA": { file: "spring" },
+  JDBC: { file: "jdbc" },
+  Supabase: { file: "supabase" },
+  Linux: { file: "linux" },
+  Insomnia: { file: "insomnia", dark: true },
+  Eclipse: { file: "eclipse", dark: true },
+  Obsidian: { file: "obsidian" },
+  "Testes automatizados": { file: "testing" },
+  Cibersegurança: { file: "security" },
+  "IA aplicada ao Java": { file: "ai-java" },
+  "Orientação a Objetos": { file: "oop" },
+  "Padrão DAO": { file: "dao" },
+  "REST APIs": { file: "rest" },
+  "Arquitetura em camadas": { file: "layers" },
+  UML: { file: "uml" },
+  Versionamento: { file: "versioning" },
+  "LGPD aplicada a software": { file: "lgpd" },
 };
 
-/** Projects whose stack names this skill: any part of "A / B" as a whole word ("Java 17" yes, "JavaScript" no). */
-function usedIn(name: string) {
-  const parts = name.toLowerCase().split(" / ");
-  const names = (stack: string) => {
-    const s = stack.toLowerCase();
-    return parts.some((part) => s === part || s.startsWith(`${part} `));
-  };
-  return projects.filter((p) => p.stack.some(names)).map((p) => p.title);
-}
-
-/** The short daily list (the full list lives on About), as the Esteira's two rows. */
+/** Skills: every skill with its tier and logo: a belt of logos, then an accordion by tier. */
 export async function HomeSkills({ locale }: { locale: Locale }) {
   const t = await getTranslations("skills");
-  const names = (skills.find((g) => g.tier === "daily")?.items ?? []).map((i) => pick(i, locale));
-
-  const cards = names.map((name) => {
-    const logo = LOGOS[name];
-    const used = usedIn(name);
-    return (
-      <article key={name} className="esteira-card">
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-[11px] tracking-[0.12em] text-muted uppercase">
-            {t("tiers.daily")}
-          </span>
-          {logo && (
-            <span className="relative size-10">
-              {/* eslint-disable-next-line @next/next/no-img-element -- small static SVG logos */}
-              <img
-                src={`/skills/${logo.file}.svg`}
-                alt=""
-                className={`size-10 object-contain ${logo.dark ? "dark:hidden" : ""}`}
-              />
-              {logo.dark && (
-                // eslint-disable-next-line @next/next/no-img-element -- dark-theme variant
-                <img
-                  src={`/skills/${logo.file}-dark.svg`}
-                  alt=""
-                  className="absolute inset-0 hidden size-10 object-contain dark:block"
-                />
-              )}
-            </span>
-          )}
-        </div>
-        <h3 className="mt-auto font-display text-5xl uppercase max-[900px]:text-4xl">{name}</h3>
-        {used.length > 0 && (
-          <p className="mt-3 line-clamp-2 font-mono text-xs text-muted">{used.join(" · ")}</p>
-        )}
-      </article>
-    );
-  });
-  const half = Math.ceil(cards.length / 2);
+  const items: Skill[] = skills.flatMap((g) =>
+    g.items.map((i) => {
+      return { name: pick(i, locale), tier: g.tier, logo: LOGOS[pick(i, "pt")] };
+    }),
+  );
+  const tiers = Object.fromEntries(skills.map((g) => [g.tier, t(`tiers.${g.tier}`)])) as Record<
+    Skill["tier"],
+    string
+  >;
 
   return (
-    <section id="skills" aria-labelledby="skills-title" className="py-28 lg:py-40">
+    <section id="skills" aria-labelledby="skills-title" className="pt-16 pb-28 lg:pt-24 lg:pb-40">
       <Reveal className="mx-auto mb-14 max-w-7xl px-5 sm:px-8">
         <p className="mb-4 font-mono text-xs tracking-widest text-accent uppercase" data-line>
           {t("title")}
         </p>
         <h2 id="skills-title" className="font-display text-6xl uppercase sm:text-8xl" data-line>
-          {t("daily")}
+          {t("all")}
         </h2>
       </Reveal>
-      <Esteira label={t("daily")} rows={[cards.slice(0, half), cards.slice(half)]} />
+      <SkillsView items={items} tiers={tiers} label={t("all")} />
     </section>
   );
 }

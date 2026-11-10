@@ -45,8 +45,8 @@ export const profile = {
   },
   cv: {
     pt: "/cv/kevin-henrique-cv-pt.pdf",
-    // No English CV yet: the English site offers the Portuguese one, labelled "(PT)".
-    en: null,
+    en: "/cv/kevin-henrique-cv-en.pdf",
+    es: "/cv/kevin-henrique-cv-es.pdf",
   },
   photo: {
     src: "/about/kevin.jpg",
@@ -66,8 +66,8 @@ export const profile = {
     { code: "es", name: { pt: "Espanhol", en: "Spanish" }, level: { pt: "Básico", en: "Basic" } },
   ],
   aboutShort: {
-    pt: "Estudo Engenharia de Software na UMC e trabalho desde os 17. Hoje sou Jovem Aprendiz na secretaria de uma escola, onde criei o PDF Renamer e o SEK, que a equipe usa todo dia.",
-    en: "I study Software Engineering at UMC and have been working since I was 17. Today I'm an apprentice in a school's office, where I built PDF Renamer and SEK, which the team uses every day.",
+    pt: "Estudo Engenharia de Software na UMC e trabalho desde os 17. Hoje sou Jovem Aprendiz na secretaria de uma escola, onde criei o KIRI e o SEK, que a equipe usa todo dia.",
+    en: "I study Software Engineering at UMC and have been working since I was 17. Today I'm an apprentice in a school's office, where I built KIRI and SEK, which the team uses every day.",
   },
   startedCoding: {
     age: 15,

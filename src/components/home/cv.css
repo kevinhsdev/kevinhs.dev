@@ -1,0 +1,139 @@
+/* the page background under the About window, going to black right before Contact so that
+   seam doesn't show */
+.cv {
+  background: linear-gradient(
+    180deg,
+    var(--background) calc(100% - 18rem),
+    var(--nebula-back) 100%
+  );
+}
+.cv-label {
+  font: 500 0.72rem/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-strong);
+}
+.cv-title {
+  margin-top: 1rem;
+  font: 400 clamp(3.25rem, 7vw, 6rem) / 0.9 var(--font-display);
+  text-transform: uppercase;
+}
+
+/* the three languages as a short list of rows */
+.cv-langs {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 24rem;
+  margin-top: 2.25rem;
+}
+.cv-langs button {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  border-radius: 0.8rem;
+  text-align: left;
+  color: var(--foreground);
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+.cv-langs button:hover {
+  border-color: color-mix(in srgb, var(--foreground) 30%, transparent);
+}
+.cv-langs button[aria-pressed="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+.cv-langs b {
+  font: 600 0.8rem/1 var(--font-mono);
+  color: var(--accent-strong);
+}
+
+.cv-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+.cv-open:hover {
+  color: var(--foreground);
+}
+
+/* the preview: the whole first page, sharp, with relief: page 2 peeking out behind it, a soft
+   contact shadow plus a long drop shadow; no 3D tilt, which would soften the text */
+.cv-paper {
+  position: relative;
+  display: block;
+  width: min(100%, 40rem, calc((100svh - 7rem) * 0.707));
+  margin-inline: auto;
+  border-radius: 0.35rem;
+  background: #fff;
+  box-shadow:
+    inset 0 0 0 1px rgb(0 0 0 / 0.06),
+    0.7rem 0.7rem 0 -1px #e7eaf1,
+    0.7rem 0.7rem 0 0 rgb(0 0 0 / 0.12),
+    0 1px 2px rgb(0 0 0 / 0.25),
+    0 0.6rem 1.2rem -0.3rem rgb(0 0 0 / 0.35),
+    0 2.5rem 4.5rem -1rem rgb(0 0 0 / 0.55);
+  transition: translate 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+a.cv-paper:hover {
+  translate: 0 -0.3rem;
+}
+.cv-paper img {
+  display: block;
+  border-radius: inherit;
+  width: 100%;
+  height: auto;
+  animation: cv-in 0.35s ease-out;
+}
+@keyframes cv-in {
+  from {
+    opacity: 0;
+  }
+}
+/* the preview glides in from below as it scrolls into view and drifts up and out as it leaves,
+   tied to the scroll itself (browsers without scroll timelines just show it) */
+@supports (animation-timeline: view()) {
+  .cv-preview {
+    animation: cv-scroll linear both;
+    animation-timeline: view();
+    animation-range: entry 0% exit 100%;
+  }
+  @keyframes cv-scroll {
+    entry 0% {
+      opacity: 0;
+      translate: 0 5rem;
+      scale: 0.96;
+    }
+    entry 85% {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+    exit 25% {
+      opacity: 1;
+      translate: 0 0;
+      scale: 1;
+    }
+    exit 100% {
+      opacity: 0;
+      translate: 0 -3rem;
+      scale: 0.97;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-preview,
+  .cv-paper,
+  .cv-paper img {
+    transition: none;
+    animation: none;
+  }
+}

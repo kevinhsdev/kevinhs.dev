@@ -1,27 +1,23 @@
 import type { Metadata } from "next";
+import { Caveat, Gloock, League_Gothic } from "next/font/google";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { certificateFolders, eventOptions } from "@/components/about/data";
-import { Reveal } from "@/components/motion/reveal";
+import { CertificatesView } from "@/components/about/certificates-view";
+import { certificateFolders } from "@/components/about/data";
+import { AboutStory, Kicker } from "@/components/about/stories";
+import { BrandLente } from "@/components/shell/brand-lente";
+import { MetalCvButton } from "@/components/shell/ctas";
 import { SiteFooter } from "@/components/shell/footer";
-import { CardFanCarousel } from "@/components/ui/card-fan-carousel";
-import GlassFolder from "@/components/ui/glass-folder";
-import { HoloCard } from "@/components/ui/holo-card";
-import { InteractiveSelector } from "@/components/ui/interactive-selector";
-import { about, gallery, now, pick, profile, skills } from "@/content";
+import { Esteira } from "@/components/ui/esteira";
+import { now, pick, profile } from "@/content";
 import type { Locale } from "@/i18n/routing";
 import "@/components/about/about.css";
 
-const FAN = [
-  "guitarra-luz",
-  "teclado",
-  "guitarra",
-  "instrumentos",
-  "volei",
-  "volei-jogo",
-  "aviao",
-  "adesivos",
-];
+/** Tall condensed capitals for titles, a high-contrast serif for the soft words. */
+const tall = League_Gothic({ variable: "--font-tall", subsets: ["latin"] });
+const serif = Gloock({ variable: "--font-serif", weight: "400", subsets: ["latin"] });
+/** The handwriting from the home hero, over the name in the opening. */
+const hand = Caveat({ variable: "--font-hand", weight: "600", subsets: ["latin"] });
 
 export async function generateMetadata({
   params,
@@ -31,211 +27,183 @@ export async function generateMetadata({
   return { title: `${t("title")} · Kevin Henrique`, description: t("description") };
 }
 
-function Heading({ id, children }: { id: string; children: React.ReactNode }) {
-  return (
-    <h2 id={id} className="font-display text-5xl leading-none uppercase sm:text-7xl">
-      {children}
-    </h2>
-  );
-}
-
 /**
- * About: who Kevin is (with the Holo Card) → off-screen photos (Card Fan) → certificates
- * (Glass Folders) → events (Interactive Selector) → studying now → every skill by tier.
+ * About, after Leclerc's "The man" and Lando's "Off track". The top half is in stories.tsx;
+ * below it, on night blue: the certificate belt with its glass folders and the grid of every
+ * certificate, what he's studying and building as a timing tower, and the K in glass.
  */
 export default async function AboutPage({ params }: PageProps<"/[locale]/about">) {
   const { locale: raw } = await params;
   setRequestLocale(raw);
   const locale = raw as Locale;
   const t = await getTranslations("about");
-  const ts = await getTranslations("skills");
 
-  const fan = FAN.map((id) => {
-    const photo = gallery.find((g) => g.id === id);
-    if (!photo) throw new Error(`about: unknown photo "${id}"`);
-    return { imgUrl: photo.src, alt: pick(photo.alt, locale) };
-  });
+  const folders = certificateFolders(locale);
+  // dealt from each folder in turn, so the belt mixes them instead of eight Alura blues in a row
+  const groups = folders.map((f) => f.files.map((file) => ({ ...file, group: t(f.key) })));
+  const certs = Array.from({ length: Math.max(...groups.map((g) => g.length)) }, (_, i) =>
+    groups.flatMap((g) => g[i] ?? []),
+  ).flat();
+  // the real first page where there is one; a paper card for the one without a file
+  const certCards = certs.map((c) =>
+    c.preview ? (
+      <article key={c.id} className="cert cert--img">
+        <Image
+          src={c.preview.src}
+          alt=""
+          width={c.preview.width}
+          height={c.preview.height}
+          sizes="360px"
+        />
+      </article>
+    ) : (
+      <article key={c.id} className="cert">
+        <div className="flex items-start justify-between gap-4">
+          <span className="cert-kicker">{t("certificate")}</span>
+          <span className="cert-group">{c.group}</span>
+        </div>
+        <p className="cert-name">{c.name}</p>
+        <div className="flex items-end justify-between">
+          <span className="cert-meta">{c.meta}</span>
+          <span className="cert-seal" aria-hidden="true">
+            K
+          </span>
+        </div>
+      </article>
+    ),
+  );
 
   return (
     <>
-      <main id="main" className="about">
-        {/* who */}
-        <section
-          aria-labelledby="about-title"
-          className="mx-auto grid max-w-7xl gap-14 px-5 pt-36 pb-20 sm:px-8 lg:grid-cols-12 lg:gap-12 lg:pt-44"
-        >
-          <div className="lg:col-span-7">
-            <Reveal>
-              <h1
-                id="about-title"
-                data-line
-                className="font-display text-7xl leading-[0.9] uppercase sm:text-9xl"
-              >
-                {t("title")}
-              </h1>
-            </Reveal>
-            <p className="mt-8 max-w-2xl text-xl leading-snug text-pretty sm:text-2xl">
-              {pick(about.lede, locale)}
-            </p>
-            <div className="mt-8 flex max-w-2xl flex-col gap-4 leading-relaxed text-muted">
-              {about.intro.map((p, i) => (
-                <p key={i}>{pick(p, locale)}</p>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-col items-center gap-8 lg:col-span-5">
-            {profile.photo && (
-              <Image
-                src={profile.photo.src}
-                alt={pick(profile.photo.alt, locale)}
-                width={480}
-                height={600}
-                priority
-                className="aspect-[4/5] w-full max-w-sm rounded-3xl border border-border object-cover"
+      <main id="main" className={`about ax ${tall.variable} ${serif.variable} ${hand.variable}`}>
+        <AboutStory locale={locale} />
+
+        <div className="dark ax-night ax-tail">
+          {/* certificates riding a conveyor behind the title, the glass folders in front */}
+          <section aria-labelledby="certs-title" className="about-certs">
+            <div className="about-certs-belt" aria-hidden="true">
+              {/* the second row starts halfway down the list, so the rows never line up */}
+              <Esteira
+                rows={[certCards, [...certCards.slice(6), ...certCards.slice(0, 6)].reverse()]}
+                label={t("certificates")}
               />
-            )}
-            {/* The foil barely shows on a white card, so the card keeps the dark tokens. */}
-            <div className="dark w-full max-w-sm">
-              <HoloCard className="about-holo" maxTilt={16} label={t("card")}>
-                <div className="flex items-start justify-between">
-                  <span className="font-mono text-[11px] tracking-[0.18em] text-[var(--hc-muted)] uppercase">
-                    kevinhs.dev
-                  </span>
-                  <span className="rounded-full border border-[var(--hc-border)] px-2 py-0.5 text-[10px] text-[var(--hc-accent-text)]">
-                    {pick(profile.status, locale)}
-                  </span>
-                </div>
-                <div>
-                  <p className="font-display text-3xl leading-none text-[var(--hc-fg)] uppercase">
-                    {profile.name}
-                  </p>
-                  <p className="mt-1 text-sm text-[var(--hc-muted)]">
-                    {pick(profile.role, locale)}
-                  </p>
-                </div>
-                <div className="flex items-end justify-between gap-4 font-mono text-[11px] text-[var(--hc-muted)]">
-                  <span>{pick(profile.location, locale)}</span>
-                  <span className="flex gap-3">
-                    <a
-                      href={profile.links.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[var(--hc-accent-text)]"
-                    >
-                      GitHub
-                    </a>
-                    <a
-                      href={profile.links.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[var(--hc-accent-text)]"
-                    >
-                      LinkedIn
-                    </a>
-                  </span>
-                </div>
-              </HoloCard>
             </div>
-          </div>
-        </section>
-
-        {/* off screen */}
-        <section aria-labelledby="photos-title" className="about-photos py-20 lg:py-28">
-          <div className="mx-auto max-w-7xl px-5 sm:px-8">
-            <Heading id="photos-title">{t("photos")}</Heading>
-          </div>
-          <CardFanCarousel cards={fan} className="about-fan mt-10" />
-        </section>
-
-        {/* certificates */}
-        <section
-          aria-labelledby="certs-title"
-          className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28"
-        >
-          <Heading id="certs-title">{t("certificates")}</Heading>
-          <p className="mt-4 max-w-xl text-muted">{t("certificatesIntro")}</p>
-          <div className="mt-12 flex flex-wrap justify-center gap-10 sm:justify-start">
-            {certificateFolders(locale).map((f, i) => (
-              <GlassFolder
-                key={f.key}
-                label={t(f.key)}
-                meta={t("items", { n: f.files.length })}
-                art={f.art}
-                tone={f.tone}
-                action="none"
-                appearDelay={i * 120}
-                files={f.files.map(({ name, meta }) => ({ name, meta }))}
+            <div className="about-certs-front">
+              <h2 id="certs-title" className="ax-h2">
+                {t("certificates")}
+              </h2>
+              <p className="mx-auto mt-4 max-w-md text-lg text-muted">{t("certificatesIntro")}</p>
+              <CertificatesView
+                folders={folders.map((f) => ({
+                  ...f,
+                  label: t(f.key),
+                  count: t("items", { n: f.files.length }),
+                }))}
+                labels={{
+                  open: t("certOpen"),
+                  prev: t("certPrev"),
+                  next: t("certNext"),
+                  close: t("certClose"),
+                  noPreview: t("certNoPreview"),
+                }}
               />
-            ))}
-          </div>
-        </section>
+            </div>
+          </section>
 
-        {/* events */}
-        <section
-          aria-labelledby="events-title"
-          className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28"
-        >
-          <Heading id="events-title">{t("events")}</Heading>
-          <p className="mt-4 max-w-xl text-muted">{t("eventsIntro")}</p>
-          <InteractiveSelector
-            className="about-events mt-12"
-            label={t("events")}
-            options={eventOptions(locale)}
-          />
-        </section>
-
-        {/* studying now */}
-        <section
-          aria-labelledby="now-title"
-          className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28"
-        >
-          <Heading id="now-title">{t("studying")}</Heading>
-          <ol className="mt-10 grid gap-4 md:grid-cols-3">
-            {now.learning.map((item, i) => (
-              <li
-                key={i}
-                className="rounded-3xl border border-border bg-surface p-6 leading-relaxed"
-              >
-                <span className="mb-3 block font-mono text-xs text-accent">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                {pick(item, locale)}
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* every skill */}
-        <section
-          aria-labelledby="skills-title"
-          className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28"
-        >
-          <Heading id="skills-title">{t("skills")}</Heading>
-          <dl className="mt-10 grid gap-px overflow-hidden rounded-3xl border border-border bg-border md:grid-cols-2">
-            {skills.map((group) => (
-              <div key={group.tier} className="bg-background p-6 sm:p-8">
-                <dt className="font-mono text-xs tracking-widest text-muted uppercase">
-                  {ts(`tiers.${group.tier}`)}
-                </dt>
-                <dd className="mt-5">
-                  <ul className="flex flex-wrap gap-2">
-                    {group.items.map((item) => {
-                      const name = pick(item, locale);
-                      return (
-                        <li
-                          key={name}
-                          className="rounded-full border border-border px-4 py-2 text-sm"
-                        >
-                          {name}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </dd>
+          {/* studying now, after the drivers' sites: a live timing tower. On track, what he's
+              studying, P1 down, with sectors lighting up while it runs; in the garage, what
+              he's building */}
+          <section aria-labelledby="now-title" className="ax-tt">
+            <div className="ax-tt-head">
+              <div>
+                <Kicker>{t("nowKicker")}</Kicker>
+                <h2 id="now-title" className="ax-h2 mt-6">
+                  {t("studying")}
+                </h2>
               </div>
-            ))}
-          </dl>
-        </section>
+              <p className="ax-tt-live">
+                <span className="ahd-dot" aria-hidden="true" />
+                {t("live")} · {t("updated", { date: now.updatedAt.split("-").reverse().join("/") })}
+              </p>
+            </div>
+            <div className="ax-tt-boards">
+              <div className="ax-tt-board">
+                <p className="ax-tt-label">
+                  <span>{t("track")}</span>
+                  <span>{now.learning.length}</span>
+                </p>
+                <ol>
+                  {now.learning.map((item, i) => {
+                    const p = item.progress;
+                    return (
+                      <li key={i} className="ax-tt-row" style={{ "--i": i } as React.CSSProperties}>
+                        <span className="ax-tt-pos">P{i + 1}</span>
+                        <div className="ax-tt-main">
+                          <h3 className="ax-tt-name">{pick(item.title, locale)}</h3>
+                          <p className="ax-tt-text">{pick(item.text, locale)}</p>
+                        </div>
+                        {/* sectors: with a number they fill to it, without one they keep lapping */}
+                        <span
+                          className="ax-tt-sectors"
+                          data-lap={p == null || undefined}
+                          style={
+                            p == null ? undefined : ({ "--p": p / 100 } as React.CSSProperties)
+                          }
+                          aria-hidden="true"
+                        >
+                          <i />
+                          <i />
+                          <i />
+                        </span>
+                        <span className="ax-tt-status">
+                          {item.status ? pick(item.status, locale) : t("inProgress")}
+                          {p != null && ` · ${p}%`}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </div>
+              <div className="ax-tt-board">
+                <p className="ax-tt-label">
+                  <span>{t("garage")}</span>
+                  <span>{now.building.length}</span>
+                </p>
+                <ul>
+                  {now.building.map((b, i) => {
+                    const [name, text] = pick(b, locale).split(/[:,]\s(.*)/s);
+                    return (
+                      <li key={i} className="ax-tt-row" style={{ "--i": i } as React.CSSProperties}>
+                        <span className="ax-tt-pos">G{i + 1}</span>
+                        <div className="ax-tt-main">
+                          <h3 className="ax-tt-name">{text ? name : name!.replace(/\.$/, "")}</h3>
+                          {text && <p className="ax-tt-text">{text}</p>}
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          {/* closing call: the K in glass, then a fade into the footer's black */}
+          <section aria-labelledby="about-end-title" className="about-end">
+            <div className="mx-auto max-w-7xl px-5 pt-10 pb-36 text-center sm:px-8 lg:pb-48">
+              <BrandLente label={profile.name} className="about-lente mx-auto" />
+              <h2 id="about-end-title" className="ax-h2">
+                {t("endTitle")}
+              </h2>
+              <p className="mx-auto mt-5 max-w-md text-lg text-muted">{t("endText")}</p>
+              <div className="mt-9 flex flex-wrap items-center justify-center gap-5">
+                <MetalCvButton />
+                <a href={`/${locale}#contact`} className="about-end-link">
+                  {t("endContact")} →
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
       <SiteFooter />
     </>

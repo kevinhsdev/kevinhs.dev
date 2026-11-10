@@ -1,150 +1,289 @@
 "use client";
 
+import { Copy, Download, SendHorizontal } from "lucide-react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { Fragment, useEffect, useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { CvButton, InstagramButton, LinkedInButton, useCopyEmail } from "@/components/shell/ctas";
-import { ShaderStage } from "@/components/stage/shader-stage";
-import { PromptInputBox } from "@/components/ui/ai-prompt-box";
+import {
+  GitHubButton,
+  InstagramButton,
+  LinkedInButton,
+  useCopyEmail,
+  useCvLabel,
+} from "@/components/shell/ctas";
 import { MetalButton } from "@/components/ui/mercurio";
 import { profile } from "@/content/profile";
 import { contactAction } from "@/lib/contact-action";
 import { contactSchema } from "@/lib/contact-schema";
+import { prefersReduced } from "@/motion/reduced";
 import "./contact.css";
 
-const pill =
-  "inline-flex h-12 items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--foreground)_18%,transparent)] px-5 text-sm font-semibold transition-colors hover:border-accent hover:text-accent";
-const field =
-  "h-12 w-full rounded-2xl border border-[color-mix(in_srgb,var(--foreground)_14%,transparent)] bg-[color-mix(in_srgb,var(--background)_55%,transparent)] px-4 text-sm outline-none placeholder:text-muted focus:border-accent";
+const PRESETS = ["opportunity", "project", "general"] as const;
 
-/**
- * Contact, on the Nebulosa stage (always dark): the e-mail big, Mercúrio copies it, the CTAs,
- * and a message form whose message field is the AI Prompt Box in the site palette.
- */
-export function Contact() {
+/** The form's state and its send, behind the chat. */
+function useContactForm() {
   const t = useTranslations("contact");
-  const email = useCopyEmail();
   const [name, setName] = useState("");
   const [from, setFrom] = useState("");
+  const [message, setMessage] = useState("");
   const [website, setWebsite] = useState("");
+  const [log, setLog] = useState<string[]>([]);
   const [pending, start] = useTransition();
 
-  // The prompt box clears itself on send, so a send the server would refuse is stopped
-  // here (capture phase, before the box sees it) and the text stays.
-  const guard = (e: React.SyntheticEvent, root: HTMLElement) => {
-    const text = root.querySelector("textarea")?.value.trim() ?? "";
-    const ok = contactSchema.safeParse({ name, email: from, message: text, website }).success;
-    if (ok) return;
-    e.preventDefault();
-    e.stopPropagation();
-    toast.error(t("invalid"));
-  };
-
-  const send = (message: string) =>
+  /** Check, then send; a refused message stays in the box. */
+  const submit = () => {
+    const text = message.trim();
+    if (!contactSchema.safeParse({ name, email: from, message: text, website }).success)
+      return void toast.error(t("invalid"));
     start(async () => {
-      const r = await contactAction({ name, email: from, message, website });
+      const r = await contactAction({ name, email: from, message: text, website });
       if (r.ok) {
-        toast.success(t("sent"));
-        setName("");
-        setFrom("");
+        setLog((l) => [...l, text]);
+        setMessage("");
         return;
       }
       toast.error(t(r.reason));
       if (r.reason !== "invalid") window.location.href = r.mailto;
     });
+  };
 
+  return {
+    t,
+    name,
+    setName,
+    from,
+    setFrom,
+    message,
+    setMessage,
+    website,
+    setWebsite,
+    log,
+    pending,
+    submit,
+  };
+}
+type Form = ReturnType<typeof useContactForm>;
+
+/**
+ * The conversation, laid out like a messaging app: a header, the log (my messages arrive one by
+ * one with "typing…" in between, then a card asking who you are), quick replies, the composer.
+ * A sent message shows on the right with ✓✓ and gets an answer.
+ */
+function ChatApp({
+  f,
+  bubbles,
+  className = "",
+}: {
+  f: Form;
+  bubbles: React.ReactNode[];
+  className?: string;
+}) {
+  const email = useCopyEmail();
+  const cv = useCvLabel();
+  const root = useRef<HTMLDivElement>(null);
+  const logEl = useRef<HTMLDivElement>(null);
+  const total = bubbles.length + 1; // + the "who are you" card
+  const [shown, setShown] = useState(0);
+
+  // start the conversation once the chat is on screen
+  useEffect(() => {
+    const timers: number[] = [];
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e?.isIntersecting) return;
+        io.disconnect();
+        if (prefersReduced()) return setShown(total);
+        for (let i = 1; i <= total; i++)
+          timers.push(window.setTimeout(() => setShown(i), 500 + (i - 1) * 1100));
+      },
+      { rootMargin: "0px 0px -25% 0px" },
+    );
+    io.observe(root.current!);
+    return () => {
+      io.disconnect();
+      timers.forEach(clearTimeout);
+    };
+  }, [total]);
+
+  // keep the newest message in view
+  useEffect(() => {
+    const el = logEl.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [shown, f.log.length]);
+
+  const lastIn = Math.min(shown, bubbles.length) - 1;
   return (
-    <ShaderStage
-      kind="nebulosa"
-      as="section"
-      id="contact"
-      aria-labelledby="contact-title"
-      className="dark"
-    >
-      <div className="mx-auto grid min-h-svh max-w-7xl items-center gap-16 px-5 py-28 sm:px-8 lg:grid-cols-12 lg:gap-12">
-        <div className="lg:col-span-7">
-          <h2
-            id="contact-title"
-            className="font-display text-7xl leading-[0.9] text-[var(--stage-ink)] uppercase sm:text-9xl"
-          >
-            {t("title")}
-          </h2>
-          <p className="mt-6 max-w-xl text-lg text-[var(--stage-muted)]">{t("intro")}</p>
+    <div ref={root} className={`ct-app ${className}`}>
+      <header className="ct-app-head">
+        {profile.photo && (
+          <Image src={profile.photo.src} alt="" width={80} height={80} className="ct-avatar" />
+        )}
+        <div className="min-w-0">
+          <b className="block truncate">{profile.name}</b>
+          <span className="ct-online">{f.t("chat.status")}</span>
+        </div>
+        <div className="ct-app-actions">
           <button
             type="button"
             onClick={() => void email.copy()}
-            className="mt-10 block max-w-full truncate text-left font-display text-[clamp(1.75rem,8vw,3.75rem)] text-accent-strong underline-offset-8 hover:underline"
+            aria-label={email.label}
+            title={email.label}
           >
-            {profile.email}
+            <Copy aria-hidden className="size-[18px]" />
           </button>
-          <div className="mt-10 flex flex-wrap items-center gap-3">
-            <MetalButton onClick={() => void email.copy()}>{email.label}</MetalButton>
-            <CvButton className={pill} />
-            <LinkedInButton className={pill} />
-            <InstagramButton className={pill} />
-          </div>
+          <a href={cv.href} download aria-label={cv.label} title={cv.label}>
+            <Download aria-hidden className="size-[18px]" />
+          </a>
         </div>
+      </header>
 
-        <form
-          className="contact-box lg:col-span-5"
-          onSubmit={(e) => e.preventDefault()}
-          aria-busy={pending}
-        >
-          <h3 className="mb-5 font-mono text-xs tracking-widest text-[var(--stage-muted)] uppercase">
-            {t("orForm")}
-          </h3>
-          <div className="mb-3 grid gap-3 sm:grid-cols-2">
-            <label className="sr-only" htmlFor="contact-name">
-              {t("name")}
+      <div ref={logEl} className="ct-app-log" role="log" aria-live="polite">
+        <p className="ct-day">{f.t("chat.today")}</p>
+        {bubbles.slice(0, shown).map((b, i) => (
+          <div
+            key={i}
+            className="ct-msg ct-in"
+            data-tail={(i === lastIn && shown <= bubbles.length) || undefined}
+          >
+            {b}
+          </div>
+        ))}
+        {shown === total && (
+          <div className="ct-msg ct-in ct-card" data-tail>
+            <p>{f.t("chat.idTitle")}</p>
+            <label className="sr-only" htmlFor="ct-name">
+              {f.t("name")}
             </label>
             <input
-              id="contact-name"
-              className={field}
-              placeholder={t("name")}
+              id="ct-name"
+              placeholder={f.t("name")}
               autoComplete="name"
               maxLength={100}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={f.name}
+              onChange={(e) => f.setName(e.target.value)}
             />
-            <label className="sr-only" htmlFor="contact-email">
-              {t("email")}
+            <label className="sr-only" htmlFor="ct-email">
+              {f.t("email")}
             </label>
             <input
-              id="contact-email"
-              className={field}
+              id="ct-email"
               type="email"
-              placeholder={t("email")}
+              placeholder={f.t("email")}
               autoComplete="email"
-              value={from}
-              onChange={(e) => setFrom(e.target.value)}
+              value={f.from}
+              onChange={(e) => f.setFrom(e.target.value)}
             />
           </div>
-          {/* honeypot: hidden from people, bots fill it */}
-          <div aria-hidden className="absolute -left-[9999px] size-px overflow-hidden">
-            <label>
-              {t("honeypot")}
-              <input
-                tabIndex={-1}
-                autoComplete="off"
-                value={website}
-                onChange={(e) => setWebsite(e.target.value)}
-              />
-            </label>
+        )}
+        {shown > 0 && shown < total && (
+          <div className="ct-typing" role="status" aria-label={f.t("chat.typing")}>
+            <i />
+            <i />
+            <i />
           </div>
-          <fieldset
-            onKeyDownCapture={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) guard(e, e.currentTarget);
-            }}
-            onClickCapture={(e) => {
-              const btn = (e.target as HTMLElement).closest(".apb-send");
-              if (btn?.getAttribute("data-state") === "send") guard(e, e.currentTarget);
-            }}
-          >
-            <legend className="sr-only">{t("message")}</legend>
-            <PromptInputBox placeholder={t("placeholder")} isLoading={pending} onSend={send} />
-          </fieldset>
-        </form>
+        )}
+        {f.log.map((m, i) => (
+          <Fragment key={i}>
+            <div className="ct-msg ct-out" data-tail>
+              {m}
+              <small>{f.t("chat.now")} ✓✓</small>
+            </div>
+            <div className="ct-msg ct-in" data-tail>
+              {f.t("sent")}
+            </div>
+          </Fragment>
+        ))}
       </div>
-    </ShaderStage>
+
+      <div className="ct-quick" role="group" aria-label={f.t("presetsTitle")}>
+        {PRESETS.map((k) => {
+          const text = f.t(`presets.${k}.text`);
+          return (
+            <button
+              key={k}
+              type="button"
+              aria-pressed={f.message === text}
+              onClick={() => f.setMessage(text)}
+            >
+              {f.t(`presets.${k}.label`)}
+            </button>
+          );
+        })}
+      </div>
+
+      <form
+        className="ct-compose"
+        aria-busy={f.pending}
+        onSubmit={(e) => {
+          e.preventDefault();
+          f.submit();
+        }}
+      >
+        {/* honeypot: hidden from people, bots fill it */}
+        <div aria-hidden className="absolute -left-[9999px] size-px overflow-hidden">
+          <label>
+            {f.t("honeypot")}
+            <input
+              tabIndex={-1}
+              autoComplete="off"
+              value={f.website}
+              onChange={(e) => f.setWebsite(e.target.value)}
+            />
+          </label>
+        </div>
+        <label className="sr-only" htmlFor="ct-message">
+          {f.t("message")}
+        </label>
+        <textarea
+          id="ct-message"
+          rows={1}
+          placeholder={f.t("placeholder")}
+          value={f.message}
+          onChange={(e) => f.setMessage(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              e.currentTarget.form?.requestSubmit();
+            }
+          }}
+        />
+        <button type="submit" aria-label={f.t("send")} disabled={f.pending || !f.message.trim()}>
+          <SendHorizontal aria-hidden className="size-5" />
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/** Contact (always dark, fading into the footer's black): the e-mail up front, the chat beside it. */
+export function Contact() {
+  const f = useContactForm();
+  const email = useCopyEmail();
+  return (
+    <section id="contact" aria-labelledby="contact-title" className="contact dark">
+      <div className="mx-auto grid min-h-svh max-w-7xl items-center gap-14 px-5 py-28 sm:px-8 lg:grid-cols-12 lg:gap-12">
+        <div className="lg:col-span-6">
+          <h2 id="contact-title" className="ct-title">
+            {f.t("title")}
+          </h2>
+          <p className="mt-6 max-w-xl text-lg text-[var(--stage-muted)]">{f.t("intro")}</p>
+          <button type="button" onClick={() => void email.copy()} className="contact-email">
+            {profile.email}
+          </button>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <MetalButton onClick={() => void email.copy()}>{email.label}</MetalButton>
+            <LinkedInButton compact className="ct-social" />
+            <InstagramButton compact className="ct-social" />
+            <GitHubButton compact className="ct-social" />
+          </div>
+        </div>
+        <ChatApp
+          f={f}
+          bubbles={[f.t("chat.hi"), f.t("chat.ask")]}
+          className="ct-app-framed lg:col-span-6"
+        />
+      </div>
+    </section>
   );
 }

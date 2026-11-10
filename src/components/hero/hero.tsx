@@ -1,8 +1,8 @@
 import { Caveat } from "next/font/google";
 import { getTranslations } from "next-intl/server";
 import {
-  CopyEmailButton,
-  CvButton,
+  MetalCvButton,
+  GitHubButton,
   InstagramButton,
   LinkedInButton,
 } from "@/components/shell/ctas";
@@ -10,6 +10,8 @@ import { getProject, pick, profile } from "@/content";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { ShaderStage } from "@/components/stage/shader-stage";
+import { site } from "@/content/site";
+import { HeroSeam } from "./seam";
 import { Swarm } from "./swarm";
 import "./hero.css";
 
@@ -17,9 +19,9 @@ const hand = Caveat({ variable: "--font-hand", weight: "600", subsets: ["latin"]
 
 /** The three real numbers on the right: project metrics, never invented. */
 const NUMBERS = [
-  { project: "pdf-renamer", metric: 0 },
-  { project: "pdf-renamer", metric: 1 },
-  { project: "sek", metric: 0 },
+  { project: "kiri", metric: 0, label: "pdfDocs" },
+  { project: "kiri", metric: 1, label: "pdfDays" },
+  { project: "sek", metric: 0, label: "sekStudents" },
 ] as const;
 
 /**
@@ -29,11 +31,24 @@ const NUMBERS = [
  */
 export async function Hero({ locale }: { locale: Locale }) {
   const t = await getTranslations("hero");
-  const numbers = NUMBERS.flatMap(({ project: slug, metric: index }) => {
+  // the value is the project's metric; the label is a clearer hero line for it (messages)
+  const numbers = NUMBERS.flatMap(({ project: slug, metric: index, label }) => {
     const project = getProject(slug);
     const metric = project?.metrics[index];
-    return project && metric ? [{ slug, metric }] : [];
+    return project && metric
+      ? [
+          {
+            slug,
+            value: metric.value,
+            label: t(`n.${label}`),
+            source: pick(project.title, locale).split(" · ")[0]!,
+          },
+        ]
+      : [];
   });
+
+  // Fluxo's palette is dark-only; Ondas follows the page theme, like the old kevinhs.dev hero.
+  const theme = site.heroBackground === "fluxo" ? "dark" : "hero--tema";
 
   return (
     <>
@@ -50,11 +65,11 @@ export async function Hero({ locale }: { locale: Locale }) {
       <section
         id="hero"
         aria-labelledby="hero-title"
-        className={`hero dark ${hand.variable}`}
+        className={`hero ${theme} ${hand.variable}`}
         data-montagem="hero"
       >
         <div className="hero__quadro" data-camada="quadro" aria-hidden>
-          <ShaderStage kind="fluxo" />
+          <ShaderStage kind={site.heroBackground} />
         </div>
 
         <div className="hero__a" data-parte>
@@ -90,7 +105,7 @@ export async function Hero({ locale }: { locale: Locale }) {
             </p>
             <div className="hero__ctas">
               <span data-camada="bloco">
-                <CvButton className="hero__botao hero__botao--cv sel" />
+                <MetalCvButton className="hero__metal sel" />
               </span>
               <ul className="hero__redes" data-duplica aria-label={t("links")}>
                 <li data-camada="bloco">
@@ -100,7 +115,7 @@ export async function Hero({ locale }: { locale: Locale }) {
                   <InstagramButton className="anel sel" compact />
                 </li>
                 <li data-camada="bloco">
-                  <CopyEmailButton className="anel sel" compact />
+                  <GitHubButton className="anel sel" compact />
                 </li>
               </ul>
             </div>
@@ -116,30 +131,30 @@ export async function Hero({ locale }: { locale: Locale }) {
         </div>
 
         <div className="hero__dir" data-parte>
+          <p className="hero__kicker" data-camada="texto">
+            {t("numbersKicker")}
+          </p>
           <ul className="hero__numeros" data-duplica aria-label={t("numbers")}>
-            {numbers.map(({ slug, metric }, i) =>
-              i < numbers.length - 1 ? (
-                <li key={`${slug}-${metric.value}`}>
-                  <strong data-camada="texto">{metric.value}</strong>
-                  <span data-camada="texto">{pick(metric.label, locale)}</span>
-                </li>
-              ) : (
-                <li key={`${slug}-${metric.value}`}>
-                  <Link className="hero__num-link sel" href={`/projects/${slug}`}>
-                    <strong data-camada="texto">{metric.value}</strong>
-                    <span data-camada="texto">
-                      {pick(metric.label, locale)}
+            {numbers.map(({ slug, value, label, source }) => (
+              <li key={`${slug}-${value}`}>
+                <Link className="hero__num-link" href={`/projects/${slug}`}>
+                  <strong data-camada="texto">{value}</strong>
+                  <span data-camada="texto">
+                    {label}
+                    <em className="hero__fonte">
+                      {source}
                       <svg className="ico" aria-hidden>
                         <use href="#u-ne" />
                       </svg>
-                    </span>
-                  </Link>
-                </li>
-              ),
-            )}
+                    </em>
+                  </span>
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </section>
+      <HeroSeam locale={locale} />
 
       <Swarm
         labels={{

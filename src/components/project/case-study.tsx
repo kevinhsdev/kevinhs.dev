@@ -3,6 +3,29 @@ import type { MDXComponents, MDXContent } from "mdx/types";
 import { Fragment, type ComponentProps, type ReactNode } from "react";
 import type { Locale } from "@/i18n/routing";
 
+/** "Decisões técnicas e trade-offs" → "decisoes-tecnicas-e-trade-offs": the id of a section. */
+export function sectionId(title: string) {
+  return title
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/** The case study's sections (its "## " headings), read from the source for the side index. */
+export async function caseStudySections(slug: string, locale: Locale) {
+  const { readFile } = await import("node:fs/promises");
+  const src = await readFile(
+    `${process.cwd()}/src/content/case-studies/${slug}.${locale}.mdx`,
+    "utf8",
+  );
+  return [...src.matchAll(/^## (.+)$/gm)].map(([, title = ""]) => ({
+    id: sectionId(title.trim()),
+    title: title.trim(),
+  }));
+}
+
 /** The compiled MDX body of a case study (bundled at build time). */
 export async function loadCaseStudy(slug: string, locale: Locale): Promise<MDXContent> {
   const mdx = (await import(`@/content/case-studies/${slug}.${locale}.mdx`)) as {
@@ -83,7 +106,13 @@ function Diagram({
 
 /** Case-study typography; sections (h2) are numbered by a CSS counter in project.css. */
 export const mdxComponents: MDXComponents = {
-  h2: (props: ComponentProps<"h2">) => <h2 className="case-h2" {...props} />,
+  h2: (props: ComponentProps<"h2">) => (
+    <h2
+      className="case-h2"
+      id={typeof props.children === "string" ? sectionId(props.children) : undefined}
+      {...props}
+    />
+  ),
   h3: (props: ComponentProps<"h3">) => (
     <h3 className="mt-10 mb-3 text-xl font-semibold tracking-tight" {...props} />
   ),

@@ -5,7 +5,7 @@ import type { projectSchema } from "./schema";
 export const projects = [
   {
     slug: "sek",
-    title: "SEK · Gestão Escolar",
+    title: { pt: "SEK · Gestão Escolar", en: "SEK · School Management" },
     tier: "featured",
     status: "in-use",
     year: 2026,
@@ -55,12 +55,13 @@ export const projects = [
       poster: "/projects/sek/poster.jpg",
       duration: "1:05",
     },
+    teaser: { src: "/projects/sek/trailer.mp4", poster: "/projects/sek/trailer-poster.jpg" },
     privateCode: true,
     hasCaseStudy: true,
   },
   {
-    slug: "pdf-renamer",
-    title: "PDF Renamer",
+    slug: "kiri",
+    title: "KIRI",
     tier: "featured",
     status: "in-use",
     year: 2026,
@@ -104,19 +105,19 @@ export const projects = [
       "Anthropic API",
     ],
     links: {
-      repo: "https://github.com/kevinhsdev/pdf-renamer",
-      demo: "https://kevinhsdev.github.io/pdf-renamer/",
+      repo: "https://github.com/kevinhsdev/kiri",
+      demo: "https://kevinhsdev.github.io/kiri/",
     },
     presentation: {
-      src: "/projects/pdf-renamer/apresentacao.mp4",
-      poster: "/projects/pdf-renamer/poster.jpg",
+      src: "/projects/kiri/apresentacao.mp4",
+      poster: "/projects/kiri/poster.jpg",
       duration: "1:11",
     },
     hasCaseStudy: true,
   },
   {
     slug: "blood-bank",
-    title: "Sistema Hemocentro",
+    title: { pt: "Sistema Hemocentro", en: "Blood Bank System" },
     tier: "featured",
     status: "academic",
     year: 2026,
@@ -184,10 +185,12 @@ export const projects = [
       repo: "https://github.com/kevinhsdev/AMATUS",
       demo: "https://kevinhsdev.github.io/AMATUS/",
     },
+    cover: "/projects/amatus/cover.webp",
   },
   {
     slug: "site-lut",
-    title: "Site do Luterano",
+    cover: "/projects/site-lut/cover.webp",
+    title: "I. E. Luterano",
     tier: "other",
     status: "in-development",
     year: 2026,
@@ -207,7 +210,8 @@ export const projects = [
   },
   {
     slug: "finance-api",
-    title: "API de Controle Financeiro",
+    // TODO(kevin): final name; "in development" until then.
+    title: { pt: "Em desenvolvimento", en: "In development" },
     tier: "other",
     status: "in-development",
     year: 2026,

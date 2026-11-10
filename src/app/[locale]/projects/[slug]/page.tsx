@@ -1,15 +1,22 @@
-import { ArrowLeft, ArrowRight, ArrowUpRight, Lock } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Database, Lock, Terminal } from "lucide-react";
 import type { Metadata } from "next";
+import { Caveat } from "next/font/google";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Logo } from "@/components/home/skills-view";
+import { CaseToc } from "@/components/project/case-toc";
+import { caseStudySections, loadCaseStudy } from "@/components/project/case-study";
 import { Metrics } from "@/components/project/metrics";
-import { loadCaseStudy } from "@/components/project/case-study";
+import { GitHubIcon } from "@/components/shell/brand-icons";
 import { SiteFooter } from "@/components/shell/footer";
+import { VideoPlayer } from "@/components/project/video-player";
 import { ShaderStage } from "@/components/stage/shader-stage";
 import { getAdjacentProjects, getProject, pick, projectParams } from "@/content";
 import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import "@/components/project/project.css";
+
+const hand = Caveat({ variable: "--font-hand", weight: "600", subsets: ["latin"] });
 
 export const dynamicParams = false;
 export const generateStaticParams = projectParams;
@@ -20,24 +27,63 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const p = getProject(slug);
   if (!p) return {};
-  return { title: `${p.title} · Kevin Henrique`, description: pick(p.tagline, locale as Locale) };
+  return {
+    title: `${pick(p.title, locale as Locale)} · Kevin Henrique`,
+    description: pick(p.tagline, locale as Locale),
+  };
+}
+
+/** The logo of each stack item (the same files as the skills section); a plain icon when none exists. */
+const STACK_LOGO: Record<string, { file: string; dark?: boolean }> = {
+  "Node.js": { file: "nodejs" },
+  "node:sqlite": { file: "sqlite", dark: true },
+  JavaScript: { file: "javascript" },
+  HTML: { file: "html" },
+  CSS: { file: "css" },
+  "Java 17": { file: "java" },
+  "Java 25": { file: "java" },
+  JDBC: { file: "jdbc" },
+  "MySQL 8": { file: "mysql", dark: true },
+  Maven: { file: "maven" },
+  DAO: { file: "dao" },
+  "Spring Boot": { file: "springboot" },
+  "Spring Data JPA": { file: "spring" },
+  Docker: { file: "docker", dark: true },
+};
+const STACK_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
+  PowerShell: Terminal,
+  PostgreSQL: Database,
+  "GitHub Pages": GitHubIcon,
+};
+
+function StackMark({ name }: { name: string }) {
+  const logo = STACK_LOGO[name];
+  if (logo) return <Logo logo={logo} className="pj-stack-logo" />;
+  const Icon = STACK_ICON[name];
+  return Icon ? <Icon aria-hidden className="pj-stack-logo text-accent" /> : null;
 }
 
 const pill =
   "inline-flex h-12 items-center gap-2 rounded-full border border-border px-5 text-sm font-semibold transition-colors hover:border-accent hover:text-accent";
 
+/** A numbered section with a big title that rises in as it scrolls into view. */
 function Section({
   id,
   title,
+  wide,
   children,
 }: {
   id: string;
   title: string;
+  wide?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <section aria-labelledby={id} className="mx-auto max-w-5xl px-5 py-16 sm:px-8 lg:py-24">
-      <h2 id={id} className="mb-8 font-mono text-sm tracking-widest text-muted uppercase">
+    <section
+      aria-labelledby={id}
+      className={`pj-sec mx-auto px-5 py-20 sm:px-8 lg:py-28 ${wide ? "max-w-7xl" : "max-w-6xl"}`}
+    >
+      <h2 id={id} className="pj-sec-title">
         {title}
       </h2>
       {children}
@@ -46,8 +92,9 @@ function Section({
 }
 
 /**
- * A project: Tipos header → presentation video → the problem → what was built (the case
- * study when there is one) → numbers → stack → links → previous/next.
+ * A project: Tipos header with the facts strip → the video, growing as it scrolls in → the
+ * problem, lit word by word → what was built (the case study with its side index) → the
+ * numbers → the stack rolling past → links → the next project, full screen.
  */
 export default async function ProjectPage({ params }: PageProps<"/[locale]/projects/[slug]">) {
   const { locale: raw, slug } = await params;
@@ -58,89 +105,120 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
   const t = await getTranslations("project");
   const tp = await getTranslations("projects");
   const CaseStudy = p.hasCaseStudy ? await loadCaseStudy(slug, locale) : null;
+  const sections = p.hasCaseStudy ? await caseStudySections(slug, locale) : [];
   const { previous, next } = getAdjacentProjects(slug);
-
-  const problem = (
-    <Section id="problem" title={t("problem")}>
-      <p className="max-w-3xl text-2xl leading-snug text-pretty sm:text-3xl">
-        {pick(p.summary, locale)}
-      </p>
-    </Section>
-  );
+  const title = pick(p.title, locale);
+  const words = pick(p.summary, locale).split(" ");
 
   return (
     <>
-      <main id="main">
+      <div className="pj-progress" aria-hidden="true" />
+      <main id="main" className="pj-main">
         <ShaderStage kind="tipos" as="section" aria-labelledby="project-title" className="dark">
-          <div className="mx-auto flex min-h-[78svh] max-w-7xl flex-col justify-end gap-6 px-5 pt-32 pb-16 sm:px-8">
+          <div className="pj-hero-in mx-auto flex min-h-[86svh] max-w-7xl flex-col justify-end gap-6 px-5 pt-32 pb-12 sm:px-8">
             <Link
               href="/#projects"
               className="inline-flex w-fit items-center gap-2 text-sm text-[var(--stage-muted)] hover:text-accent-strong"
             >
               <ArrowLeft aria-hidden className="size-4" /> {t("back")}
             </Link>
-            <p className="font-mono text-xs tracking-widest text-accent-strong uppercase">
-              {tp(`status.${p.status}`)} · {p.year}
-            </p>
-            <h1
-              id="project-title"
-              className="font-display text-[clamp(3.5rem,11vw,10rem)] leading-[0.88] text-balance text-[var(--stage-ink)] uppercase"
-            >
-              {p.title}
-            </h1>
+            {/* the giant name, with the project's status written over it by hand */}
+            <div className={`pj-title ${hand.variable}`}>
+              <p className="pj-hand">{tp(`status.${p.status}`)}</p>
+              <h1
+                id="project-title"
+                className="font-display text-[clamp(3.5rem,11vw,10rem)] leading-[0.88] text-balance text-[var(--stage-ink)] uppercase"
+              >
+                {title}
+              </h1>
+            </div>
             <p className="max-w-2xl text-lg text-[var(--stage-muted)] sm:text-xl">
               {pick(p.tagline, locale)}
             </p>
-            {(p.role || p.teamSize) && (
-              <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-3 text-sm text-[var(--stage-muted)]">
-                {p.role && (
-                  <div className="max-w-md">
-                    <dt className="font-mono text-xs tracking-widest uppercase">{t("role")}</dt>
-                    <dd className="mt-1 text-[var(--stage-ink)]">{pick(p.role, locale)}</dd>
-                  </div>
-                )}
-                <div>
-                  <dt className="font-mono text-xs tracking-widest uppercase">{t("year")}</dt>
-                  <dd className="mt-1 text-[var(--stage-ink)]">
-                    {p.year} ·{" "}
-                    {p.teamSize && p.teamSize > 1 ? t("team", { count: p.teamSize }) : t("solo")}
-                  </dd>
-                </div>
-              </dl>
+            {p.role && (
+              <p className="max-w-2xl text-sm text-[var(--stage-muted)]">
+                <span className="mr-2 font-mono text-xs tracking-widest uppercase">
+                  {t("role")}
+                </span>
+                <span className="text-[var(--stage-ink)]">{pick(p.role, locale)}</span>
+              </p>
             )}
+            {/* the facts, in a strip like a driver's card */}
+            <dl className="pj-facts">
+              <div>
+                <dt>{t("year")}</dt>
+                <dd>{p.year}</dd>
+              </div>
+              <div>
+                <dt>{t("teamLabel")}</dt>
+                <dd>
+                  {p.teamSize && p.teamSize > 1 ? t("team", { count: p.teamSize }) : t("solo")}
+                </dd>
+              </div>
+              <div>
+                <dt>{t("statusLabel")}</dt>
+                <dd>{tp(`status.${p.status}`)}</dd>
+              </div>
+              <div>
+                <dt>{t("stack")}</dt>
+                <dd>{t("stackCount", { count: p.stack.length })}</dd>
+              </div>
+            </dl>
           </div>
         </ShaderStage>
 
-        {p.presentation ? (
-          <figure className="mx-auto max-w-6xl px-5 pt-16 sm:px-8 lg:pt-24">
-            <video
-              src={p.presentation.src}
-              poster={p.presentation.poster}
-              controls
-              playsInline
-              preload="none"
-              className="aspect-video w-full rounded-3xl border border-border bg-surface object-cover"
-            />
-            <figcaption className="mt-3 font-mono text-xs text-muted">
-              {t("video", { title: p.title })} · {p.presentation.duration} · {t("videoNote")}
-            </figcaption>
+        {(p.presentation || p.cover) && (
+          <figure className="pj-media mx-auto max-w-[90rem] px-3 pt-10 sm:px-6 lg:pt-16">
+            {p.presentation ? (
+              <VideoPlayer
+                src={p.presentation.src}
+                title={title}
+                duration={p.presentation.duration}
+                label={t("video", { title })}
+                cta={t("play")}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element -- static screenshot
+              <img
+                src={p.cover}
+                alt={t("screenshot", { title })}
+                className="aspect-video w-full bg-surface object-cover object-top"
+              />
+            )}
+            {p.presentation && (
+              <figcaption className="mt-3 px-2 font-mono text-xs text-muted">
+                {t("video", { title })} · {p.presentation.duration} · {t("videoNote")}
+              </figcaption>
+            )}
           </figure>
-        ) : null}
+        )}
 
-        {problem}
+        <Section id="problem" title={t("problem")}>
+          {/* each word lights up as the paragraph scrolls past */}
+          <p className="pj-lit">
+            {words.map((w, i) => (
+              <span key={i} style={{ "--p": i / words.length } as React.CSSProperties}>
+                {w}{" "}
+              </span>
+            ))}
+          </p>
+        </Section>
 
         {(CaseStudy || p.highlights.length > 0) && (
-          <Section id="built" title={t("built")}>
+          <Section id="built" title={t("built")} wide>
             {CaseStudy ? (
-              <div className="case-study max-w-3xl">
-                <CaseStudy />
+              <div className="pj-case">
+                {sections.length > 1 && <CaseToc label={t("contents")} sections={sections} />}
+                <div className="case-study max-w-3xl">
+                  <CaseStudy />
+                </div>
               </div>
             ) : (
               <ul className="grid gap-4 sm:grid-cols-2">
                 {p.highlights.map((h, i) => (
                   <li
                     key={i}
-                    className="rounded-3xl border border-border bg-surface p-6 leading-relaxed"
+                    className="pj-card rounded-3xl border border-border bg-surface p-6 leading-relaxed"
                   >
                     <span className="mb-3 block font-mono text-xs text-accent">
                       {String(i + 1).padStart(2, "0")}
@@ -154,21 +232,23 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
         )}
 
         {p.metrics.length > 0 && (
-          <Section id="metrics" title={t("metrics")}>
+          <Section id="metrics" title={t("metrics")} wide>
             <Metrics
               items={p.metrics.map((m) => ({ value: m.value, label: pick(m.label, locale) }))}
             />
           </Section>
         )}
 
-        <Section id="stack" title={t("stack")}>
-          <ul className="flex flex-wrap gap-2">
-            {p.stack.map((s) => (
-              <li key={s} className="rounded-full border border-border px-4 py-2 text-sm">
+        <Section id="stack" title={t("stack")} wide>
+          <ol className="pj-stack">
+            {p.stack.map((s, i) => (
+              <li key={s}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <StackMark name={s} />
                 {s}
               </li>
             ))}
-          </ul>
+          </ol>
         </Section>
 
         <Section id="links" title={t("links")}>
@@ -191,25 +271,20 @@ export default async function ProjectPage({ params }: PageProps<"/[locale]/proje
           </div>
         </Section>
 
-        <nav
-          aria-label={`${t("previous")} / ${t("next")}`}
-          className="mx-auto grid max-w-7xl gap-px border-y border-border bg-border sm:grid-cols-2"
-        >
+        {/* previous and next, side by side; the name slides and the arrow runs on hover */}
+        <nav aria-label={`${t("previous")} / ${t("next")}`} className="pj-adj">
           {[
-            { p: previous, label: t("previous"), Icon: ArrowLeft, end: false },
-            { p: next, label: t("next"), Icon: ArrowRight, end: true },
-          ].map(({ p: q, label, Icon, end }) => (
-            <Link
-              key={label}
-              href={`/projects/${q.slug}`}
-              className={`group flex flex-col gap-2 bg-background px-5 py-10 transition-colors hover:text-accent sm:px-8 ${end ? "sm:items-end sm:text-right" : ""}`}
-            >
-              <span className="inline-flex items-center gap-2 font-mono text-xs tracking-widest text-muted uppercase">
-                {!end && <Icon aria-hidden className="size-4" />}
-                {label}
-                {end && <Icon aria-hidden className="size-4" />}
+            { q: previous, k: t("previous"), dir: "prev" },
+            { q: next, k: t("nextProject"), dir: "next" },
+          ].map(({ q, k, dir }) => (
+            <Link key={dir} href={`/projects/${q.slug}`} className="pj-adj-link" data-dir={dir}>
+              <span className="pj-adj-k">
+                {dir === "prev" && <ArrowLeft aria-hidden className="size-4" />}
+                {k}
+                {dir === "next" && <ArrowRight aria-hidden className="size-4" />}
               </span>
-              <span className="font-display text-3xl uppercase sm:text-5xl">{q.title}</span>
+              <span className="pj-adj-name">{pick(q.title, locale)}</span>
+              <span className="pj-adj-tag">{pick(q.tagline, locale)}</span>
             </Link>
           ))}
         </nav>

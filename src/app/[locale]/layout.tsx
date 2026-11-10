@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 import { BOOT_SCRIPT } from "@/components/hero/boot";
 import { Chrome } from "@/components/shell/chrome";
 import { CtaDock } from "@/components/shell/cta-dock";
+import { Curtain, CURTAIN_SCRIPT } from "@/components/shell/curtain";
 import { SiteHeader } from "@/components/shell/header";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { routing } from "@/i18n/routing";
@@ -47,6 +48,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <Script id="hero-boot" strategy="beforeInteractive">
           {BOOT_SCRIPT}
         </Script>
+        <Script id="curtain-boot" strategy="beforeInteractive">
+          {CURTAIN_SCRIPT}
+        </Script>
         <NextIntlClientProvider>
           <ThemeProvider>
             <a
@@ -59,6 +63,16 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
             {children as ReactNode}
             <CtaDock />
             <Chrome />
+            <Curtain
+              labels={{
+                "": t("home"),
+                journey: t("journey"),
+                projects: t("projects"),
+                skills: t("skills"),
+                contact: t("contact"),
+                about: t("about"),
+              }}
+            />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

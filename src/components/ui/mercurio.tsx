@@ -5,7 +5,18 @@ import { mountMetalRing } from "./metal-ring";
 import "./mercurio.css";
 
 /** Mercúrio: the pill CTA with the liquid-metal ring; the tint is the site's light accent. */
-export function MetalButton({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
+export function MetalButton({
+  children,
+  onClick,
+  href,
+  className = "",
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+  /** Renders a download link instead of a button. */
+  href?: string;
+  className?: string;
+}) {
   const metalRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const el = metalRef.current!;
@@ -23,18 +34,29 @@ export function MetalButton({ children, onClick }: { children: ReactNode; onClic
       off?.();
     };
   }, []);
-  return (
-    <button className="metal-btn" type="button" onClick={onClick}>
+  // a download link points down and slides down; a button points right and slides right
+  const arrow = href ? "M8 3v10M4 9l4 4 4-4" : "M3 8h10M9 4l4 4-4 4";
+  const inner = (
+    <>
       <span ref={metalRef} className="metal-btn__metal" aria-hidden="true" />
       <span className="metal-btn__label">{children}</span>
       <span className="metal-btn__orb" aria-hidden="true">
         <svg viewBox="0 0 16 16">
-          <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={arrow} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         <svg viewBox="0 0 16 16">
-          <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={arrow} fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </span>
+    </>
+  );
+  return href ? (
+    <a className={`metal-btn metal-btn--down ${className}`} href={href} download>
+      {inner}
+    </a>
+  ) : (
+    <button className={`metal-btn ${className}`} type="button" onClick={onClick}>
+      {inner}
     </button>
   );
 }

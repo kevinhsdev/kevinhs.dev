@@ -1,21 +1,31 @@
 import type { z } from "zod";
 import type { nowSchema } from "./schema";
 
-/** The /now page. Update once a month. */
+/**
+ * The /now page. Update once a month.
+ * TODO(kevin): add progress (0–100) to each learning item to fill its bar on About.
+ */
 export const now = {
   updatedAt: "2026-09",
   learning: [
     {
-      pt: "AWS, rumo à certificação Cloud Practitioner, prevista para dezembro.",
-      en: "AWS, working toward the Cloud Practitioner certification, expected in December.",
+      title: { pt: "AWS Cloud Practitioner", en: "AWS Cloud Practitioner" },
+      text: {
+        pt: "Estudando AWS, rumo à certificação.",
+        en: "Studying AWS, working toward the certification.",
+      },
+      status: { pt: "Prova prevista para dezembro", en: "Exam expected in December" },
     },
     {
-      pt: "Bootcamps Santander (Cibersegurança) e Itaú (Java com IA).",
-      en: "Santander (Cybersecurity) and Itaú (Java with AI) bootcamps.",
+      title: { pt: "Bootcamps", en: "Bootcamps" },
+      text: {
+        pt: "Santander (Cibersegurança) e Itaú (Java com IA).",
+        en: "Santander (Cybersecurity) and Itaú (Java with AI).",
+      },
     },
     {
-      pt: "Spring Data JPA e testes automatizados.",
-      en: "Spring Data JPA and automated testing.",
+      title: { pt: "Spring Data JPA", en: "Spring Data JPA" },
+      text: { pt: "E testes automatizados.", en: "And automated testing." },
     },
   ],
   building: [

@@ -1,0 +1,336 @@
+/*
+ * The footer scene (Campo, ProfitizeBuild, made Kevin's): dusk over the dotted Earth, the K in
+ * liquid metal on the horizon, the info over the sea. Always dark.
+ */
+.hz {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  overflow: hidden;
+  background: #05070d;
+  color: #fff;
+}
+/* grain over the scene, entering with it */
+.hz::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background-image: url("/noise.png");
+  background-size: 160px;
+  opacity: 0.08;
+  mix-blend-mode: overlay;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 32%);
+  mask-image: linear-gradient(to bottom, transparent, #000 32%);
+}
+.hz-view,
+.hz-info {
+  grid-area: 1 / 1;
+}
+
+/* ---- the scene ---- */
+.hz-view {
+  --anchor: 0.56; /* where the horizon falls in the scene */
+  position: relative;
+  height: clamp(680px, 54vw, 940px);
+  container-type: size;
+  overflow: hidden;
+  /* the sky is born from the dark above, no cut */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 12%,
+    rgba(0, 0, 0, 0.8) 22%,
+    #000 32%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.35) 12%,
+    rgba(0, 0, 0, 0.8) 22%,
+    #000 32%
+  );
+}
+/* shade on the ground so the text reads */
+.hz-view::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgb(5 7 13 / 0.95) 0%, rgb(5 7 13 / 0.72) 30%, transparent 50%),
+    linear-gradient(to bottom, rgb(5 7 13 / 0.5) 0%, transparent 16%);
+}
+/* dusk: night above, violet, then a warm band right on the horizon */
+.hz-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      60% 22% at 50% calc(var(--anchor) * 100%),
+      color-mix(in srgb, var(--accent) 55%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(
+      to bottom,
+      #05070d 0%,
+      #0a1030 calc(var(--anchor) * 45%),
+      #1d1a5c calc(var(--anchor) * 78%),
+      #4a3b9a calc(var(--anchor) * 92%),
+      #d98aa8 calc(var(--anchor) * 99%),
+      #f2b493 calc(var(--anchor) * 100%),
+      #6a4a9a calc(var(--anchor) * 100% + 4%),
+      #141238 calc(var(--anchor) * 100% + 18%),
+      #05070d 100%
+    );
+}
+/* a few stars */
+.hz-sky::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 50%;
+  background-image:
+    radial-gradient(1px 1px at 12% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 27% 18%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 41% 34%, #fff, transparent),
+    radial-gradient(1px 1px at 58% 22%, #fff, transparent),
+    radial-gradient(1px 1px at 69% 38%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 83% 26%, #fff, transparent),
+    radial-gradient(1px 1px at 92% 41%, #fff, transparent),
+    radial-gradient(1px 1px at 6% 46%, #fff, transparent);
+  opacity: 0.55;
+}
+.hz-globe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.hz-globe.is-ready {
+  opacity: 1;
+}
+/* the monument: its base (BASE of the mask height) stands on the horizon and sinks in the haze */
+.hz-monument {
+  position: absolute;
+  z-index: 1;
+  visibility: hidden; /* until the JS writes --ar and --mask */
+  left: 50%;
+  top: calc(var(--anchor) * 100%);
+  height: min(40cqh, 28cqw);
+  aspect-ratio: var(--ar);
+  transform: translate(-50%, calc(var(--base) * -100%));
+  -webkit-mask-image: linear-gradient(to top, transparent 15%, rgba(0, 0, 0, 0.5) 17.5%, #000 22%);
+  mask-image: linear-gradient(to top, transparent 15%, rgba(0, 0, 0, 0.5) 17.5%, #000 22%);
+}
+.has-mask .hz-monument {
+  visibility: visible;
+}
+.hz-metal {
+  position: absolute;
+  inset: 0;
+  display: block;
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+  filter: saturate(0.94) brightness(0.96);
+}
+.hz-metal.is-ready {
+  opacity: 1;
+}
+.hz-metal > canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* the dusk reflected in the chrome: only inside the glyphs (the same mask), soft-light */
+.hz-reflect {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, #8f8cf2 18%, #e8ecff 46%, #d98aa8 70%, #f2b493 78%);
+  -webkit-mask: var(--mask) center / 100% 100% no-repeat;
+  mask: var(--mask) center / 100% 100% no-repeat;
+  mix-blend-mode: soft-light;
+  opacity: 0.6;
+}
+/* the atmosphere's haze along the horizon */
+.hz-mist {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: calc(var(--anchor) * 100% - 0.4%);
+  width: 70%;
+  height: 5%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--accent) 45%, rgb(200 170 220 / 0.6)),
+    color-mix(in srgb, var(--accent) 20%, transparent) 55%,
+    transparent
+  );
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+/* ---- the info, over the ground ---- */
+.hz-info {
+  position: relative;
+  z-index: 6;
+  align-self: end;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 28px 48px;
+  padding: 0 clamp(20px, 5vw, 72px) 28px;
+}
+.hz-brand {
+  display: grid;
+  gap: 14px;
+}
+.hz-word {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: clamp(26px, 2.4vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-shadow: 0 2px 24px rgb(0 0 0 / 0.5);
+}
+.hz-tagline {
+  margin: 0;
+  max-width: 26rem;
+  font-size: 15.5px;
+  color: rgb(255 255 255 / 0.72);
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.6);
+}
+.hz-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.hz-time {
+  font: 500 12px/1 var(--font-mono);
+  color: rgb(255 255 255 / 0.6);
+}
+.hz-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #3ddc84;
+}
+.hz-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: hz-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes hz-ping {
+  75%,
+  100% {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+.hz-cols {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 0 clamp(36px, 4.4vw, 64px);
+}
+.hz-col h2 {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.hz-col ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hz-col a {
+  font-size: 14.5px;
+  color: rgb(255 255 255 / 0.7);
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.6);
+  transition: color 0.2s;
+}
+.hz-col a:hover {
+  color: #fff;
+}
+.hz-copy {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-top: 18px;
+  border-top: 1px solid rgb(255 255 255 / 0.12);
+  font-size: 13.5px;
+  color: rgb(255 255 255 / 0.66);
+}
+.hz-copy a:hover {
+  color: #fff;
+}
+.hz-top {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: #fff;
+  color: #05070d;
+  transition: translate 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hz-top:hover {
+  color: #05070d !important;
+  translate: 0 -3px;
+}
+
+/* phone: the scene becomes a tall frame and the text drops onto the dark ground */
+@media (max-width: 760px) {
+  .hz-view {
+    --anchor: 0.5;
+    height: 560px;
+  }
+  .hz-view::after {
+    background:
+      linear-gradient(to top, #05070d 0%, rgb(5 7 13 / 0.6) 22%, transparent 42%),
+      linear-gradient(to bottom, rgb(5 7 13 / 0.5) 0%, transparent 18%);
+  }
+  .hz-monument {
+    height: min(26cqh, 40cqw);
+  }
+  .hz-info {
+    grid-area: auto;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-top: -72px;
+    padding: 0 20px 28px;
+  }
+  .hz-cols {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px 24px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hz-dot::after {
+    animation: none;
+  }
+}

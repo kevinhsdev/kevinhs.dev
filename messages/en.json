@@ -16,7 +16,8 @@
     "open": "Open menu",
     "close": "Close menu",
     "navigation": "Navigation",
-    "label": "Menu"
+    "label": "Menu",
+    "find": "Find me on"
   },
   "theme": {
     "toggle": "Toggle light/dark theme"
@@ -55,6 +56,12 @@
       "touring": "Touring",
       "speed": "Agent speed: {v}×",
       "redo": "Build the page again"
+    },
+    "numbersKicker": "In real use",
+    "n": {
+      "pdfDocs": "more documents processed a day (from ~100 to ~300)",
+      "pdfDays": "days to process a class’s documents",
+      "sekStudents": "students covered by the school’s system"
     }
   },
   "journey": {
@@ -78,6 +85,8 @@
   },
   "projects": {
     "title": "Projects",
+    "count": "{n, plural, one {project} other {projects}}",
+    "soon": "Coming soon",
     "featured": "Featured",
     "other": "Other projects",
     "open": "View project",
@@ -94,13 +103,13 @@
   },
   "skills": {
     "title": "Skills",
-    "daily": "What I use every day",
     "tiers": {
       "daily": "Daily use",
       "experienced": "Experienced",
       "learning": "Learning now",
       "concepts": "Concepts"
-    }
+    },
+    "all": "Everything I work with"
   },
   "contact": {
     "title": "Let's talk",
@@ -116,7 +125,32 @@
     "invalid": "Check the fields: name, a valid e-mail and a message of at least 10 characters.",
     "unconfigured": "Direct sending isn't set up. Opening your e-mail app…",
     "failed": "Couldn't send. Opening your e-mail app…",
-    "honeypot": "Leave this field empty"
+    "honeypot": "Leave this field empty",
+    "presetsTitle": "Start with",
+    "presets": {
+      "opportunity": {
+        "label": "Opportunity",
+        "text": "Hi Kevin! I came across your portfolio and would love to chat about a role in data/software engineering. Would you be open to a quick call?"
+      },
+      "project": {
+        "label": "Project",
+        "text": "Hi Kevin! I have a project/technical challenge in mind and would like to discuss scope, architecture and your availability."
+      },
+      "general": {
+        "label": "General",
+        "text": "Hi Kevin! I like your work and wanted to connect."
+      }
+    },
+    "chat": {
+      "status": "Open to internships",
+      "hi": "Hi! Glad you made it all the way here.",
+      "orHere": "Or send me a message right below.",
+      "ask": "Tell me: is it about an opportunity, a project or just a hello?",
+      "today": "Today",
+      "typing": "typing…",
+      "idTitle": "So I can get back to you:",
+      "now": "now"
+    }
   },
   "project": {
     "back": "All projects",
@@ -127,32 +161,90 @@
     "links": "Links",
     "video": "{title} presentation video",
     "videoNote": "in Portuguese",
+    "screenshot": "{title} home screen",
     "previous": "Previous",
     "next": "Next",
     "role": "Role",
     "year": "Year",
     "team": "Team of {count}",
-    "solo": "Solo"
+    "solo": "Solo",
+    "teamLabel": "Team",
+    "statusLabel": "Status",
+    "stackCount": "{count} technologies",
+    "contents": "In this case study",
+    "play": "Watch the presentation",
+    "nextProject": "Next project"
   },
   "about": {
     "title": "About me",
+    "hand": "who I am",
     "description": "Who Kevin Henrique is: how he started coding, what he does today and what he enjoys off-screen.",
     "photos": "Off-screen",
     "certificates": "Certificates",
-    "certificatesIntro": "Finished courses and certifications. Click a folder to open it.",
+    "certificatesIntro": "Open a folder to see its certificates.",
     "languages": "Languages",
-    "courses": "Courses",
     "items": "{n} items",
-    "events": "Events",
-    "eventsIntro": "Meetups and talks where I went to learn and meet people in the field.",
     "studying": "Learning now",
+    "nowKicker": "Today",
     "skills": "All skills",
-    "card": "Business card",
-    "previous": "Previous",
-    "next": "Next"
+    "more": "Read my story",
+    "endTitle": "Let's talk",
+    "endText": "Grab my résumé or send me a message.",
+    "endContact": "Go to contact",
+    "certificate": "Certificate",
+    "story": "My story",
+    "inProgress": "In progress",
+    "scroll": "Scroll to explore",
+    "sport": "volleyball",
+    "morePhotos": "More photos",
+    "chapter": "Chapter",
+    "ch1": "I started coding at 15, with OneBitCode's courses.",
+    "ch2": "Software Engineering at UMC. In a school office, I built KIRI and SEK.",
+    "ch3": "Applied AI and Harness Engineering. I learn at events and use Claude Code every day.",
+    "maltaText": "I adapted to a new place and practiced my English.",
+    "statementE": "I study *every* *day.* I build *what* the team uses.",
+    "malta": "malta",
+    "music": "music",
+    "updated": "Updated {date}",
+    "hobbies": "Hobbies",
+    "heroHello": "Behind the code,",
+    "dragHint": "drag the photos ↗",
+    "dio": "DIO",
+    "alura": "Alura",
+    "events": "Events",
+    "certOpen": "Open original",
+    "certPrev": "Previous",
+    "certNext": "Next",
+    "certClose": "Close",
+    "certNoPreview": "No digital file",
+    "live": "Live",
+    "track": "On track",
+    "garage": "In the garage"
   },
   "footer": {
     "rights": "© {year} Kevin Henrique da Silva",
-    "top": "Back to top"
+    "top": "Back to top",
+    "navigate": "Navigate",
+    "elsewhere": "Find me",
+    "built": "Built from scratch with Next.js · open source on GitHub"
+  },
+  "cv": {
+    "kicker": "Résumé",
+    "title": "My résumé",
+    "intro": "Experience, projects, education and languages. Pick a language and download the PDF.",
+    "langs": {
+      "pt": "Portuguese",
+      "en": "English",
+      "es": "Spanish"
+    },
+    "choose": "Résumé language",
+    "download": "Download PDF",
+    "open": "Open in a new tab",
+    "preview": "Preview of the first page of the {lang} résumé"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "This address doesn't exist or has moved.",
+    "back": "Back to the home page"
   }
 }

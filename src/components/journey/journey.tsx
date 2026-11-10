@@ -58,12 +58,6 @@ export async function Journey({ locale }: { locale: Locale }) {
       spain: t("spain"),
       usa: t("usa"),
     },
-    carousel: {
-      label: t("photos"),
-      previous: t("previous"),
-      next: t("next"),
-      status: t("status", { i: "{i}", n: "{n}" }),
-    },
   };
 
   return <JourneyStage data={data} />;

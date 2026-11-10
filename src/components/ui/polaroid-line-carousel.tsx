@@ -1,4 +1,4 @@
-// @ts-nocheck -- ProfitizeBuild file kept verbatim; it predates this repo's noUncheckedIndexedAccess.
+// @ts-nocheck
 "use client"
 
 import * as React from "react"

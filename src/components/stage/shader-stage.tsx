@@ -3,7 +3,7 @@
 import { useEffect, useRef, type ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-export type ShaderKind = "nebulosa" | "fluxo" | "tipos";
+export type ShaderKind = "nebulosa" | "fluxo" | "tipos" | "ondas";
 
 export function supportsWebgl(): boolean {
   try {
@@ -22,7 +22,9 @@ async function mount(kind: ShaderKind, el: HTMLElement): Promise<(() => void) | 
     import("@/lib/webgl-stage"),
     kind === "fluxo"
       ? import("@/lib/shaders/fluxo").then((m) => m.fluxo)
-      : import("@/lib/shaders/tipos").then((m) => m.tipos),
+      : kind === "ondas"
+        ? import("@/lib/shaders/ondas").then((m) => m.ondas)
+        : import("@/lib/shaders/tipos").then((m) => m.tipos),
   ]);
   return mountWebglStage(el, shader);
 }

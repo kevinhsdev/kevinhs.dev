@@ -25,8 +25,8 @@ export const timeline = [
     end: "present",
     highlights: [
       {
-        pt: "Criei o PDF Renamer, que classifica e renomeia documentos com OCR: uma turma (~200 documentos) caiu de 3 dias para até 1.",
-        en: "Built PDF Renamer, which classifies and renames documents with OCR: a class (~200 documents) went from 3 days to 1 at most.",
+        pt: "Criei o KIRI, que classifica e renomeia documentos com OCR: uma turma (~200 documentos) caiu de 3 dias para até 1.",
+        en: "Built KIRI, which classifies and renames documents with OCR: a class (~200 documents) went from 3 days to 1 at most.",
       },
       {
         pt: "Por iniciativa própria, criei o SEK, o sistema de gestão que hoje toda a secretaria usa.",
