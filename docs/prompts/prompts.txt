@@ -1,0 +1,1762 @@
+Quero arrumar a Hero, não gostei da foto e nem do fundo. pode utilizar a ideia dos agentes construirem, mas ficou feio assim, a fonte e o formato do lado esquerdo na hero ficou legal, mas de resto, não gosto da ideia de ter foto na hero pois não tenhos fotos boas, prefiro os shaders e tals...
+
+
+
+<pasted_content id="0cc2">
+# Cobe Globe — ProfitizeBuild
+Objetivo: um globo 3D em React que gira sozinho numa página branca, desenhado em WebGL pelo cobe: o mapa do mundo em pontos, nove cidades marcadas em azul, dois arcos entre elas e rótulos presos aos pontos, que somem com um desfoque quando a cidade passa para trás do globo. Arraste para girar: solto, o globo segue no embalo e desacelera; na vertical ele inclina até um limite e volta.
+
+Contexto
+  O desenho é do cobe 2.0.1 (WebGL, uns 5 KB, sem dependências): o mapa, o brilho, os pontos e os arcos. O giro, o arraste e os rótulos são do componente.
+  Os rótulos usam CSS Anchor Positioning: o cobe cria uma âncora invisível em cada ponto e uma variável que diz se ele está na frente do globo. Funciona no Chrome, no Edge e no Safari 26+; num navegador sem anchor positioning, o globo aparece sem os rótulos, em vez de empilhá-los num canto.
+  O componente cria o canvas dentro dele, fora do React (o cobe embrulha o canvas numa div própria), e dá um id a cada globo: dois globos na mesma página não trocam os rótulos entre si.
+  O giro anda pelo tempo, não por quadro: a mesma velocidade a 60 e a 120 Hz. Fora da tela o globo para de desenhar; com "reduzir movimento" ligado no sistema, ele só gira quando é arrastado.
+  React (18 ou 19), TypeScript e o pacote cobe. Sem Tailwind e sem outras bibliotecas: o CSS mora dentro do componente, numa <style>, com classes cg-*. Os rótulos e a demo declaram a própria tipografia e o box-sizing, então não herdam nada da página e ficam iguais em qualquer projeto.
+
+Antes de começar
+  Olhe a stack do projeto:
+  - React com TypeScript (Next.js, Vite, Remix, Astro com React…): siga os passos abaixo. Os arquivos começam com "use client", que o Next.js exige e os outros ignoram.
+  - React sem TypeScript: crie os arquivos como .jsx e tire só as anotações de tipo (os blocos interface e type, os ": Tipo", os "as Tipo", os "type" dentro dos imports e os genéricos <…>). Não mude mais nada.
+  - Sem React (HTML puro, Vue, Svelte, Angular…): pare e me avise antes de fazer qualquer coisa; este componente é React.
+  Os arquivos vão na pasta de componentes do projeto (src/components ou components). O componente fica numa subpasta ui, como na estrutura do shadcn; se o projeto já tem components/ui, use essa.
+  Instale só o cobe, na versão exata (o desenho muda entre versões): npm install cobe@2.0.1 --save-exact. Com pnpm, pnpm add cobe@2.0.1 --save-exact; com yarn, yarn add cobe@2.0.1 --exact; com bun, bun add cobe@2.0.1 --exact. Nada mais.
+  Mesmo que o projeto use Tailwind ou shadcn, não converta o CSS em classes utilitárias nem o mova para um .css separado.
+
+Implementação
+  1. Crie components/ui/cobe-globe.tsx com exatamente o conteúdo abaixo. Copie o arquivo inteiro, sem abreviar, sem reformatar, sem traduzir, sem renomear e sem "melhorar" nada, inclusive o CSS no fim:
+
+```tsx
+"use client"
+
+import * as React from "react"
+import createGlobe from "cobe"
+
+/**
+ * Cobe Globe — um globo 3D em WebGL que gira sozinho, com pontos nas cidades, arcos entre elas e rótulos presos aos
+ * pontos, que somem com um desfoque quando o ponto passa para trás do globo.
+ *
+ * O desenho é do cobe (WebGL, uns 5 KB): o mapa em pontos, o brilho e os marcadores. Arraste para girar: solto, o globo
+ * segue no embalo e desacelera; na vertical ele inclina até um limite e volta. Os rótulos usam CSS Anchor Positioning
+ * (Chrome, Edge, Safari 26+); nos navegadores sem ele, o globo aparece sem os rótulos.
+ *
+ * O giro, o embalo e a volta da inclinação andam pelo tempo, não por quadro: o globo gira na mesma velocidade a 60 e a
+ * 120 Hz. Fora da tela ele para de desenhar; com "reduzir movimento" ligado no sistema, só gira quando é arrastado.
+ *
+ * O canvas nasce aqui dentro, fora do React: o cobe embrulha o canvas numa div dele, e um canvas do React mudaria de
+ * lugar debaixo dele. Os nomes das âncoras levam um id deste globo, então dois globos na mesma página não trocam os
+ * rótulos entre si.
+ */
+
+export interface GlobeMarker {
+  id: string
+  location: [number, number]
+  label: string
+}
+
+export interface GlobeArc {
+  id: string
+  from: [number, number]
+  to: [number, number]
+  label?: string
+}
+
+type RGB = [number, number, number]
+
+export interface GlobeProps {
+  markers?: GlobeMarker[]
+  arcs?: GlobeArc[]
+  className?: string
+  style?: React.CSSProperties
+  markerColor?: RGB
+  baseColor?: RGB
+  arcColor?: RGB
+  glowColor?: RGB
+  dark?: number
+  mapBrightness?: number
+  markerSize?: number
+  markerElevation?: number
+  arcWidth?: number
+  arcHeight?: number
+  speed?: number
+  theta?: number
+  diffuse?: number
+  mapSamples?: number
+}
+
+type Settings = Required<Omit<GlobeProps, "className" | "style">>
+
+// o cobe cria, para cada ponto e arco com id, uma âncora (--cobe-<id>, --cobe-arc-<id>) e uma variável de visibilidade
+// (--cobe-visible-<id>, --cobe-visible-arc-<id>), as duas valendo para a página inteira. O id leva o deste globo na
+// frente e só letras, números, - e _
+const anchorId = (uid: string, id: string) => uid + "-" + id.replace(/[^a-zA-Z0-9_-]/g, "-")
+
+// cada rótulo preso à âncora do ponto (ou do arco) e apagado, com desfoque, quando ele passa para trás do globo
+const labelStyle = (name: string) =>
+  ({
+    positionAnchor: "--cobe-" + name,
+    opacity: "var(--cobe-visible-" + name + ", 0)",
+    filter: "blur(calc((1 - var(--cobe-visible-" + name + ", 0)) * 8px))",
+  }) as React.CSSProperties
+
+export function Globe({
+  markers = [],
+  arcs = [],
+  className,
+  style,
+  markerColor = [0.3, 0.45, 0.85],
+  baseColor = [1, 1, 1],
+  arcColor = [0.3, 0.45, 0.85],
+  glowColor = [0.94, 0.93, 0.91],
+  dark = 0,
+  mapBrightness = 10,
+  markerSize = 0.025,
+  markerElevation = 0.01,
+  arcWidth = 0.5,
+  arcHeight = 0.25,
+  speed = 0.003,
+  theta = 0.2,
+  diffuse = 1.5,
+  mapSamples = 16000,
+}: GlobeProps) {
+  const uid = "g" + React.useId().replace(/[^a-zA-Z0-9_-]/g, "")
+  const stageRef = React.useRef<HTMLDivElement>(null)
+
+  // o globo nasce uma vez; a cada quadro ele lê daqui as props mais novas (arrays escritos no JSX mudam a cada render)
+  const settings: Settings = {
+    markers,
+    arcs,
+    markerColor,
+    baseColor,
+    arcColor,
+    glowColor,
+    dark,
+    mapBrightness,
+    markerSize,
+    markerElevation,
+    arcWidth,
+    arcHeight,
+    speed,
+    theta,
+    diffuse,
+    mapSamples,
+  }
+  const settingsRef = React.useRef(settings)
+  React.useEffect(() => {
+    settingsRef.current = settings
+  })
+
+  React.useEffect(() => {
+    const stage = stageRef.current
+    if (!stage) return
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    const canvas = document.createElement("canvas")
+    canvas.className = "cg-canvas"
+    stage.append(canvas)
+
+    let globe: ReturnType<typeof createGlobe> | null = null
+    let raf = 0
+    let last = 0
+    let size = 0
+    let visible = true
+    let phi = 0
+    let phiOffset = 0
+    let thetaOffset = 0
+    let drag = { phi: 0, theta: 0 }
+    let velocity = { phi: 0, theta: 0 }
+    let pointer: { x: number; y: number } | null = null
+    let lastPointer: { x: number; y: number; t: number } | null = null
+
+    const points = (s: Settings) => ({
+      markers: s.markers.map((m) => ({ location: m.location, size: s.markerSize, id: anchorId(uid, m.id) })),
+      arcs: s.arcs.map((a) => ({ from: a.from, to: a.to, id: anchorId(uid, a.id) })),
+    })
+
+    const frame = (now: number) => {
+      raf = requestAnimationFrame(frame)
+      // o passo, em quadros de 60 Hz, pelo tempo que passou: um quadro perdido conta no máximo como três
+      const k = last ? Math.min(now - last, 50) / (1000 / 60) : 1
+      last = now
+      if (!globe || !visible) return
+      const s = settingsRef.current
+      if (!pointer) {
+        if (!reduced) phi += s.speed * k
+        if (Math.abs(velocity.phi) > 0.0001 || Math.abs(velocity.theta) > 0.0001) {
+          phiOffset += velocity.phi * k
+          thetaOffset += velocity.theta * k
+          const decay = Math.pow(0.95, k)
+          velocity.phi *= decay
+          velocity.theta *= decay
+        }
+        // inclinado além do limite, volta devagar para dentro dele
+        const pull = 1 - Math.pow(0.9, k)
+        if (thetaOffset < -0.4) thetaOffset += (-0.4 - thetaOffset) * pull
+        else if (thetaOffset > 0.4) thetaOffset += (0.4 - thetaOffset) * pull
+      }
+      globe.update({
+        phi: phi + phiOffset + drag.phi,
+        theta: s.theta + thetaOffset + drag.theta,
+        dark: s.dark,
+        mapBrightness: s.mapBrightness,
+        markerColor: s.markerColor,
+        baseColor: s.baseColor,
+        arcColor: s.arcColor,
+        markerElevation: s.markerElevation,
+        ...points(s),
+      })
+    }
+
+    const init = () => {
+      size = canvas.offsetWidth
+      if (!size) return
+      const s = settingsRef.current
+      globe = createGlobe(canvas, {
+        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+        width: size,
+        height: size,
+        phi: 0,
+        theta: s.theta,
+        dark: s.dark,
+        diffuse: s.diffuse,
+        mapSamples: s.mapSamples,
+        mapBrightness: s.mapBrightness,
+        baseColor: s.baseColor,
+        markerColor: s.markerColor,
+        glowColor: s.glowColor,
+        markerElevation: s.markerElevation,
+        ...points(s),
+        arcColor: s.arcColor,
+        arcWidth: s.arcWidth,
+        arcHeight: s.arcHeight,
+        opacity: 0.7,
+      })
+      raf = requestAnimationFrame(frame)
+      setTimeout(() => (canvas.style.opacity = "1"))
+    }
+
+    // o globo nasce quando o canvas ganha largura e acompanha a largura dele depois
+    const ro = new ResizeObserver(() => {
+      if (!globe) return init()
+      const width = canvas.offsetWidth
+      if (width && width !== size) {
+        size = width
+        globe.update({ width, height: width })
+      }
+    })
+    ro.observe(canvas)
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting
+    })
+    io.observe(stage)
+
+    // arrastar: o globo segue a mão; solto, continua no embalo da última velocidade dela
+    const down = (e: PointerEvent) => {
+      pointer = { x: e.clientX, y: e.clientY }
+      canvas.style.cursor = "grabbing"
+    }
+    const move = (e: PointerEvent) => {
+      if (!pointer) return
+      drag = { phi: (e.clientX - pointer.x) / 300, theta: (e.clientY - pointer.y) / 1000 }
+      const now = performance.now()
+      if (lastPointer) {
+        const dt = Math.max(now - lastPointer.t, 1)
+        const max = 0.15
+        velocity = {
+          phi: Math.max(-max, Math.min(max, ((e.clientX - lastPointer.x) / dt) * 0.3)),
+          theta: Math.max(-max, Math.min(max, ((e.clientY - lastPointer.y) / dt) * 0.08)),
+        }
+      }
+      lastPointer = { x: e.clientX, y: e.clientY, t: now }
+    }
+    const up = () => {
+      if (pointer) {
+        phiOffset += drag.phi
+        thetaOffset += drag.theta
+        drag = { phi: 0, theta: 0 }
+        lastPointer = null
+      }
+      pointer = null
+      canvas.style.cursor = "grab"
+    }
+    canvas.addEventListener("pointerdown", down)
+    window.addEventListener("pointermove", move, { passive: true })
+    window.addEventListener("pointerup", up, { passive: true })
+    window.addEventListener("pointercancel", up, { passive: true })
+
+    return () => {
+      cancelAnimationFrame(raf)
+      ro.disconnect()
+      io.disconnect()
+      canvas.removeEventListener("pointerdown", down)
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+      window.removeEventListener("pointercancel", up)
+      if (globe) {
+        globe.destroy()
+        // o contexto sai na hora (o navegador segura uns 16 por página), e o canvas e a div do cobe saem junto
+        const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl")
+        gl?.getExtension("WEBGL_lose_context")?.loseContext()
+      }
+      stage.replaceChildren()
+    }
+  }, [uid])
+
+  return (
+    <div className={"cg-root" + (className ? " " + className : "")} style={style}>
+      {/* o CSS cru: como filho de texto, o SSR do React 18 escaparia as aspas e quebraria os seletores */}
+      <style dangerouslySetInnerHTML={{ __html: CG_CSS }} />
+      <div ref={stageRef} className="cg-stage" />
+      {markers.map((m) => (
+        <div key={m.id} className="cg-label cg-label--marker" style={labelStyle(anchorId(uid, m.id))}>
+          {m.label}
+          <span className="cg-label__tip" />
+        </div>
+      ))}
+      {arcs
+        .filter((a) => a.label)
+        .map((a) => (
+          <div key={a.id} className="cg-label cg-label--arc" style={labelStyle("arc-" + anchorId(uid, a.id))}>
+            {a.label}
+            <span className="cg-label__tip" />
+          </div>
+        ))}
+    </div>
+  )
+}
+
+const CG_CSS = `
+/* o que o projeto pode trocar com uma classe (largura, posição, margem): na camada base, que vem antes das classes de
+   componente e dos utilitários (Tailwind v4) e perde para o CSS fora de camada (Tailwind v3, CSS Modules, CSS comum) */
+@layer base {
+  .cg-root { position: relative; width: 100%; margin: 0; }
+}
+.cg-root {
+  aspect-ratio: 1;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cg-stage { position: absolute; inset: 0; }
+/* o arraste na horizontal gira o globo; no toque, o gesto vertical continua rolando a página */
+.cg-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  touch-action: pan-y;
+}
+
+/* os rótulos: nada de texto herdado da página, para ficarem iguais em qualquer projeto */
+.cg-label {
+  display: none;
+  position: absolute;
+  box-sizing: border-box;
+  margin: 0 0 8px;
+  padding: 2px 6px;
+  font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9.6px;
+  font-weight: 400;
+  font-style: normal;
+  font-variant: normal;
+  font-feature-settings: normal;
+  line-height: 1.5;
+  letter-spacing: .08em;
+  word-spacing: normal;
+  text-align: left;
+  text-indent: 0;
+  text-transform: uppercase;
+  text-shadow: none;
+  white-space: nowrap;
+  pointer-events: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: opacity .8s, filter .8s;
+}
+.cg-label--marker { background: #1a1a2e; color: #fff; }
+.cg-label--arc { background: #fff; color: #1a1a2e; box-shadow: 0 1px 4px rgba(0, 0, 0, .1); }
+.cg-label__tip {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate3d(-50%, -1px, 0);
+  border: 5px solid transparent;
+}
+.cg-label--marker .cg-label__tip { border-top-color: #1a1a2e; }
+.cg-label--arc .cg-label__tip { border-top-color: #fff; }
+/* presos aos pontos por CSS Anchor Positioning; sem ele, os rótulos ficam escondidos em vez de empilhados num canto */
+@supports (position-anchor: --a) {
+  .cg-label { display: block; bottom: anchor(top); left: anchor(center); translate: -50% 0; }
+}
+`
+```
+
+  2. Crie components/cobe-globe-demo.tsx, ao lado da pasta ui, com exatamente este conteúdo. O import é relativo e funciona sem alias; se o componente ficou em outro lugar, ajuste só esse caminho:
+
+```tsx
+"use client"
+
+import { Globe, type GlobeArc, type GlobeMarker } from "./ui/cobe-globe"
+
+/**
+ * O globo numa página branca: nove cidades com rótulo e dois arcos (São Francisco → Tóquio e Nova York → Londres).
+ * Arraste para girar.
+ */
+
+const markers: GlobeMarker[] = [
+  { id: "sf", location: [37.7595, -122.4367], label: "São Francisco" },
+  { id: "nyc", location: [40.7128, -74.006], label: "Nova York" },
+  { id: "tokyo", location: [35.6762, 139.6503], label: "Tóquio" },
+  { id: "london", location: [51.5074, -0.1278], label: "Londres" },
+  { id: "sydney", location: [-33.8688, 151.2093], label: "Sydney" },
+  { id: "capetown", location: [-33.9249, 18.4241], label: "Cidade do Cabo" },
+  { id: "dubai", location: [25.2048, 55.2708], label: "Dubai" },
+  { id: "paris", location: [48.8566, 2.3522], label: "Paris" },
+  { id: "saopaulo", location: [-23.5505, -46.6333], label: "São Paulo" },
+]
+
+const arcs: GlobeArc[] = [
+  { id: "sf-tokyo", from: [37.7595, -122.4367], to: [35.6762, 139.6503], label: "SF → Tóquio" },
+  { id: "nyc-london", from: [40.7128, -74.006], to: [51.5074, -0.1278], label: "NY → Londres" },
+]
+
+export default function GlobeDemo() {
+  return (
+    <div className="cg-demo">
+      <style dangerouslySetInnerHTML={{ __html: DEMO_CSS }} />
+      <div className="cg-demo__globe">
+        <Globe
+          markers={markers}
+          arcs={arcs}
+          markerColor={[0.3, 0.45, 0.85]}
+          baseColor={[1, 1, 1]}
+          arcColor={[0.3, 0.45, 0.85]}
+          glowColor={[0.94, 0.93, 0.91]}
+          dark={0}
+          mapBrightness={10}
+          markerSize={0.025}
+          markerElevation={0.01}
+        />
+      </div>
+    </div>
+  )
+}
+
+const DEMO_CSS = `
+.cg-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100svh;
+  padding: 32px;
+  overflow: hidden;
+  background: #fff;
+}
+.cg-demo__globe { width: 100%; max-width: 512px; }
+`
+```
+
+  3. Mostre a demo numa página só dela, que ocupa a tela inteira (min-height: 100svh) com o próprio fundo branco:
+     - Next.js (App Router): crie app/globo/page.tsx (ou src/app/globo/page.tsx) que só devolve <GlobeDemo />. Se o layout envolver as páginas num container com padding ou largura máxima, a demo fica fora dele.
+     - Vite ou outro React sem rotas: o App.tsx só devolve <GlobeDemo />. Com react-router, uma rota /globo.
+     - Nada de margem em volta: o body fica com margin: 0. Tire da página da demo os estilos globais de template que centralizam o body ou o #root, dão padding, largura máxima, cor de fundo ou cor de texto (os do create-vite e do create-next-app fazem isso). Pode remover esses estilos de exemplo se o projeto ainda for o template.
+
+Como usar no projeto
+  <Globe markers={[{ id: "sp", location: [-23.5505, -46.6333], label: "São Paulo" }]} />
+  - O globo é quadrado e ocupa a largura do container: dê a largura no container (max-width: 512px, como na demo) ou numa classe do globo. className e style servem para largura, posição e margem, com Tailwind, CSS Modules ou CSS comum.
+  - markers: { id, location: [latitude, longitude], label }[]. arcs: { id, from, to, label? }[]; sem label, o arco fica sem rótulo. Os ids não se repetem dentro do mesmo globo.
+  - Cores em RGB de 0 a 1: baseColor (o globo), markerColor (os pontos), arcColor (os arcos) e glowColor (o brilho em volta). dark (0 a 1) escurece o globo; mapBrightness é o brilho dos pontos do mapa.
+  - markerSize e markerElevation (o tamanho dos pontos e a altura deles sobre a superfície), arcWidth e arcHeight, speed (o giro, em radianos por quadro de 60 Hz), theta (a inclinação de partida), diffuse (a luz) e mapSamples (quantos pontos tem o mapa: mais pontos, mais detalhe e mais custo).
+
+Ajustes
+  Os rótulos: as cores ficam em .cg-label--marker (fundo #1a1a2e, texto branco) e .cg-label--arc (fundo branco, texto #1a1a2e), no CSS do componente; o tamanho do texto, em .cg-label (9.6px).
+  O giro: speed={0.003} dá uma volta a cada 35 s, mais ou menos; speed={0} deixa o globo parado até alguém arrastar.
+  O embalo: no arraste, a velocidade da mão vira giro (multiplicada por 0.3 na horizontal e 0.08 na vertical, até 0.15 por quadro) e perde 5% a cada quadro de 60 Hz depois de soltar.
+  A visibilidade dos rótulos: o cobe 2.0.1 põe na página uma variável --cobe-visible-<id> que vale "N" (não 1) enquanto o ponto está na frente e some quando ele vai para trás. O CSS do componente conta com isso: a opacidade fica inválida e volta a 1, e o desfoque some. Para outro efeito, use a variável do mesmo jeito, sem fazer conta com ela (numa escala, por exemplo, ela não funciona).
+
+Verificação
+  - O typecheck (npx tsc --noEmit) e o build passam, e o console do navegador fica limpo.
+  - Uma página branca com um globo de 512 px no centro (menos, numa tela estreita), que entra num fade de pouco mais de um segundo e gira sozinho: o mapa do mundo em pontos cinza, as cidades em azul (São Francisco, Nova York, Tóquio, Londres, Sydney, Cidade do Cabo, Dubai, Paris e São Paulo), dois arcos azuis (São Francisco → Tóquio e Nova York → Londres) e um brilho claro em volta.
+  - Sobre cada cidade da frente, um rótulo escuro em caixa alta, monoespaçado, com uma setinha; sobre cada arco, um rótulo branco. Quando a cidade passa para trás do globo, o rótulo some com um desfoque.
+  - Arrastando na horizontal, o globo gira com a mão; solto, segue no embalo e desacelera. Na vertical, ele inclina até um limite e volta devagar.
+  - Com "reduzir movimento" ligado no sistema, o globo só gira quando arrastado.
+  - Num navegador sem CSS Anchor Positioning, o globo aparece sem os rótulos.
+
+Ao terminar, diga o endereço em que a demo abriu e o caminho de cada arquivo criado.
+</pasted_content id="0cc2">
+
+
+
+
+<pasted_content id="0cc2">
+# Polaroid Line Carousel — ProfitizeBuild
+Objetivo: um carrossel de fotos em React em que as fotos são polaroides presas por pregadores de madeira num varal que cede no meio. Arrastar o varal (ou usar as setas) faz as fotos deslizarem por ele, balançando nos pregadores com a velocidade que a pessoa deu e voltando ao lugar com um leve passo além; mesmo paradas, elas balançam numa brisa. A foto do meio é a que está à vista, com o título e a legenda embaixo. A demo são seis fotos de paisagem numa página creme, ocupando a tela inteira.
+
+Contexto
+  O varal é uma curva que vai de uma ponta à outra e cede no meio (sag, 46 px). As fotos ficam penduradas nele, uma ao lado da outra, cada uma com um pregador no topo e o título escrito à mão (em itálico, com serifa) na margem de baixo. A do meio fica na frente, inteira e com as cores cheias; as outras ficam um pouco menores e mais apagadas.
+  Arrastar em qualquer lugar do carrossel leva o varal junto com o ponteiro; ao soltar, ele desliza até a foto mais perto do meio numa mola (contando a velocidade do arraste: um puxão rápido vai mais longe), e as fotos balançam para trás do movimento e se acalmam. Passar da primeira ou da última estica o varal com resistência, e ele volta. O clique numa foto a traz para o meio. As setas embaixo andam uma foto; com o carrossel em foco (Tab), ← e → também. Com autoplay (4,5 s por foto, o padrão), ele avança sozinho e volta à primeira depois da última, esperando enquanto alguém mexe nele. Embaixo, à esquerda, o título e a legenda da foto do meio entram de baixo para cima a cada troca; à direita, o contador (01 / 06) e as setas.
+  O tamanho sai do próprio carrossel, não da tela: a foto tem até 300 px de largura e encolhe para caber (42% da largura e da altura do carrossel, no mínimo 150 px), e o varal passa a 20% da altura. No celular o dedo passa as fotos de lado e a rolagem da página para cima e para baixo continua funcionando. Com "reduzir movimento" ligado no sistema, as fotos não balançam e a legenda troca sem animação. Fora da tela, a animação para.
+  São dois arquivos e as fotos. O componente (components/ui/polaroid-line-carousel.tsx) exporta PolaroidLineCarousel (o export default) e os tipos; uma foto sem imagem ganha uma paisagem de serras pintada num canvas (quatro paletas), então ele funciona sem arquivo nenhum. A demo (components/polaroid-line-carousel-demo.tsx) tem seis fotos com títulos e legendas em português, que ficam em public/polaroid-line-carousel.
+  React (18 ou 19) e TypeScript. Sem Tailwind e sem bibliotecas: o CSS mora dentro do componente, numa <style>, com classes pl-*. O carrossel declara a própria tipografia e o box-sizing, então não herda nada da página. A posição e o fundo ficam numa camada (@layer base), para as classes do projeto vencerem. No React 19 a <style> sobe para o <head> uma vez só; no 18 ela vai junto do carrossel, escondida.
+
+Antes de começar
+  Olhe a stack do projeto:
+  - React com TypeScript (Next.js, Vite, Remix, Astro com React…): siga os passos abaixo. Os arquivos começam com "use client", que o Next.js exige e os outros ignoram.
+  - React sem TypeScript: crie os arquivos como .jsx e tire só as anotações de tipo (os blocos type, os ": Tipo", os "as Tipo" e os genéricos <…>). Não mude mais nada.
+  - Sem React (HTML puro, Vue, Svelte, Angular…): pare e me avise antes de fazer qualquer coisa; este componente é React.
+  Os arquivos vão na pasta de componentes do projeto (src/components ou components). O componente fica numa subpasta ui, como na estrutura do shadcn; se o projeto já tem components/ui, use essa.
+  Não instale nada: o componente só usa o React.
+  Mesmo que o projeto use Tailwind ou shadcn, não converta o CSS em classes utilitárias e não o mova para um .css separado. No Next.js, não troque os <img> pelo next/image: o componente posiciona as fotos ele mesmo, e as pintadas são data URLs.
+
+Implementação
+  1. Crie components/ui/polaroid-line-carousel.tsx com exatamente o conteúdo abaixo. Copie o arquivo inteiro, sem abreviar, sem reformatar, sem traduzir, sem renomear e sem "melhorar" nada, inclusive a pintura das paisagens e o CSS:
+
+```tsx
+"use client"
+
+import * as React from "react"
+
+/*
+ * Polaroid Line Carousel — fotos instantâneas presas por pregadores num varal que
+ * cede no meio. Arraste o varal (ou use as setas) e as fotos deslizam por ele,
+ * balançando nos pregadores com a velocidade que você der e voltando ao lugar com
+ * um leve passo além; mesmo paradas, elas balançam numa brisa. A do meio é a que
+ * está à vista.
+ *
+ * Arrastar, clicar numa foto, ←/→ e autoplay. Slide sem `image` ganha uma
+ * paisagem pintada, então funciona sem arquivo nenhum.
+ */
+
+export type LandPalette = "dawn" | "alpine" | "dusk" | "mist"
+
+export type Slide = {
+  image?: string
+  title?: string
+  caption?: string
+  alt?: string
+  /** Paleta e semente da paisagem pintada quando `image` está vazio. */
+  palette?: LandPalette
+  seed?: number
+}
+
+export type PolaroidLineCarouselProps = {
+  slides?: Slide[]
+  /** Qualquer medida do CSS. Padrão: 100svh. */
+  height?: number | string
+  /** Largura de uma foto em px (ela encolhe em espaços estreitos). */
+  cardWidth?: number
+  /** Quanto o varal cede no meio, em px. */
+  sag?: number
+  /** Quanto as fotos balançam; 0 as deixa paradas. */
+  swing?: number
+  /** ms por foto; 0 desliga o autoplay. Ele espera enquanto alguém mexe no varal. */
+  autoplay?: number
+  /** Cor do varal. */
+  string?: string
+  background?: string
+  ink?: string
+  /** Textos dos botões e do leitor de tela. */
+  labels?: Partial<PolaroidLineLabels>
+  onChange?: (index: number) => void
+  className?: string
+  style?: React.CSSProperties
+  ariaLabel?: string
+}
+
+export type PolaroidLineLabels = {
+  previous: string
+  next: string
+  /** O aviso do leitor de tela: a foto à vista (a partir de 1), o total e o título. */
+  status: (index: number, total: number, title?: string) => string
+}
+
+const DEFAULT_LABELS: PolaroidLineLabels = {
+  previous: "Anterior",
+  next: "Próxima",
+  status: (index, total, title) => "Foto " + index + " de " + total + (title ? ": " + title : ""),
+}
+
+// #region lógica
+export function wrap(i: number, n: number): number {
+  return n ? ((i % n) + n) % n : 0
+}
+
+export function clamp(v: number, a: number, b: number): number {
+  return Math.min(b, Math.max(a, v))
+}
+
+/** Altura de um varal que cede `sag` entre (0, y0) e (w, y0), no ponto x. */
+export function stringY(x: number, w: number, y0: number, sag: number): number {
+  const t = clamp(x / w, 0, 1)
+  return y0 + 4 * sag * t * (1 - t)
+}
+
+/** Um passo de uma mola com amortecimento crítico até o alvo. */
+export function springStep(x: number, v: number, target: number, dt: number, k = 70): [number, number] {
+  const c = 2 * Math.sqrt(k)
+  const nv = v + (k * (target - x) - c * v) * dt
+  return [x + nv * dt, nv]
+}
+
+/** Um passo do balanço de uma foto. lineVel é a velocidade das fotos no varal (px/s, + = para a direita); a foto fica para trás do movimento, a gravidade a puxa de volta e o atrito a amortece. */
+export function swingStep(a: number, w: number, lineVel: number, dt: number, gain: number): [number, number] {
+  const nw = w + (-38 * a - 4.2 * w + lineVel * 0.0034 * gain) * dt
+  return [clamp(a + nw * dt, -0.6, 0.6), nw]
+}
+
+/** Índice da foto mais perto do meio para um deslocamento do varal. */
+export function nearestAt(off: number, spacing: number, n: number): number {
+  return clamp(Math.round(off / spacing), 0, Math.max(0, n - 1))
+}
+
+export function pad2(n: number): string {
+  return n < 10 ? "0" + n : String(n)
+}
+
+/** Quanto o elemento está encolhido ou ampliado na tela por um transform em volta (1 sem transform). */
+function screenScale(el: HTMLElement): number {
+  return el.offsetWidth ? el.getBoundingClientRect().width / el.offsetWidth || 1 : 1
+}
+// #endregion lógica
+
+/* ------------------------------------------------------- paisagens pintadas */
+
+const PALETTES = {
+  dawn: { top: "#e7b7a5", bottom: "#f8e8d6", sun: "#fff4df", far: "#d2b2bb", near: "#3a2a3b", mist: "255,240,232" },
+  alpine: { top: "#7ea5c8", bottom: "#e3ecf2", sun: "#ffffff", far: "#a9bfd0", near: "#1c3044", mist: "236,244,250" },
+  dusk: { top: "#2a2450", bottom: "#ef8d60", sun: "#ffd9a6", far: "#93607c", near: "#18121f", mist: "255,196,160" },
+  mist: { top: "#c4d0cb", bottom: "#eef1ec", sun: "#ffffff", far: "#aebcb5", near: "#2c3a33", mist: "246,248,245" },
+}
+
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0
+    let t = a
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+function hexRgb(h: string): [number, number, number] {
+  const v = parseInt(h.replace("#", ""), 16)
+  return [(v >> 16) & 255, (v >> 8) & 255, v & 255]
+}
+function mixRgb(a: string, b: string, t: number): string {
+  const A = hexRgb(a)
+  const B = hexRgb(b)
+  return "rgb(" + A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(",") + ")"
+}
+
+// Uma paisagem de serras em camadas: o céu, um sol baixo, cinco serras sumindo na
+// névoa com bruma entre elas, pinheiros na mais perto e o grão do filme. Pintada uma vez.
+function paintLandscape(seed: number, palette: LandPalette, w = 1600, h = 1000): string {
+  if (typeof document === "undefined") return ""
+  const c = document.createElement("canvas")
+  c.width = w
+  c.height = h
+  const g = c.getContext("2d")
+  if (!g) return ""
+  const P = PALETTES[palette] ?? PALETTES.dawn
+  const r = mulberry32(seed * 104729 + 7)
+
+  const sky = g.createLinearGradient(0, 0, 0, h * 0.72)
+  sky.addColorStop(0, P.top)
+  sky.addColorStop(1, P.bottom)
+  g.fillStyle = sky
+  g.fillRect(0, 0, w, h)
+  const sx = w * (0.22 + r() * 0.56)
+  const sy = h * (0.26 + r() * 0.16)
+  const halo = g.createRadialGradient(sx, sy, 0, sx, sy, w * 0.45)
+  halo.addColorStop(0, "rgba(" + hexRgb(P.sun).join(",") + ",.85)")
+  halo.addColorStop(0.08, "rgba(" + hexRgb(P.sun).join(",") + ",.55)")
+  halo.addColorStop(1, "rgba(" + hexRgb(P.sun).join(",") + ",0)")
+  g.fillStyle = halo
+  g.fillRect(0, 0, w, h)
+  g.fillStyle = P.sun
+  g.beginPath()
+  g.arc(sx, sy, h * 0.045, 0, Math.PI * 2)
+  g.fill()
+
+  const layers = 5
+  for (let L = 0; L < layers; L++) {
+    const k = L / (layers - 1)
+    const base = h * (0.42 + k * 0.4)
+    const amp = h * (0.07 + k * 0.1)
+    const ph = [r(), r(), r(), r()].map((v) => v * Math.PI * 2)
+    const fr = [1.3 + r(), 3.1 + r() * 2, 7 + r() * 4, 17 + r() * 8]
+    const ridge = (x: number) => {
+      const u = x / w
+      return (
+        base -
+        amp *
+          (0.55 * Math.sin(u * fr[0] + ph[0]) +
+            0.28 * Math.sin(u * fr[1] + ph[1]) +
+            0.12 * Math.abs(Math.sin(u * fr[2] + ph[2])) +
+            0.05 * Math.sin(u * fr[3] + ph[3]))
+      )
+    }
+    const mist = g.createLinearGradient(0, base - amp * 1.4, 0, base + amp * 0.4)
+    mist.addColorStop(0, "rgba(" + P.mist + ",0)")
+    mist.addColorStop(1, "rgba(" + P.mist + "," + (0.55 - k * 0.35).toFixed(2) + ")")
+    g.fillStyle = mist
+    g.fillRect(0, base - amp * 1.4, w, amp * 1.8)
+    const body = g.createLinearGradient(0, base - amp, 0, h)
+    body.addColorStop(0, mixRgb(P.far, P.near, Math.pow(k, 1.3)))
+    body.addColorStop(1, mixRgb(P.far, P.near, Math.min(1, Math.pow(k, 1.3) + 0.18)))
+    g.fillStyle = body
+    g.beginPath()
+    g.moveTo(0, h)
+    for (let x = 0; x <= w; x += 6) g.lineTo(x, ridge(x))
+    g.lineTo(w, h)
+    g.closePath()
+    g.fill()
+    if (L >= layers - 2) {
+      g.fillStyle = mixRgb(P.far, P.near, Math.min(1, Math.pow(k, 1.3) + 0.08))
+      for (let x = 0; x < w; x += 7 + r() * 9) {
+        if (r() < 0.35) continue
+        const y = ridge(x) + 2
+        const th = h * (0.025 + r() * 0.035) * (0.6 + k)
+        const tw = th * 0.32
+        g.beginPath()
+        g.moveTo(x, y - th)
+        g.lineTo(x + tw, y)
+        g.lineTo(x - tw, y)
+        g.closePath()
+        g.fill()
+      }
+    }
+  }
+
+  const vig = g.createRadialGradient(w / 2, h * 0.45, h * 0.3, w / 2, h / 2, w * 0.78)
+  vig.addColorStop(0, "rgba(0,0,0,0)")
+  vig.addColorStop(1, "rgba(0,0,0,.32)")
+  g.fillStyle = vig
+  g.fillRect(0, 0, w, h)
+  const grain = g.getImageData(0, 0, w, h)
+  const d = grain.data
+  for (let i = 0; i < d.length; i += 4) {
+    const v = (r() - 0.5) * 14
+    d[i] += v
+    d[i + 1] += v
+    d[i + 2] += v
+  }
+  g.putImageData(grain, 0, 0)
+  return c.toDataURL("image/jpeg", 0.88)
+}
+
+const DEFAULT_SLIDES: Slide[] = [
+  { title: "Primeira luz", caption: "A névoa saindo das serras do leste.", palette: "dawn", seed: 3 },
+  { title: "Passo alto", caption: "Ar frio, limpo até a serra mais longe.", palette: "alpine", seed: 8 },
+  { title: "Hora da brasa", caption: "O resto do sol no fundo do vale.", palette: "dusk", seed: 14 },
+  { title: "Vale quieto", caption: "Uma névoa da manhã que nunca sobe.", palette: "mist", seed: 21 },
+  { title: "Serra rosa", caption: "Cinco serras, um suspiro longo.", palette: "dawn", seed: 34 },
+  { title: "Hora azul", caption: "Os pinheiros escurecendo contra a neve.", palette: "alpine", seed: 55 },
+]
+
+// Cada slide como o endereço de uma imagem; os sem imagem são pintados no primeiro quadro depois de montar.
+function useSlideImages(slides: Slide[]): string[] {
+  const key = slides.map((s) => s.image || (s.palette || "dawn") + ":" + (s.seed ?? 1)).join("|")
+  const [painted, setPainted] = React.useState<{ key: string; srcs: string[] }>({ key: "", srcs: [] })
+  React.useEffect(() => {
+    if (slides.every((s) => s.image)) return
+    const id = requestAnimationFrame(() =>
+      setPainted({ key, srcs: slides.map((s, i) => (s.image ? "" : paintLandscape(s.seed ?? i + 1, s.palette || "dawn"))) }),
+    )
+    return () => cancelAnimationFrame(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key])
+  return slides.map((s, i) => s.image || (painted.key === key ? painted.srcs[i] : "") || "")
+}
+
+const PL_CSS = [
+  "@layer base{.pl-root{position:relative;background:var(--pl-bg)}}",
+  ".pl-root{width:100%;overflow:hidden;isolation:isolate;color:var(--pl-ink);container-type:size;user-select:none;-webkit-user-select:none;touch-action:pan-y;outline:none;cursor:grab;-webkit-tap-highlight-color:transparent;font:400 16px/1.4 ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;letter-spacing:normal;text-align:left}",
+  ".pl-root,.pl-root *,.pl-root *::before,.pl-root *::after{box-sizing:border-box}",
+  ".pl-root[data-drag='1']{cursor:grabbing}",
+  ".pl-root:focus-visible{box-shadow:inset 0 0 0 2px var(--pl-ink)}",
+  ".pl-string{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}",
+  ".pl-card{position:absolute;left:0;top:0;width:var(--pl-cw);transform-origin:50% 0;will-change:transform;cursor:inherit;visibility:hidden}",
+  ".pl-print{margin-top:10px;background:#fbfaf7;padding:10px 10px 0;box-shadow:0 1px 2px rgba(0,0,0,.12),0 18px 30px -16px rgba(0,0,0,.4);transition:transform .5s cubic-bezier(.2,.7,.2,1),filter .5s ease}",
+  ".pl-card[data-on='0'] .pl-print{transform:scale(.9);filter:saturate(.7) brightness(.96)}",
+  ".pl-shot{position:relative;aspect-ratio:1;overflow:hidden;background:#d9d5cc}",
+  ".pl-shot img{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:cover;display:block;pointer-events:none}",
+  ".pl-note{height:46px;display:flex;align-items:center;justify-content:center;padding:0 6px;font:italic 400 15px/1.1 ui-serif,Georgia,'Times New Roman',serif;color:#3b3833;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
+  ".pl-peg{position:absolute;left:50%;top:0;width:10px;height:26px;margin-left:-5px;border-radius:2px;background:linear-gradient(90deg,#c9a67a,#e3c9a1 45%,#b8915f);box-shadow:0 2px 3px rgba(0,0,0,.25)}",
+  ".pl-peg::after{content:'';position:absolute;left:4px;top:8px;width:2px;height:7px;background:rgba(80,60,30,.45);border-radius:1px}",
+  ".pl-bar{position:absolute;left:clamp(16px,4cqw,56px);right:clamp(16px,4cqw,56px);bottom:clamp(20px,4cqh,40px);display:flex;align-items:center;gap:clamp(12px,2cqw,24px);cursor:default}",
+  ".pl-cap{flex:1;min-width:0;overflow:hidden;padding-bottom:.15em}",
+  ".pl-cap>*{display:block;animation:pl-in .55s cubic-bezier(.2,.8,.2,1) both}",
+  ".pl-title{font:500 clamp(18px,2.2cqw,26px)/1.15 ui-serif,Georgia,'Times New Roman',serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
+  ".pl-sub{margin-top:4px;font:400 13px/1.4 ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:var(--pl-muted)}",
+  ".pl-count{font:500 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;color:var(--pl-muted);white-space:nowrap}",
+  ".pl-count b{color:var(--pl-ink);font-weight:500}",
+  ".pl-btn{appearance:none;flex:none;width:40px;height:40px;margin:0;padding:0;border-radius:50%;border:1px solid var(--pl-line);background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer;transition:background .2s ease,color .2s ease}",
+  ".pl-btn:hover{background:var(--pl-ink);color:var(--pl-bg)}",
+  ".pl-btn:focus-visible{outline:2px solid var(--pl-ink);outline-offset:2px}",
+  ".pl-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}",
+  "@keyframes pl-in{from{transform:translateY(100%);opacity:0}to{transform:none;opacity:1}}",
+  "@media (prefers-reduced-motion:reduce){.pl-cap>*{animation:none}.pl-print{transition:none}}",
+].join("\n")
+
+// O React 19 sobe uma <style> com href e precedence para o <head>, uma vez só para todos os varais. O React 18 não
+// conhece isso: lá ela vai dentro do varal, escondida e com o CSS cru, porque como filho de texto o SSR do 18 escaparia
+// as aspas e quebraria os seletores.
+const HOISTS_STYLES = Number(React.version.split(".")[0]) >= 19
+
+function PolaroidLineStyles() {
+  if (HOISTS_STYLES) {
+    const hoist = { href: "polaroid-line-carousel", precedence: "default" } as React.StyleHTMLAttributes<HTMLStyleElement>
+    return <style {...hoist}>{PL_CSS}</style>
+  }
+  return <style hidden dangerouslySetInnerHTML={{ __html: PL_CSS }} />
+}
+
+export default function PolaroidLineCarousel({
+  slides = DEFAULT_SLIDES,
+  height = "100svh",
+  cardWidth = 300,
+  sag = 46,
+  swing = 1,
+  autoplay = 4500,
+  string = "#8a7f72",
+  background = "var(--color-background, #efece6)",
+  ink = "var(--color-foreground, #161513)",
+  labels,
+  onChange,
+  className,
+  style,
+  ariaLabel = "Carrossel de fotos",
+}: PolaroidLineCarouselProps) {
+  const n = slides.length
+  const L = { ...DEFAULT_LABELS, ...labels }
+  const srcs = useSlideImages(slides)
+  const [active, setActive] = React.useState(0)
+  const [dragging, setDragging] = React.useState(false)
+  // w = 0 até medir: as fotos ficam escondidas até lá, em vez de aparecerem num tamanho errado
+  const [size, setSize] = React.useState({ w: 0, h: 0, cw: cardWidth })
+  const rootRef = React.useRef<HTMLDivElement>(null)
+  const pathRef = React.useRef<SVGPathElement>(null)
+  const cards = React.useRef<(HTMLDivElement | null)[]>([])
+  const sim = React.useRef({ off: 0, vel: 0, target: 0, a: [] as number[], w: [] as number[] })
+  const drag = React.useRef<null | { x: number; off: number; lx: number; lt: number; v: number; k: number; moved: boolean }>(null)
+  const lastTouch = React.useRef(0)
+  const activeRef = React.useRef(0)
+  const opts = React.useRef({ sag, swing })
+  React.useEffect(() => {
+    opts.current = { sag, swing }
+  }, [sag, swing])
+
+  const spacing = size.cw * 1.08
+  const goTo = React.useCallback(
+    (i: number) => {
+      sim.current.target = clamp(i, 0, n - 1) * spacing
+    },
+    [n, spacing],
+  )
+
+  // o tamanho do próprio varal, sem a escala de um transform em volta (clientWidth, não getBoundingClientRect)
+  React.useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const measure = () => {
+      const w = root.clientWidth
+      const h = root.clientHeight
+      const cw = Math.round(Math.max(150, Math.min(cardWidth, w * 0.42, h * 0.42)))
+      setSize((s) => (s.w === w && s.h === h && s.cw === cw ? s : { w, h, cw }))
+    }
+    const ro = new ResizeObserver(measure)
+    ro.observe(root)
+    return () => ro.disconnect()
+  }, [cardWidth])
+
+  // o alvo continua na foto à vista quando o espaçamento muda
+  React.useEffect(() => {
+    sim.current.target = activeRef.current * spacing
+    sim.current.off = activeRef.current * spacing
+  }, [spacing])
+
+  React.useEffect(() => {
+    onChange?.(active)
+  }, [active, onChange])
+
+  // a simulação, escrita direto no DOM a cada quadro
+  React.useEffect(() => {
+    const root = rootRef.current
+    if (!root || !size.w) return
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    let visible = true
+    let raf = 0
+    let prev = performance.now()
+    const S = sim.current
+    const frame = (now: number) => {
+      raf = 0
+      if (!visible) return
+      const dt = Math.min(0.033, (now - prev) / 1000)
+      prev = now
+      const { w, h, cw } = size
+      const y0 = Math.max(40, h * 0.2)
+      const d = drag.current
+      let lineVel: number
+      if (d && d.moved) {
+        lineVel = d.v * 1000
+      } else {
+        const before = S.off
+        ;[S.off, S.vel] = springStep(S.off, S.vel, S.target, dt)
+        lineVel = -(S.off - before) / Math.max(dt, 1e-3)
+      }
+      const o = opts.current
+      const g = reduce ? 0 : o.swing
+      const near = nearestAt(S.off, spacing, n)
+      for (let i = 0; i < n; i++) {
+        const el = cards.current[i]
+        if (!el) continue
+        const x = w / 2 + i * spacing - S.off
+        if (x < -cw * 1.5 || x > w + cw * 1.5) {
+          el.style.visibility = "hidden"
+          continue
+        }
+        el.style.visibility = "visible"
+        let a = S.a[i] || 0
+        let av = S.w[i] || 0
+        ;[a, av] = swingStep(a, av, lineVel, dt, g)
+        if (g) a += Math.sin(now / 1300 + i * 1.7) * 0.0009 * g
+        S.a[i] = a
+        S.w[i] = av
+        const y = stringY(x, w, y0, o.sag) - 6
+        el.style.transform = "translate(" + (x - cw / 2).toFixed(1) + "px," + y.toFixed(1) + "px) rotate(" + a.toFixed(4) + "rad)"
+        el.style.zIndex = String(i === near ? n + 1 : n - Math.abs(i - near))
+      }
+      pathRef.current?.setAttribute("d", "M0 " + y0 + " Q" + w / 2 + " " + (y0 + 2 * o.sag) + " " + w + " " + y0)
+      if (near !== activeRef.current) {
+        activeRef.current = near
+        setActive(near)
+      }
+      raf = requestAnimationFrame(frame)
+    }
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting
+      if (visible && !raf) {
+        prev = performance.now()
+        raf = requestAnimationFrame(frame)
+      }
+    })
+    io.observe(root)
+    raf = requestAnimationFrame(frame)
+    return () => {
+      cancelAnimationFrame(raf)
+      io.disconnect()
+    }
+  }, [size, spacing, n])
+
+  // autoplay, de volta à primeira foto depois da última
+  React.useEffect(() => {
+    if (!autoplay || n < 2) return
+    const t = window.setInterval(() => {
+      if (document.hidden || drag.current || performance.now() - lastTouch.current < autoplay) return
+      goTo(activeRef.current >= n - 1 ? 0 : activeRef.current + 1)
+    }, autoplay)
+    return () => window.clearInterval(t)
+  }, [autoplay, n, goTo])
+
+  // o ponteiro anda em px da tela; o varal, nos do próprio layout: k desconta a escala de um transform em volta
+  const onDown = (e: React.PointerEvent) => {
+    if (e.button > 0 || (e.target as HTMLElement).closest(".pl-bar")) return
+    lastTouch.current = performance.now()
+    const k = rootRef.current ? screenScale(rootRef.current) : 1
+    drag.current = { x: e.clientX, off: sim.current.off, lx: e.clientX, lt: e.timeStamp, v: 0, k, moved: false }
+  }
+  const onMove = (e: React.PointerEvent) => {
+    const d = drag.current
+    if (!d) return
+    const dx = (e.clientX - d.x) / d.k
+    if (!d.moved && Math.abs(dx) * d.k > 5) {
+      d.moved = true
+      setDragging(true)
+      try {
+        rootRef.current?.setPointerCapture(e.pointerId)
+      } catch {
+        // o ponteiro já foi embora: o arraste segue sem a captura
+      }
+    }
+    if (!d.moved) return
+    const dt = Math.max(1, e.timeStamp - d.lt)
+    d.v = 0.7 * ((e.clientX - d.lx) / d.k / dt) + 0.3 * d.v
+    d.lx = e.clientX
+    d.lt = e.timeStamp
+    const max = (n - 1) * spacing
+    let off = d.off - dx
+    if (off < 0) off *= 0.35
+    if (off > max) off = max + (off - max) * 0.35
+    sim.current.off = off
+  }
+  const onUp = (e: React.PointerEvent) => {
+    const d = drag.current
+    drag.current = null
+    lastTouch.current = performance.now()
+    if (!d) return
+    if (d.moved) {
+      setDragging(false)
+      sim.current.vel = -d.v * 1000
+      goTo(nearestAt(sim.current.off - d.v * 180, spacing, n))
+      return
+    }
+    const card = (e.target as HTMLElement).closest("[data-i]")
+    if (card) goTo(Number(card.getAttribute("data-i")))
+  }
+  const step = (dir: number) => {
+    lastTouch.current = performance.now()
+    goTo(clamp(activeRef.current + dir, 0, n - 1))
+  }
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") step(1)
+    else if (e.key === "ArrowLeft") step(-1)
+    else return
+    e.preventDefault()
+  }
+
+  const s = slides[active] || {}
+
+  return (
+    <div
+      ref={rootRef}
+      className={["pl-root", className].filter(Boolean).join(" ")}
+      style={{
+        height,
+        ["--pl-bg" as string]: background,
+        ["--pl-ink" as string]: ink,
+        ["--pl-muted" as string]: "color-mix(in srgb, var(--pl-ink) 55%, transparent)",
+        ["--pl-line" as string]: "color-mix(in srgb, var(--pl-ink) 18%, transparent)",
+        ["--pl-cw" as string]: size.cw + "px",
+        ...style,
+      }}
+      data-drag={dragging ? "1" : "0"}
+      role="region"
+      aria-roledescription="carrossel"
+      aria-label={ariaLabel}
+      tabIndex={0}
+      onKeyDown={onKey}
+      onPointerDown={onDown}
+      onPointerMove={onMove}
+      onPointerUp={onUp}
+      onPointerCancel={onUp}
+    >
+      <PolaroidLineStyles />
+      <svg className="pl-string" aria-hidden="true">
+        <path ref={pathRef} fill="none" stroke={string} strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+      {slides.map((sl, i) => (
+        <div
+          key={i}
+          className="pl-card"
+          data-i={i}
+          data-on={i === active ? "1" : "0"}
+          ref={(el) => void (cards.current[i] = el)}
+          aria-hidden={i === active ? undefined : true}
+        >
+          <div className="pl-print">
+            <div className="pl-shot">{srcs[i] ? <img src={srcs[i]} alt={sl.alt || sl.title || ""} draggable={false} /> : null}</div>
+            <div className="pl-note">{sl.title || ""}</div>
+          </div>
+          <div className="pl-peg" />
+        </div>
+      ))}
+      <div className="pl-bar">
+        <div className="pl-cap" key={active} aria-hidden="true">
+          {s.title ? <span className="pl-title">{s.title}</span> : null}
+          {s.caption ? <span className="pl-sub">{s.caption}</span> : null}
+        </div>
+        <span className="pl-count" aria-hidden="true">
+          <b>{pad2(active + 1)}</b> / {pad2(n)}
+        </span>
+        <button type="button" className="pl-btn" aria-label={L.previous} onClick={() => step(-1)}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 3 5 8l5 5" stroke="currentColor" strokeWidth="1.4" />
+          </svg>
+        </button>
+        <button type="button" className="pl-btn" aria-label={L.next} onClick={() => step(1)}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="m6 3 5 5-5 5" stroke="currentColor" strokeWidth="1.4" />
+          </svg>
+        </button>
+      </div>
+      <div className="pl-sr" aria-live="polite">
+        {L.status(active + 1, n, s.title)}
+      </div>
+    </div>
+  )
+}
+```
+
+  2. Crie components/polaroid-line-carousel-demo.tsx com exatamente o conteúdo abaixo. O import aponta para ./ui/polaroid-line-carousel; se o componente ficou em outro lugar, ajuste só esse caminho:
+
+```tsx
+"use client"
+
+import PolaroidLineCarousel from "./ui/polaroid-line-carousel"
+import type { PolaroidLineCarouselProps, Slide } from "./ui/polaroid-line-carousel"
+
+/**
+ * Seis fotos de paisagem num varal, ocupando a tela inteira. As fotos (quadradas, em WebP) ficam na pasta
+ * public/polaroid-line-carousel do projeto; photos troca essa pasta (um basePath do Next.js, um CDN). As outras props
+ * vão direto para o carrossel.
+ */
+export const demoSlides = (photos = "/polaroid-line-carousel"): Slide[] => [
+  { image: `${photos}/acima-das-nuvens.webp`, title: "Acima das nuvens", caption: "Valais, Suíça: o nascer do sol a 3.100 m." },
+  { image: `${photos}/lago-de-vidro.webp`, title: "Lago de vidro", caption: "Lago di Braies, um barco a remo ao meio-dia." },
+  { image: `${photos}/vale-dourado.webp`, title: "Vale dourado", caption: "A luz do fim da tarde descendo pela serra." },
+  { image: `${photos}/linha-da-neve.webp`, title: "Linha da neve", caption: "Pinheiros, o leito do rio e a serra alta." },
+  { image: `${photos}/serras-azuis.webp`, title: "Serras azuis", caption: "Sete camadas de névoa antes do anoitecer." },
+  { image: `${photos}/ponte-da-cascata.webp`, title: "Ponte da cascata", caption: "Multnomah Falls depois da chuva." },
+]
+
+export default function PolaroidLineCarouselDemo({ photos, ...props }: { photos?: string } & PolaroidLineCarouselProps) {
+  return <PolaroidLineCarousel slides={demoSlides(photos)} {...props} />
+}
+```
+
+  3. Baixe as seis fotos da demo para public/polaroid-line-carousel (a pasta public da raiz do projeto, a que o Vite e o Next.js servem na raiz do site). São recortes quadrados em WebP de 800 × 800 px, 460 KB no total. Rode na raiz do projeto:
+
+```bash
+mkdir -p public/polaroid-line-carousel && cd public/polaroid-line-carousel
+for foto in acima-das-nuvens lago-de-vidro vale-dourado linha-da-neve serras-azuis ponte-da-cascata; do
+  curl -fsSLO "https://profitize.com.br/build/componentes/polaroid-line-carousel/$foto.webp"
+done
+shasum -a 256 -c - <<'EOF'
+689d4fae342c03c4fe60fadba880cfa0c37aaaec86f7a62ddf982bb38eb2bff7  acima-das-nuvens.webp
+d91b3d8fbb08cb50556f16f5f88dc54dafcb89d892ce48c2ac1c1875c52256ab  lago-de-vidro.webp
+a3f7b86247381979091fc1d20bf457298373b56d64ec2feedf9d0904f4c4abc9  vale-dourado.webp
+27808ccb85d60b88a98480149e16b61250f77e8c763ae5265d3af90bc6c4483f  linha-da-neve.webp
+b057d01d4dcc4394309a19adfd459d110e1059628c7a6dbef38d3043f266fbf2  serras-azuis.webp
+32589bdeb81a7cdd79d73a488e78e28084b054451e3787331ec39948dd7fe117  ponte-da-cascata.webp
+EOF
+cd -
+```
+
+     As seis linhas da conferência têm que dizer OK; se alguma falhar, baixe aquela foto de novo. No Linux, troque shasum -a 256 por sha256sum; no Windows, rode no Git Bash ou no WSL.
+
+  4. Mostre a demo numa página só dela, que ocupa a tela inteira (o carrossel tem height="100svh" por padrão):
+     - Next.js (App Router): crie app/polaroid-line-carousel/page.tsx (ou src/app/polaroid-line-carousel/page.tsx) que só devolve <PolaroidLineCarouselDemo />. Se o layout envolver as páginas num container com padding ou largura máxima, a demo fica fora dele.
+     - Vite ou outro React sem rotas: o App.tsx só devolve <PolaroidLineCarouselDemo />. Com react-router, uma rota /polaroid-line-carousel.
+     - Se o site não fica na raiz do domínio (o basePath do Next.js, o base do Vite), passe a pasta com ele: <PolaroidLineCarouselDemo photos="/meu-base/polaroid-line-carousel" />.
+     - Nada de margem em volta: o body fica com margin: 0. Tire da página da demo os estilos globais de template que centralizam o body ou o #root, dão padding, largura máxima ou cor de texto (os do create-vite e do create-next-app fazem isso). Pode remover esses estilos de exemplo se o projeto ainda for o template.
+
+Como usar no projeto
+  <PolaroidLineCarousel slides={fotos} height={560} autoplay={0} background="#ffffff" ariaLabel="Nossos projetos" />
+  - slides: as fotos. image é o endereço (fica num quadrado, cortada pelo meio: object-fit cover); title vai na margem da polaroide e embaixo, em letra grande; caption, a legenda embaixo do título; alt, o texto do leitor de tela (sem ele, vale o título). Sem image, palette ("dawn", "alpine", "dusk" ou "mist") e seed (um número) escolhem a paisagem pintada.
+  - height: a altura do carrossel, qualquer medida do CSS ("100svh" é o padrão; 560, "70vh", "100%" dentro de um pai com altura). Precisa ser uma altura definida: o carrossel não cresce com o conteúdo.
+  - cardWidth: a largura máxima de uma foto em px (300). sag: quanto o varal cede no meio (46). swing: quanto as fotos balançam (1; 0 as deixa paradas).
+  - autoplay: milissegundos por foto (4500); 0 desliga.
+  - background e ink: o fundo e a cor do texto e das setas. Por padrão, var(--color-background) e var(--color-foreground), os tokens do shadcn e do Tailwind 4, se o projeto tiver; sem eles, creme (#efece6) e quase preto (#161513). string: a cor do varal (#8a7f72).
+  - labels: os textos das setas e do aviso do leitor de tela ({ previous: "Anterior", next: "Próxima", status: (i, total, title) => "Foto 1 de 6: …" } é o padrão), para traduzir.
+  - onChange: avisa o índice da foto do meio a cada troca (a partir de 0).
+  - className e style: posição, margem e o resto, com Tailwind, CSS Modules ou CSS comum.
+
+Ajustes
+  A física fica nas funções do começo do arquivo: springStep (k = 70, a rigidez da mola do deslize), swingStep (38 é a gravidade do balanço, 4,2 o atrito e 0,0034 o quanto a velocidade empurra a foto) e, no componente, os 180 de goTo(nearestAt(...)) no onUp, o quanto um puxão rápido leva adiante. O espaço entre as fotos: spacing = cw * 1,08. A brisa: os 0,0009 do Math.sin no laço da simulação.
+  O papel da polaroide e a madeira do pregador: .pl-print (#fbfaf7) e .pl-peg no PL_CSS. A margem de baixo da foto: a altura de .pl-note (46px).
+
+Verificação
+  - O typecheck (npx tsc --noEmit; no Vite, o tsc -b do npm run build) e o build passam, e o console do navegador fica limpo.
+  - As seis fotos abrem em /polaroid-line-carousel/acima-das-nuvens.webp e nas outras, e a conferência do passo 3 disse OK em todas.
+  - Numa tela de desktop, a página inteira com o fundo creme (ou o --color-background do projeto, se ele tiver um, como os do shadcn e do create-next-app): um varal fino de uma ponta à outra, cedendo no meio, e a foto "Acima das nuvens" (montanhas acima de um mar de nuvens no nascer do sol) pendurada no meio por um pregador de madeira, com "Lago de vidro" e a próxima à direita. Embaixo, à esquerda, "Acima das nuvens" e "Valais, Suíça: o nascer do sol a 3.100 m."; à direita, "01 / 06" e duas setas redondas.
+  - Sem mexer, a cada 4,5 s o varal desliza para a próxima foto, as fotos balançam e se acalmam, e o título e a legenda trocam; depois da sexta, volta para a primeira.
+  - Arrastar o varal para o lado leva as fotos junto com o ponteiro, inclinadas para trás do movimento; ao soltar, a foto mais perto do meio para lá. Passar da primeira estica o varal com resistência, e ele volta.
+  - O clique numa foto do lado a traz para o meio. Com o carrossel em foco (Tab), ← e → andam uma foto.
+  - Numa tela de celular, as fotos ficam menores (a do meio inteira e um pedaço das vizinhas), o dedo passa as fotos de lado e a página ainda rola para cima e para baixo.
+  - Com o reduzir movimento do sistema ligado, as fotos deslizam sem balançar.
+
+Ao terminar, diga o endereço em que a demo abriu e o caminho de cada arquivo criado.
+</pasted_content id="0cc2">
+
+
+
+
+<pasted_content id="0cc2">
+# Interactive Selector — ProfitizeBuild
+Objetivo: uma galeria em React com cinco fotos lado a lado, numa faixa de 900 × 400 px: a escolhida fica aberta e as outras viram tiras estreitas. Clicar numa tira abre a foto dela com uma transição de 0,7 s: a moldura fica branca, a foto se afasta um pouco, uma sombra sobe do pé e o título e a descrição entram deslizando ao lado de um ícone redondo. A demo é uma página cinza-escura com o título "Fuja com estilo" em cima e cinco experiências de um acampamento de luxo.
+
+Contexto
+  A escolhida ocupa 7 partes da largura e cada tira fechada 1 (no mínimo 60 px, a largura do ícone). Fechada, a foto fica 20% mais perto; aberta, volta ao tamanho. As fotos entram uma depois da outra, vindas da esquerda, quando a faixa aparece na tela, e o título e o texto da demo descem do alto.
+  Numa largura de 560 px ou mais as fotos ficam lado a lado; abaixo disso (no celular) elas se empilham numa coluna de 560 px de altura e a escolhida abre para baixo. A medida é a largura da faixa, não a da tela (container query): ela funciona numa coluna estreita de um desktop também.
+  Para o teclado e o leitor de tela é um grupo de opções (radiogroup): Tab entra na foto aberta, as setas trocam e Home e End vão para as pontas.
+  São dois arquivos. O componente (components/ui/interactive-selector.tsx) exporta InteractiveSelector, só a faixa, que recebe as opções por props, mais os tipos. A demo (components/interactive-selector-demo.tsx) tem a página, o título e as cinco opções, com as fotos e os ícones.
+  Só React (18 ou 19) e TypeScript. Sem Tailwind, sem bibliotecas (nem react-icons, nem lucide-react, nem shadcn) e sem fontes: os ícones são do Lucide, desenhados na demo, e o CSS mora dentro dos arquivos, numa <style>, com classes isel-*. A faixa declara a própria tipografia e o box-sizing, então não herda nada da página e fica igual em qualquer projeto. Posição, margem e largura ficam numa camada (@layer base), para as classes do projeto vencerem. No React 19 a <style> do componente sobe para o <head> uma vez só; no 18 ela vai dentro da faixa, escondida.
+  As fotos da demo são do Unsplash, carregadas direto de images.unsplash.com (de uso livre; o Unsplash permite usar assim). A demo precisa de internet para mostrar as fotos.
+
+Antes de começar
+  Olhe a stack do projeto:
+  - React com TypeScript (Next.js, Vite, Remix, Astro com React…): siga os passos abaixo. Os arquivos começam com "use client", que o Next.js exige e os outros ignoram.
+  - React sem TypeScript: crie os arquivos como .jsx e tire só as anotações de tipo (os blocos type, os ": Tipo", os "as Tipo", os "type" dentro dos imports e os genéricos <…>). Não mude mais nada.
+  - Sem React (HTML puro, Vue, Svelte, Angular…): pare e me avise antes de fazer qualquer coisa; este componente é React.
+  Os arquivos vão na pasta de componentes do projeto (src/components ou components). O componente fica numa subpasta ui, como na estrutura do shadcn; se o projeto já tem components/ui, use essa.
+  Não instale nada: nenhum pacote é necessário, nem o react-icons.
+  Mesmo que o projeto use Tailwind ou shadcn, não converta o CSS em classes utilitárias, não o mova para um .css separado e não troque os ícones pelos de uma biblioteca.
+  As fotos são <img> comuns, de propósito: o next/image exigiria liberar o domínio delas no next.config. No Next.js, o aviso @next/next/no-img-element do ESLint, se aparecer, pode ficar. Se o projeto tem uma Content-Security-Policy que limita img-src, libere https://images.unsplash.com.
+
+Implementação
+  1. Crie components/ui/interactive-selector.tsx com exatamente o conteúdo abaixo. Copie o arquivo inteiro, sem abreviar, sem reformatar, sem traduzir, sem renomear e sem "melhorar" nada, inclusive o CSS no fim:
+
+```tsx
+"use client"
+
+import * as React from "react"
+
+/**
+ * Interactive Selector — uma faixa de fotos lado a lado em que a escolhida abre e as outras viram tiras estreitas.
+ *
+ * Clicar numa tira (ou andar com as setas do teclado) abre a foto dela: a moldura fica branca, a foto se afasta de
+ * 120% para 100%, uma sombra sobe do pé e o título e a descrição entram deslizando ao lado do ícone. As fotos entram
+ * uma depois da outra, vindas da esquerda, quando a faixa aparece na tela.
+ *
+ * Numa largura de 560 px ou mais as fotos ficam lado a lado, em 400 px de altura; abaixo disso elas se empilham e a
+ * escolhida abre para baixo. A medida é a largura da faixa, não a da tela (container query), então ela funciona numa
+ * coluna estreita de um desktop também.
+ *
+ * Para o leitor de tela e o teclado é um grupo de opções (radiogroup): Tab entra na escolhida, as setas trocam, Home
+ * e End vão para as pontas. Posição, margem e largura aceitam as classes do projeto (Tailwind, CSS Modules, CSS comum);
+ * a faixa ocupa a largura do pai, até 900 px.
+ *
+ * Autocontido: o React é o único import. Sem Tailwind, sem bibliotecas, sem arquivo CSS.
+ */
+
+export type SelectorOption = {
+  title: string
+  description?: string
+  /** A foto. Ela cobre a tira inteira (object-fit: cover), recortada no centro. */
+  image: string
+  /** Um ícone de 24 px, que pinta com currentColor (branco). */
+  icon?: React.ReactNode
+}
+
+export type InteractiveSelectorProps = Omit<React.ComponentPropsWithoutRef<"div">, "onChange"> & {
+  options: SelectorOption[]
+  /** A opção aberta no começo (sem index). */
+  defaultIndex?: number
+  /** A opção aberta, para controlar de fora; com ela, a troca chega por onIndexChange. */
+  index?: number
+  onIndexChange?: (index: number) => void
+  /** O nome do grupo para o leitor de tela. */
+  label?: string
+}
+
+// O React 19 sobe uma <style> com href e precedence para o <head>, uma vez só para todas as faixas (fora da faixa e do
+// textContent dela). O React 18 não conhece isso: lá ela vai dentro da faixa, escondida e com o CSS cru, porque como
+// filho de texto o SSR do 18 escaparia as aspas e quebraria os seletores.
+const HOISTS_STYLES = Number(React.version.split(".")[0]) >= 19
+
+function InteractiveSelectorStyles() {
+  if (HOISTS_STYLES) {
+    const hoist = { href: "interactive-selector", precedence: "default" } as React.StyleHTMLAttributes<HTMLStyleElement>
+    return <style {...hoist}>{ISEL_CSS}</style>
+  }
+  return <style hidden dangerouslySetInnerHTML={{ __html: ISEL_CSS }} />
+}
+
+export const InteractiveSelector = React.forwardRef<HTMLDivElement, InteractiveSelectorProps>(function InteractiveSelector(
+  { options, defaultIndex = 0, index, onIndexChange, label = "Opções", className, ...props },
+  ref,
+) {
+  const [inner, setInner] = React.useState(defaultIndex)
+  const [shown, setShown] = React.useState(false)
+  const root = React.useRef<HTMLDivElement | null>(null)
+  const items = React.useRef<(HTMLButtonElement | null)[]>([])
+  const active = Math.min(Math.max(index ?? inner, 0), options.length - 1)
+
+  const setRoot = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      root.current = node
+      if (typeof ref === "function") ref(node)
+      else if (ref) ref.current = node
+    },
+    [ref],
+  )
+
+  // a entrada espera a faixa aparecer na tela
+  React.useEffect(() => {
+    const el = root.current
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setShown(true)
+      return
+    }
+    const io = new IntersectionObserver(
+      entries => {
+        if (entries.some(e => e.isIntersecting)) {
+          setShown(true)
+          io.disconnect()
+        }
+      },
+      { threshold: 0.15 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  const select = (i: number) => {
+    if (i === active) return
+    if (index === undefined) setInner(i)
+    onIndexChange?.(i)
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const n = options.length
+    let next: number
+    switch (e.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        next = (active + 1) % n
+        break
+      case "ArrowLeft":
+      case "ArrowUp":
+        next = (active - 1 + n) % n
+        break
+      case "Home":
+        next = 0
+        break
+      case "End":
+        next = n - 1
+        break
+      default:
+        return
+    }
+    e.preventDefault()
+    select(next)
+    items.current[next]?.focus()
+  }
+
+  return (
+    <div ref={setRoot} className={"isel" + (className ? " " + className : "")} data-shown={shown || undefined} {...props}>
+      <InteractiveSelectorStyles />
+      <div className="isel__list" role="radiogroup" aria-label={label} onKeyDown={onKeyDown}>
+        {options.map((option, i) => (
+          <button
+            key={i}
+            ref={el => {
+              items.current[i] = el
+            }}
+            className="isel__option"
+            type="button"
+            role="radio"
+            aria-checked={i === active}
+            tabIndex={i === active ? 0 : -1}
+            style={{ "--isel-i": i } as React.CSSProperties}
+            onClick={() => select(i)}
+          >
+            <img className="isel__img" src={option.image} alt="" decoding="async" draggable={false} />
+            <span className="isel__shade" aria-hidden="true" />
+            <span className="isel__label">
+              <span className="isel__icon" aria-hidden="true">
+                {option.icon}
+              </span>
+              <span className="isel__info">
+                <span className="isel__title">{option.title}</span>
+                {option.description != null && <span className="isel__desc">{option.description}</span>}
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+})
+
+export default InteractiveSelector
+
+const ISEL_CSS = `
+/* o que o projeto pode trocar com uma classe (posição, margem, largura): na camada base, que vem antes das classes de
+   componente e dos utilitários (Tailwind v4, Panda, Chakra) e perde para o CSS fora de camada (Tailwind v3, CSS
+   Modules, CSS comum) */
+@layer base {
+  .isel { position: relative; width: 100%; max-width: 900px; margin: 0; }
+}
+.isel[hidden] { display: none; }
+.isel {
+  box-sizing: border-box;
+  display: block;
+  /* as medidas de baixo são da largura da faixa, não da tela */
+  container-type: inline-size;
+  /* nada de texto herdado da página: a faixa fica igual em qualquer projeto */
+  font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-style: normal;
+  font-variant: normal;
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-align: left;
+  text-transform: none;
+  text-indent: 0;
+  text-shadow: none;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.isel *, .isel *::before, .isel *::after { box-sizing: border-box; }
+
+.isel__list {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  height: 400px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* cada foto: uma tira estreita (1 parte) ou aberta (7 partes), com moldura de 2 px */
+.isel__option {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 60px;
+  min-height: 60px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid #292929;
+  border-radius: 0;
+  background: #18181b;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  backface-visibility: hidden;
+  will-change: flex-grow;
+  transition-property: flex-grow, border-color, box-shadow;
+  transition-duration: .7s;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+  /* a entrada: da esquerda, uma depois da outra, quando a faixa aparece */
+  animation: isel-enter .7s cubic-bezier(.4, 0, .2, 1) both;
+  animation-delay: calc(var(--isel-i, 0) * 180ms);
+  animation-play-state: paused;
+}
+.isel[data-shown] .isel__option { animation-play-state: running; }
+@keyframes isel-enter {
+  from { opacity: 0; translate: -60px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+.isel__option[aria-checked="true"] {
+  z-index: 10;
+  flex-grow: 7;
+  border-color: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+  cursor: default;
+}
+/* o anel de foco do teclado, por dentro da moldura */
+.isel__option:focus { outline: none; }
+.isel__option:focus-visible { outline: 2px solid rgba(255, 255, 255, .9); outline-offset: -8px; }
+
+/* a foto cobre a tira inteira; fechada, ela fica 20% mais perto */
+.isel__img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  object-fit: cover;
+  object-position: center;
+  scale: 1.2;
+  user-select: none;
+  pointer-events: none;
+  transition: scale .7s cubic-bezier(.4, 0, .2, 1);
+}
+.isel__option[aria-checked="true"] .isel__img { scale: 1; }
+
+/* a sombra que sobe do pé da aberta, atrás do texto. As sombras partem do pé da camada; os 240 px de altura são a folga
+   para o desfoque de 120 px sumir antes do topo dela (com menos, ele é cortado ali e fica uma linha na foto) */
+.isel__shade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -40px;
+  display: block;
+  height: 240px;
+  margin: 0;
+  pointer-events: none;
+  box-shadow: inset 0 -120px 0 -120px #000, inset 0 -120px 0 -80px #000;
+  transition-property: bottom, box-shadow;
+  transition-duration: .7s;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+.isel__option[aria-checked="true"] .isel__shade {
+  bottom: 0;
+  box-shadow: inset 0 -120px 120px -120px #000, inset 0 -120px 120px -80px #000;
+}
+
+/* o ícone e, ao lado, o título e a descrição */
+.isel__label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 20px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  height: 48px;
+  margin: 0;
+  padding: 0 16px;
+  pointer-events: none;
+  transition: bottom .7s cubic-bezier(.4, 0, .2, 1);
+}
+.isel__icon {
+  display: flex;
+  flex: 0 0 44px;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  border: 2px solid #444;
+  border-radius: 999px;
+  background: rgba(32, 32, 32, .85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .18);
+  color: #fff;
+}
+.isel__icon svg { display: block; flex-shrink: 0; width: 24px; height: 24px; }
+.isel__info { position: relative; display: flex; flex-direction: column; min-width: 0; margin: 0; white-space: pre; color: #fff; }
+.isel__title, .isel__desc {
+  display: block;
+  margin: 0;
+  opacity: 0;
+  translate: 25px 0;
+  transition-property: opacity, translate;
+  transition-duration: .7s;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+.isel__title { font-size: 18px; font-weight: 700; line-height: 28px; color: #fff; }
+.isel__desc { font-size: 16px; font-weight: 400; line-height: 24px; color: #d1d5db; }
+.isel__option[aria-checked="true"] .isel__title,
+.isel__option[aria-checked="true"] .isel__desc { opacity: 1; translate: 0 0; }
+
+/* no mouse, a tira fechada acende a moldura */
+@media (hover: hover) {
+  .isel__option[aria-checked="false"]:hover { border-color: #52525b; }
+}
+
+/* estreita (abaixo de 560 px): as fotos se empilham e a escolhida abre para baixo; nas tiras fechadas o ícone desce
+   para caber nos 60 px */
+@container (max-width: 559.98px) {
+  .isel__list { flex-direction: column; height: 560px; }
+  .isel__option { min-width: 0; }
+  .isel__option[aria-checked="false"] .isel__label { bottom: 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .isel__option { animation: none; }
+  .isel__option, .isel__option * { transition-duration: .01ms !important; }
+}
+`
+```
+
+  2. Crie components/interactive-selector-demo.tsx, ao lado da pasta ui, com exatamente este conteúdo, inclusive os ícones e o CSS no fim. O import é relativo e funciona sem alias; se o componente ficou em outro lugar, ajuste só esse caminho:
+
+```tsx
+"use client"
+
+import * as React from "react"
+import { InteractiveSelector, type SelectorOption } from "./ui/interactive-selector"
+
+/**
+ * A faixa numa página escura, com o título em cima e cinco experiências de um acampamento de luxo, com fotos do
+ * Unsplash (de uso livre). Os ícones são do Lucide (licença ISC), desenhados aqui.
+ */
+
+const unsplash = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1200&h=800&q=75`
+
+function Icon({ children }: { children: React.ReactNode }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {children}
+    </svg>
+  )
+}
+
+export const options: SelectorOption[] = [
+  {
+    title: "Tenda de Luxo",
+    description: "Glamping sob as estrelas",
+    image: unsplash("1487730116645-74489c95b41b"),
+    icon: (
+      <Icon>
+        <path d="M3.5 21 14 3" />
+        <path d="M20.5 21 10 3" />
+        <path d="M15.5 21 12 15l-3.5 6" />
+        <path d="M2 21h20" />
+      </Icon>
+    ),
+  },
+  {
+    title: "Fogueira Gourmet",
+    description: "Marshmallow e boas histórias",
+    image: unsplash("1475483768296-6163e08872a1"),
+    icon: (
+      <Icon>
+        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+      </Icon>
+    ),
+  },
+  {
+    title: "Refúgio no Lago",
+    description: "Píer privativo e passeios de canoa",
+    image: unsplash("1439066615861-d1af74d74000"),
+    icon: (
+      <Icon>
+        <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
+      </Icon>
+    ),
+  },
+  {
+    title: "Spa na Montanha",
+    description: "Sauna e ofurô ao ar livre",
+    image: unsplash("1708630283392-678476d547f8"),
+    icon: (
+      <Icon>
+        <path d="M10 4 8 6" />
+        <path d="M17 19v2" />
+        <path d="M2 12h20" />
+        <path d="M7 19v2" />
+        <path d="M9 5 7.621 3.621A2.121 2.121 0 0 0 4 5v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
+      </Icon>
+    ),
+  },
+  {
+    title: "Trilha Guiada",
+    description: "Passeios com guias da região",
+    image: unsplash("1551632811-561732d1e306"),
+    icon: (
+      <Icon>
+        <path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z" />
+        <path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z" />
+        <path d="M16 17h4" />
+        <path d="M4 13h4" />
+      </Icon>
+    ),
+  },
+]
+
+export default function InteractiveSelectorDemo() {
+  return (
+    <div className="isel-demo">
+      <style dangerouslySetInnerHTML={{ __html: DEMO_CSS }} />
+      <header className="isel-demo__head">
+        <h1 className="isel-demo__title">Fuja com estilo</h1>
+        <p className="isel-demo__text">Experiências de acampamento de luxo nos cantos mais bonitos da natureza.</p>
+      </header>
+      <InteractiveSelector options={options} label="Experiências" />
+    </div>
+  )
+}
+
+const DEMO_CSS = `
+.isel-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100svh;
+  padding: 64px 24px 32px;
+  overflow: hidden;
+  background: #222;
+  color: #fff;
+  font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  container-type: inline-size;
+}
+.isel-demo__head { box-sizing: border-box; width: 100%; max-width: 672px; padding: 0 24px; text-align: center; }
+.isel-demo__title {
+  margin: 0 0 12px;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 40px;
+  letter-spacing: -.025em;
+  color: #fff;
+  filter: drop-shadow(0 10px 8px rgba(0, 0, 0, .04)) drop-shadow(0 4px 3px rgba(0, 0, 0, .1));
+  animation: isel-demo-in .8s ease-in-out .3s both;
+}
+.isel-demo__text {
+  max-width: 576px;
+  margin: 0 auto;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  color: #d1d5db;
+  animation: isel-demo-in .8s ease-in-out .6s both;
+}
+@container (min-width: 768px) {
+  .isel-demo__title { font-size: 48px; line-height: 1; }
+  .isel-demo__text { font-size: 20px; }
+}
+@keyframes isel-demo-in {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .isel-demo__title, .isel-demo__text { animation: none; }
+}
+`
+```
+
+  3. Mostre a demo numa página só dela, que ocupa a tela inteira (min-height: 100svh) com o próprio fundo:
+     - Next.js (App Router): crie app/interactive-selector/page.tsx (ou src/app/interactive-selector/page.tsx) que só devolve <InteractiveSelectorDemo />. Se o layout envolver as páginas num container com padding ou largura máxima, a demo fica fora dele.
+     - Vite ou outro React sem rotas: o App.tsx só devolve <InteractiveSelectorDemo />. Com react-router, uma rota /interactive-selector.
+     - Nada de margem em volta: o body fica com margin: 0. Tire da página da demo os estilos globais de template que centralizam o body ou o #root, dão padding, largura máxima, cor de fundo ou cor de texto (os do create-vite e do create-next-app fazem isso). Pode remover esses estilos de exemplo se o projeto ainda for o template.
+  4. Rode o projeto e abra a demo.
+
+Como usar no projeto
+  <InteractiveSelector options={[{ title: "Suíte Master", description: "Vista para o mar", image: "/fotos/suite.jpg", icon: <IconeCama /> }]} label="Quartos" />
+  É uma <div> com as props de uma div (className, style, id, ref…), mais estas:
+  - options: { title, description?, image, icon? }[]. image é a foto, que cobre a tira inteira (object-fit: cover), recortada no centro: use fotos de paisagem de pelo menos 1200 × 800 px, para ficarem nítidas abertas em tela retina. icon é um ícone de 24 px que pinta com currentColor (um <svg> com stroke="currentColor", como os da demo, ou um do lucide-react se o projeto já usa). De 3 a 6 opções cabem bem na largura de 900 px.
+  - defaultIndex: a opção aberta no começo (0 é a primeira).
+  - index e onIndexChange: para controlar de fora (trocar de foto por um botão, um timer ou o estado da página); com index, a troca chega por onIndexChange e a faixa só muda quando o index muda.
+  - label: o nome do grupo para o leitor de tela ("Opções" é o padrão).
+  A faixa ocupa a largura do pai, até 900 px. className serve para posição, margem e largura, com Tailwind, CSS Modules ou CSS comum (className="mx-auto", "max-w-none", "mt-12"…). Para esconder, use o atributo hidden.
+
+Ajustes
+  A altura: height: 400px em .isel__list (lado a lado) e height: 560px na container query do fim (empilhada).
+  Onde ela empilha: max-width: 559.98px na container query do fim.
+  Quanto a aberta abre: flex-grow: 7 em .isel__option[aria-checked="true"]; a tira fechada mínima: min-width: 60px em .isel__option.
+  A moldura: border: 2px solid #292929 em .isel__option (fechada) e border-color: #fff na aberta.
+  O zoom da foto fechada: scale: 1.2 em .isel__img.
+  A velocidade: os .7s das transições; a entrada: os 180ms entre uma foto e outra, em animation-delay.
+  O ícone: o círculo de 44 px em .isel__icon (fundo rgba(32, 32, 32, .85) com desfoque e borda #444).
+
+Verificação
+  - O typecheck (npx tsc --noEmit; no Vite, npx tsc -b, porque o tsconfig da raiz só aponta para os outros) e o build passam, e o console do navegador fica limpo.
+  - Uma tela inteira cinza-escura (#222). Em cima, centralizados, "Fuja com estilo" em branco e bem grosso, e embaixo "Experiências de acampamento de luxo nos cantos mais bonitos da natureza." em cinza-claro; os dois descem do alto ao abrir, um depois do outro.
+  - Embaixo, a faixa de 900 × 400 px: as cinco fotos entram da esquerda, uma depois da outra. A primeira (tendas acesas numa floresta à noite) está aberta, com moldura branca, e as outras quatro são tiras estreitas (uma fogueira com pessoas em volta, um píer num lago, um ofurô na neve e duas pessoas numa trilha com montanhas nevadas), cada uma com o ícone redondo embaixo.
+  - Na aberta, embaixo à esquerda, o ícone de uma tenda num círculo escuro com borda cinza e, ao lado, "Tenda de Luxo" em negrito com "Glamping sob as estrelas" embaixo, sobre uma sombra escura que sobe do pé da foto, sem linha onde ela começa.
+  - Clicando em outra tira, ela abre e a anterior fecha ao mesmo tempo (0,7 s): a moldura branca passa para ela, a foto se afasta, e o título e a descrição dela entram deslizando da direita enquanto os da anterior somem.
+  - Com Tab, o foco cai na foto aberta (um contorno branco por dentro da moldura); as setas trocam a foto, e Home e End vão para a primeira e a última.
+  - Numa tela de celular de 375 px, as fotos ficam empilhadas numa coluna de 560 px de altura: a aberta ocupa a maior parte, e as fechadas são faixas com o ícone.
+
+Ao terminar, diga o endereço em que a demo abriu e o caminho de cada arquivo criado.
+</pasted_content id="0cc2">

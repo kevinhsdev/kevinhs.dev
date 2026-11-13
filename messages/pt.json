@@ -1,11 +1,32 @@
 {
+  "brand": { "codeBy": "© Code by Kevin" },
   "meta": {
     "title": "Kevin Henrique · Engenharia de Software",
     "description": "Estudante de Engenharia de Software buscando estágio em backend (Java/Spring), DevOps/Cloud e IA aplicada. Construo software que uma equipe real usa todos os dias."
   },
-  "a11y": {
-    "skipToContent": "Pular para o conteúdo",
-    "todo": "Informação pendente"
+  "nav": {
+    "home": "Início",
+    "journey": "Trajetória",
+    "projects": "Projetos",
+    "skills": "Habilidades",
+    "contact": "Contato",
+    "about": "Sobre",
+    "skip": "Pular para o conteúdo"
+  },
+  "menu": {
+    "open": "Abrir menu",
+    "close": "Fechar menu",
+    "closeShort": "Fechar",
+    "navigation": "Navegação",
+    "label": "Menu",
+    "find": "Onde me encontrar"
+  },
+  "theme": {
+    "toggle": "Alternar tema claro/escuro"
+  },
+  "locale": {
+    "switch": "Ver em inglês",
+    "short": "EN"
   },
   "cta": {
     "downloadCv": "Baixar CV",
@@ -13,543 +34,232 @@
     "linkedin": "LinkedIn",
     "instagram": "Instagram",
     "github": "GitHub",
-    "email": "E-mail",
     "copyEmail": "Copiar e-mail",
     "emailCopied": "E-mail copiado",
-    "emailCopyFailed": "Não consegui copiar. O e-mail é {email}"
+    "emailCopyFailed": "Não consegui copiar. O e-mail é {email}",
+    "dock": "Atalhos de contato"
   },
-  "theme": {
-    "label": "Tema",
-    "light": "Claro",
-    "dark": "Escuro",
-    "system": "Sistema",
-    "toggle": "Alternar tema"
-  },
-  "locale": {
-    "switchTo": "Read in English",
-    "pt": "Português",
-    "en": "English"
-  },
-  "command": {
-    "open": "Abrir paleta de comandos",
-    "placeholder": "Digite um comando ou busque…",
-    "empty": "Nada encontrado.",
-    "groups": {
-      "navigate": "Navegar",
-      "actions": "Ações",
-      "preferences": "Preferências",
-      "links": "Links"
+  "hero": {
+    "role1": "Engenharia de Software",
+    "role2": "Backend · Cloud · IA aplicada",
+    "hello": "Olá, eu sou",
+    "cargo": "Estudante de<br></br>Engenharia de Software",
+    "links": "Redes e contato",
+    "availability": "remoto, híbrido ou presencial",
+    "numbers": "Números reais dos projetos",
+    "bar": {
+      "group": "Agentes montando a página",
+      "scanning": "Escaneando a página…",
+      "agents": "agentes",
+      "layers": "camadas",
+      "builtBy": "Montada por",
+      "agentsIn": "agentes em",
+      "tour": "Tour",
+      "touring": "Em tour",
+      "speed": "Velocidade dos agentes: {v}×",
+      "redo": "Montar a página de novo"
+    },
+    "numbersKicker": "Em uso de verdade",
+    "n": {
+      "pdfDocs": "mais documentos processados por dia (de ~100 para ~300)",
+      "pdfDays": "dias para processar os documentos de uma turma",
+      "sekStudents": "alunos cobertos pelo sistema da escola"
     }
   },
-  "nav": {
-    "home": "Início",
-    "about": "Sobre",
-    "experience": "Trajetória",
-    "projects": "Projetos",
-    "skills": "Habilidades",
-    "contact": "Contato",
-    "now": "Agora",
-    "toolbar": "Preferências de exibição",
-    "achievements": "Conquistas"
-  },
-  "timeline": {
-    "filters": {
-      "all": "Tudo",
-      "work": "Trabalho",
-      "study": "Estudo",
-      "event": "Eventos"
-    },
-    "present": "atual",
-    "done": "concluído",
-    "inProgress": "em andamento",
-    "expected": "previsto"
+  "journey": {
+    "title": "Trajetória",
+    "saoPaulo": "São Paulo",
+    "malta": "Malta · St. Julian's",
+    "spain": "Madrid · planejado",
+    "usa": "Cambridge · planejado",
+    "flight": "São Paulo → Malta",
+    "plans": "Próximos destinos",
+    "plansText": "Madrid, pelo espanhol, e Cambridge, nos Estados Unidos, para levar o inglês adiante.",
+    "outro": "O próximo destino é o seu time.",
+    "outroCta": "Vamos conversar",
+    "photos": "Fotos de Malta",
+    "previous": "Foto anterior",
+    "next": "Próxima foto",
+    "status": "Foto {i} de {n}",
+    "school": "Onde tudo começou",
+    "schoolYears": "12 anos como aluno",
+    "present": "hoje"
   },
   "projects": {
+    "title": "Projetos",
+    "count": "{n, plural, one {projeto} other {projetos}}",
+    "soon": "Em breve",
     "featured": "Em destaque",
     "other": "Outros projetos",
-    "caseStudy": "Ler estudo de caso",
+    "open": "Ver projeto",
     "repo": "Código",
     "demo": "Demo",
-    "video": "Demo em vídeo",
     "privateCode": "Código interno (sistema da escola)",
-    "team": "Equipe de {count}",
     "status": {
       "in-use": "Em uso diário",
       "live": "No ar",
       "evolving": "Em evolução contínua",
       "in-development": "Em desenvolvimento",
       "academic": "Projeto acadêmico"
-    },
-    "mockupAlt": "Tela de demonstração do {title}, com dados fictícios",
-    "demoNote": "dados fictícios",
-    "private": "Privado"
+    }
   },
   "skills": {
+    "title": "Habilidades",
     "tiers": {
       "daily": "Uso no dia a dia",
       "experienced": "Tenho experiência",
       "learning": "Estudando agora",
       "concepts": "Conceitos"
-    }
-  },
-  "now": {
-    "title": "Agora",
-    "learning": "Estudando",
-    "building": "Construindo",
-    "updated": "Atualizado em {date}",
-    "about": "Uma página /now conta no que eu estou focado neste momento. Atualizo uma vez por mês.",
-    "back": "Voltar ao início"
+    },
+    "all": "Tudo com que trabalho"
   },
   "contact": {
     "title": "Vamos conversar",
+    "intro": "Procuro estágio em backend, DevOps/Cloud ou IA aplicada. Remoto, híbrido ou presencial, no Brasil ou no exterior. O caminho mais rápido é o e-mail.",
+    "orForm": "Ou mande uma mensagem por aqui",
     "name": "Nome",
     "email": "Seu e-mail",
     "message": "Mensagem",
+    "placeholder": "Escreva sua mensagem…",
     "send": "Enviar",
     "sending": "Enviando…",
     "sent": "Mensagem enviada. Respondo em breve.",
-    "fallback": "O envio direto não está configurado. Abrindo seu app de e-mail…",
-    "rateLimited": "Muitas mensagens em pouco tempo. Tente de novo em alguns minutos.",
-    "invalid": "Confira os campos destacados.",
-    "error": "Não foi possível enviar. Use o e-mail direto: {email}",
-    "intro": "Procuro estágio em backend, DevOps/Cloud ou IA aplicada. Remoto, híbrido ou presencial, no Brasil ou no exterior. O caminho mais rápido é o e-mail.",
-    "orForm": "Ou mande uma mensagem por aqui",
-    "honeypot": "Deixe este campo em branco"
+    "invalid": "Confira os campos: nome, e-mail válido e uma mensagem de pelo menos 10 caracteres.",
+    "unconfigured": "O envio direto não está configurado. Abrindo seu app de e-mail…",
+    "failed": "Não foi possível enviar. Abrindo seu app de e-mail…",
+    "honeypot": "Deixe este campo em branco",
+    "presetsTitle": "Começar com",
+    "presets": {
+      "opportunity": {
+        "label": "Oportunidade",
+        "text": "Oi, Kevin! Vi seu portfólio e adoraria conversar sobre uma vaga em engenharia de dados/software. Você toparia uma call rápida?"
+      },
+      "project": {
+        "label": "Projeto",
+        "text": "Oi, Kevin! Tenho um projeto/desafio técnico em mente e gostaria de conversar sobre escopo, arquitetura e sua disponibilidade."
+      },
+      "general": {
+        "label": "Geral",
+        "text": "Oi, Kevin! Gostei do seu trabalho e queria me conectar com você."
+      }
+    },
+    "chat": {
+      "status": "Aberto a estágio",
+      "hi": "Oi! Que bom que você chegou até aqui.",
+      "orHere": "Ou me manda uma mensagem aqui embaixo.",
+      "ask": "Me conta: é sobre uma oportunidade, um projeto ou só um oi?",
+      "today": "Hoje",
+      "typing": "digitando…",
+      "idTitle": "Pra eu conseguir te responder:",
+      "now": "agora"
+    }
+  },
+  "project": {
+    "back": "Todos os projetos",
+    "problem": "O problema",
+    "built": "O que construí",
+    "metrics": "Números",
+    "stack": "Stack",
+    "links": "Links",
+    "video": "Vídeo de apresentação do {title}",
+    "videoNote": "em português",
+    "screenshot": "Tela inicial do {title}",
+    "previous": "Anterior",
+    "next": "Próximo",
+    "role": "Papel",
+    "year": "Ano",
+    "team": "Equipe de {count}",
+    "solo": "Individual",
+    "teamLabel": "Equipe",
+    "statusLabel": "Status",
+    "stackCount": "{count} tecnologias",
+    "contents": "Neste estudo",
+    "play": "Assistir à apresentação",
+    "nextProject": "Próximo projeto"
+  },
+  "about": {
+    "title": "Sobre mim",
+    "hand": "quem sou eu",
+    "description": "Quem é Kevin Henrique: como começou a programar, o que faz hoje e o que gosta fora da tela.",
+    "photos": "Fora da tela",
+    "certificates": "Certificados",
+    "certificatesIntro": "Abra uma pasta para ver os certificados dela.",
+    "languages": "Idiomas",
+    "items": "{n} itens",
+    "studying": "Estudando agora",
+    "nowKicker": "Hoje",
+    "skills": "Todas as habilidades",
+    "more": "Conheça minha história",
+    "teaserTitle": "Além do código",
+    "teaserWorld": "De onde eu sou",
+    "teaserSpin": "arraste para girar",
+    "teaserMail": "Fale comigo",
+    "teaserOff": "quando o notebook fecha",
+    "teaserTo": "Para",
+    "teaserSubject": "Assunto",
+    "teaserSubjectText": "Vamos conversar?",
+    "teaserCerts": "em {n} pastas, de idiomas a eventos",
+    "endTitle": "Vamos conversar",
+    "endText": "Baixe o currículo ou me mande uma mensagem.",
+    "endContact": "Ir para o contato",
+    "certificate": "Certificado",
+    "story": "Minha história",
+    "inProgress": "Em andamento",
+    "scroll": "Role para explorar",
+    "sport": "vôlei",
+    "morePhotos": "Mais fotos",
+    "chapter": "Capítulo",
+    "ch1": "Comecei a programar aos 15, com os cursos da OneBitCode.",
+    "ch2": "Engenharia de Software na UMC. Na secretaria de uma escola, criei o KIRI e o SEK.",
+    "ch3": "IA aplicada e Harness Engineering. Aprendo em eventos e uso o Claude Code todo dia.",
+    "maltaText": "Me adaptei a um lugar novo e pratiquei o inglês.",
+    "statementE": "Estudo *todos* *os* *dias.* Construo *o* *que* a equipe usa.",
+    "malta": "malta",
+    "music": "música",
+    "updated": "Atualizado em {date}",
+    "hobbies": "Hobbies",
+    "heroHello": "Por trás do código,",
+    "dragHint": "arraste as fotos ↗",
+    "dio": "DIO",
+    "alura": "Alura",
+    "events": "Eventos",
+    "certOpen": "Abrir original",
+    "certPrev": "Anterior",
+    "certNext": "Próximo",
+    "certClose": "Fechar",
+    "certNoPreview": "Sem arquivo digital",
+    "live": "Ao vivo",
+    "termTitle": "kevin — zsh — 80×24",
+    "termPrompt": "kevin@umc ~ %",
+    "termCommand": "kevin --agora",
+    "termLearning": "Estudando",
+    "termBuilding": "Construindo",
+    "termProcesses": "{n} processos"
   },
   "footer": {
-    "saved": "kevin.zip salvo (2026 KB)",
-    "remaining": "faltam ~{count, plural, one {# rolagem} other {# rolagens}}",
-    "waitingDownload": "aguardando download",
-    "cvNote": "o resumo de tudo",
-    "emailNote": "vazio, escreve você",
-    "backToTop": "voltar ao início",
-    "cvFile": "curriculo.pdf",
-    "repo": "Ver o código do site",
-    "snake": {
-      "score": "pontos",
-      "best": "recorde",
-      "label": "Jogo Snake. Use as setas ou WASD para mover; Enter para começar.",
-      "start": "▶ ENTER ou toque para jogar",
-      "hint": "setas / WASD · no celular, deslize ou use o direcional",
-      "record": "NOVO RECORDE!",
-      "pad": "Direcional",
-      "up": "Cima",
-      "down": "Baixo",
-      "left": "Esquerda",
-      "right": "Direita"
-    }
+    "rights": "© {year} Kevin Henrique da Silva",
+    "top": "Voltar ao topo",
+    "navigate": "Navegação",
+    "elsewhere": "Onde me encontrar",
+    "built": "Feito do zero com Next.js"
+  },
+  "cv": {
+    "kicker": "Currículo",
+    "title": "Meu currículo",
+    "intro": "Experiência, projetos, formação e idiomas. Escolha o idioma e baixe em PDF.",
+    "langs": {
+      "pt": "Português",
+      "en": "Inglês",
+      "es": "Espanhol"
+    },
+    "choose": "Idioma do currículo",
+    "download": "Baixar PDF",
+    "open": "Abrir em nova aba",
+    "preview": "Prévia da primeira página do currículo em {lang}"
   },
   "notFound": {
     "title": "Página não encontrada",
-    "description": "Esse endereço não existe, ou mudou de lugar. Mas o resto do portfólio está aqui.",
-    "back": "Voltar ao início",
-    "projects": "Ver projetos"
-  },
-  "creative": {
-    "kicker": "Engenharia de Software · São Paulo",
-    "scroll": "Role para ver",
-    "statement": ["Vi um problema real.", "Construí a solução.", "Hoje ela roda todo dia."],
-    "otherProjects": "Outros projetos",
-    "talk": "Vamos conversar",
-    "skip": "Pular",
-    "editorComment": "Olá! Este sou eu, em Java.",
-    "editorLabel": "Perfil em código (Kevin.java)",
-    "telemetryStrip": "Telemetria de projetos reais",
-    "skillsLabel": "Níveis de habilidade",
-    "skillsHint": "Selecione um nível para ver as habilidades.",
-    "codeBy": "© Code by Kevin",
-    "formFile": "mensagem.md"
-  },
-  "menu": {
-    "open": "Abrir menu",
-    "close": "Fechar menu",
-    "navigation": "Navegação",
-    "socials": "Redes",
-    "search": "Buscar comandos",
-    "title": "Menu"
-  },
-  "caseStudy": {
-    "back": "Todos os projetos",
-    "kicker": "Estudo de caso",
-    "readingTime": "{minutes} min",
-    "role": "Papel",
-    "year": "Ano",
-    "status": "Status",
-    "stack": "Stack",
-    "team": "Equipe",
-    "solo": "Individual",
-    "previous": "Anterior",
-    "next": "Próximo",
-    "read": "Ler estudo de caso",
-    "sections": "Mais estudos de caso",
-    "outline": "Nesta página",
-    "reading": "Leitura",
-    "demo": {
-      "decide": "E aí, o que você faria?",
-      "mine": "minha escolha",
-      "yours": "sua escolha",
-      "same": "Pensamos igual! 🤝",
-      "different": "Boa! Mas eu fui por outro caminho:",
-      "reveal": "Fui por este caminho:",
-      "skip": "Pular e ver a resposta",
-      "classifier": {
-        "title": "Teste o classificador",
-        "intro": "Uma versão simplificada das regras, rodando aqui no seu navegador. Escolha um documento de exemplo ou escreva o que quiser.",
-        "input": "Texto extraído do PDF",
-        "scores": "Pontuação por tipo",
-        "threshold": "linha = limiar mínimo ({n} pontos)",
-        "suggest": "Nome sugerido:",
-        "because": "Porque encontrei:",
-        "unsure": "Hmm, não tenho certeza.",
-        "unsureText": "Nenhum tipo passou do limiar, então a ferramenta pergunta em vez de chutar.",
-        "samples": {
-          "rg": "RG",
-          "historico": "Histórico escolar",
-          "atestado": "Atestado médico",
-          "vago": "Texto vago"
-        },
-        "types": {
-          "rg": "RG",
-          "historico": "Histórico escolar",
-          "certidao": "Certidão de nascimento",
-          "residencia": "Comprovante de residência",
-          "atestado": "Atestado médico"
-        },
-        "files": {
-          "rg": "RG",
-          "historico": "HISTORICO_ESCOLAR",
-          "certidao": "CERTIDAO_NASCIMENTO",
-          "residencia": "COMPROVANTE_RESIDENCIA",
-          "atestado": "ATESTADO_MEDICO"
-        }
-      },
-      "conflict": {
-        "title": "Simulador: duas pessoas, uma ficha",
-        "intro": "Mude um campo na tela da Ana e salve. Depois mude na sua tela (que ainda tem a versão antiga) e salve também. Teste com o mesmo campo e com campos diferentes.",
-        "you": "Você",
-        "screen": "Tela de {name}",
-        "save": "Salvar",
-        "reload": "Recarregar",
-        "reset": "Recomeçar",
-        "saved": "Salvo.",
-        "merged": "Salvo! Alguém gravou antes, mas em outro campo: só o seu campo foi enviado e o trabalho dos dois ficou.",
-        "conflict": "{name} alterou \"{field}\" enquanto você editava. Recarregue para ver a versão nova.",
-        "server": "No servidor (v{version}):",
-        "fields": {
-          "phone": "Telefone",
-          "group": "Turma"
-        }
-      },
-      "blood": {
-        "title": "Teste a compatibilidade",
-        "intro": "Clique numa célula para escolher doador e paciente. Depois registre uma doação e veja o estoque mudar sozinho, como a trigger faz no banco.",
-        "grid": "Quem pode doar para quem",
-        "donorShort": "doador",
-        "patientShort": "paciente",
-        "yes": "compatível",
-        "no": "incompatível",
-        "can": "{donor} pode doar para {patient}.",
-        "cannot": "{donor} não pode doar para {patient}.",
-        "stockIntro": "Estoque (bolsas de exemplo):",
-        "stock": "Estoque por tipo",
-        "donate": "Registrar doação de {type}",
-        "trigger": "INSERT INTO DOACAO … → trigger: UPDATE ESTOQUE SET quantidade = quantidade + 1 WHERE tipo = ''{type}''"
-      }
-    }
-  },
-  "aboutPage": {
-    "title": "Sobre mim",
-    "description": "Quem é Kevin Henrique: como começou a programar, o que faz hoje e o que gosta fora da tela.",
-    "back": "Voltar ao início",
-    "more": "Mais sobre mim",
-    "zoom": "Ampliar: {caption}",
-    "close": "Fechar",
-    "previous": "Foto anterior",
-    "next": "Próxima foto",
-    "facts": {
-      "started": "Comecei a programar",
-      "startedValue": "aos {age} anos",
-      "study": "Estudo",
-      "location": "Moro em",
-      "languages": "Idiomas"
-    }
-  },
-  "aboutTeaser": {
-    "startedLabel": "anos quando comecei a programar",
-    "languages": "Idiomas",
-    "offScreen": "Fora da tela",
-    "learning": "Estudando agora",
-    "nowLink": "O que estou fazendo agora"
-  },
-  "achievements": {
-    "title": "Conquistas",
-    "player": "P1",
-    "score": "Pontos",
-    "unlocked": "Desbloqueadas",
-    "statusUnlocked": "Desbloqueada",
-    "statusProgress": "Em andamento",
-    "statusLocked": "Bloqueada",
-    "goal": "Objetivo",
-    "credential": "Ver certificado",
-    "loading": "Carregando",
-    "continue": "Continue?",
-    "continueCta": "Me chame para o primeiro estágio",
-    "legend": "Placar de conquistas: {unlocked} de {total} desbloqueadas, {score} pontos"
-  },
-  "visitorAchievements": {
-    "unlocked": "Conquista desbloqueada",
-    "dismiss": "Fechar notificação",
-    "case": {
-      "title": "Seus troféus",
-      "note": "Não basta rolar a página: cada troféu é um pequeno desafio, e os bloqueados guardam uma dica.",
-      "done": "Platinado! Você viu tudo por aqui. Obrigado pela visita.",
-      "left": "faltam {left}",
-      "complete": "completo",
-      "locked": "Bloqueado",
-      "arcade": "Troféus do arcade",
-      "reset": "Refazer conquistas",
-      "resetConfirm": "Apagar tudo (e desligar o arcade)?"
-    },
-    "items": {
-      "tourist": {
-        "title": "Turista",
-        "desc": "Visitou o Sobre, o Agora e um case study.",
-        "hint": "Visite três páginas: Sobre mim, Agora e um case study."
-      },
-      "reader": {
-        "title": "Leitor dedicado",
-        "desc": "Leu um case study até o fim.",
-        "hint": "Leia um case study inteiro, até o final da página."
-      },
-      "hacker": {
-        "title": "Hacker",
-        "desc": "Executou um comando pela paleta.",
-        "hint": "Abra a paleta de comandos (Ctrl+K ou ⌘K) e execute um comando."
-      },
-      "stack": {
-        "title": "Full stack",
-        "desc": "Abriu todos os arquivos de skills.",
-        "hint": "Abra cada arquivo da pasta skills/."
-      },
-      "konami": {
-        "title": "Código secreto",
-        "desc": "Digitou o código Konami.",
-        "hint": "↑ ↑ ↓ ↓ ← → ← → B A no teclado. No celular: 7 toques rápidos no meu nome."
-      },
-      "duality": {
-        "title": "Dualidade",
-        "desc": "Foi para o outro lado e voltou.",
-        "hint": "Troque o tema do site e depois volte para o original."
-      },
-      "polyglot": {
-        "title": "Poliglota",
-        "desc": "Leu o site em dois idiomas.",
-        "hint": "Leia o site em outro idioma."
-      },
-      "collector": {
-        "title": "Colecionador",
-        "desc": "Juntou todas as moedas escondidas.",
-        "hint": "Há moedas escondidas pelo modo arcade. Junte todas."
-      },
-      "boss": {
-        "title": "Chefão derrotado",
-        "desc": "Derrotou o Bug Rei no contato.",
-        "hint": "Enfrente o chefão no fim da página."
-      },
-      "snaker": {
-        "title": "Encantador de serpentes",
-        "desc": "Fez 100 pontos no Snake.",
-        "hint": "Faça 100 pontos no Snake do fliperama."
-      },
-      "cartographer": {
-        "title": "Cartógrafo",
-        "desc": "Visitou todas as fases do mapa.",
-        "hint": "Abra todas as fases do mapa da jornada."
-      },
-      "chatter": {
-        "title": "Bom de papo",
-        "desc": "Ouviu o NPC até o fim.",
-        "hint": "Clique no avatar e ouça tudo o que ele tem a dizer."
-      },
-      "invader": {
-        "title": "Defensor do código",
-        "desc": "Limpou uma onda inteira no Bug Invaders.",
-        "hint": "Derrube todos os bugs de uma onda no Bug Invaders do fliperama."
-      }
-    },
-    "platinum": {
-      "kicker": "Troféu de platina",
-      "title": "Platinado!",
-      "desc": "Você desbloqueou todas as conquistas.",
-      "cta": "Ver recompensa"
-    },
-    "reward": {
-      "title": "Sua recompensa",
-      "note": "Um tema secreto: o site inteiro vira um fliperama. Ligue e desligue quando quiser.",
-      "theme": "Tema arcade",
-      "on": "Ligado",
-      "off": "Desligado",
-      "lockedTitle": "Recompensa da platina",
-      "lockedNote": "{left, plural, one {Falta # troféu} other {Faltam # troféus}} para liberar um tema secreto: o site inteiro vira um fliperama, com fases, chefão, minigames e mais troféus.",
-      "locked": "Bloqueado"
-    },
-    "legend": {
-      "title": "Recompensa lendária",
-      "lockedNote": "Complete todos os {total} troféus, os do arcade também ({got}/{total}), para ganhar a skin Lenda (máscara verde corrompida, coroa e chuva de código) e um certificado com o seu nome.",
-      "note": "Você zerou o site. A skin Lenda é sua, e o certificado também.",
-      "name": "Seu nome no certificado",
-      "placeholder": "Visitante lendário",
-      "download": "Baixar PDF",
-      "equip": "Equipar skin Lenda",
-      "equipped": "Skin Lenda equipada",
-      "cert": {
-        "brand": "KEVINHS.DEV · PORTFÓLIO",
-        "title": "Certificado de Conquista",
-        "kicker": "LENDA DO FLIPERAMA",
-        "lead": "Este certificado é concedido a",
-        "body": "por desbloquear todos os {total} troféus do portfólio de Kevin Henrique,",
-        "body2": "incluindo os segredos escondidos no modo arcade.",
-        "dateLabel": "Data de emissão",
-        "sign": "Kevin Henrique",
-        "role": "Kevin Henrique · Dono do fliperama",
-        "id": "Certificado nº {id} · kevinhs.dev",
-        "file": "certificado-lenda-kevinhs"
-      },
-      "preview": "Prévia do certificado com o seu nome"
-    }
-  },
-  "arcade": {
-    "hud": {
-      "coin": "Insira uma ficha",
-      "credit": "Créditos"
-    },
-    "character": {
-      "title": "Ficha do personagem",
-      "class": "Classe",
-      "guild": "Guilda",
-      "base": "Base",
-      "quest": "Missão atual",
-      "origin": "Origem",
-      "originText": "Começou a programar aos {age}, {how}",
-      "inventory": "Inventário",
-      "languages": "Idiomas",
-      "sideQuests": "Missões secundárias",
-      "tree": {
-        "title": "Árvore de habilidades",
-        "legend": "Legenda",
-        "max": "Uso diário",
-        "unlocked": "Desbloqueada",
-        "training": "Treinando"
-      },
-      "talkTo": "Falar com o personagem"
-    },
-    "saves": {
-      "title": "Save points",
-      "note": "Momentos salvos em 8 bits. Passe o mouse ou toque numa foto para carregá-la em alta resolução.",
-      "slot": "Save {n}"
-    },
-    "games": {
-      "title": "Fliperama",
-      "note": "Uma pausa para jogar. 100 pontos no Snake e uma onda limpa no Bug Invaders valem troféus do arcade."
-    },
-    "npc": {
-      "talk": "Falar",
-      "title": "Diálogo",
-      "name": "Kevin.exe",
-      "next": "Próximo",
-      "close": "Fechar",
-      "lines": [
-        "Opa, viajante! Eu sou o Kevin, ou pelo menos a versão dele que roda neste arcade.",
-        "Estudo Engenharia de Software na UMC e trabalho desde os 17.",
-        "Hoje sou Jovem Aprendiz na secretaria de uma escola. Lá criei o PDF Renamer e o SEK, que a equipe usa todo dia.",
-        "Comecei a programar aos 15, com os cursos da OneBitCode. Nunca mais parei.",
-        "Minha missão atual: um estágio. Se você tem uma vaga, o chefão lá no contato está esperando.",
-        "Dica de NPC: tem moedas escondidas pelo site. Junte todas e algo especial aparece no inventário."
-      ]
-    },
-    "coins": {
-      "label": "Pegar moeda",
-      "hud": "Moedas"
-    },
-    "guitar": {
-      "lockedTitle": "Item misterioso",
-      "lockedHint": "Junte as moedas escondidas pelo site para desbloquear ({got}/{total}).",
-      "title": "Guitarra superstrato",
-      "desc": "Azul, escudo branco, captadores HSS e braço de maple. Libera a skin rock: escolha o visual no guarda-roupa."
-    },
-    "boss": {
-      "name": "Rei dos Bugs",
-      "hp": "Vida do chefão",
-      "intro": "Preencha o formulário para derrotar o chefão. Cada campo válido é um golpe.",
-      "hurt": "Acertou! Faltam {hp, plural, one {# golpe} other {# golpes}}.",
-      "beaten": "Chefão derrotado! Agora é só enviar."
-    },
-    "levels": {
-      "note": "Escolha uma fase. Cada projeto é um mundo, com os power-ups (tecnologias) que usei.",
-      "world": "Mundo {n}",
-      "powerups": "Power-ups",
-      "play": "Jogar",
-      "code": "Ver código"
-    },
-    "map": {
-      "note": "O mapa da jornada. Ande pelas fases (clique ou use as setas) e visite todas para ganhar um troféu.",
-      "level": "Fase",
-      "current": "Em andamento",
-      "progress": "Fases visitadas",
-      "hint": "← → para andar",
-      "goalLabel": "Fase final",
-      "goalTitle": "Estágio",
-      "goalText": "O castelo ainda está fechado: é a próxima fase, um estágio em backend, DevOps/Cloud ou IA aplicada. Se você tem a chave, o chefão do contato está esperando.",
-      "goalCta": "Abrir o portão"
-    },
-    "credits": {
-      "title": "Créditos",
-      "thanks": "Obrigado por jogar!",
-      "top": "Jogar de novo",
-      "roles": [
-        {
-          "role": "Direção, código e design",
-          "name": "{name}"
-        },
-        {
-          "role": "Personagem principal",
-          "name": "Kevin.exe"
-        },
-        {
-          "role": "Chefão final",
-          "name": "Rei dos Bugs"
-        },
-        {
-          "role": "Trilha sonora",
-          "name": "Sua playlist"
-        },
-        {
-          "role": "Testadores",
-          "name": "Você, que chegou até aqui"
-        }
-      ]
-    },
-    "gameOver": {
-      "sub": "Esta fase não existe. Escolha um caminho abaixo para continuar."
-    },
-    "invaders": {
-      "score": "pontos",
-      "best": "recorde",
-      "wave": "onda",
-      "lives": "vidas",
-      "record": "NOVO RECORDE!",
-      "label": "Jogo Bug Invaders. A nave atira sozinha: use as setas ou A/D para desviar; Enter para começar.",
-      "start": "▶ ENTER ou toque para jogar",
-      "hint": "setas / A-D · no celular, arraste o dedo no tabuleiro"
-    },
-    "skins": {
-      "label": "Guarda-roupa do avatar",
-      "hacker": "Hacker",
-      "rock": "Rock",
-      "legend": "Lenda",
-      "equip": "Equipar",
-      "equipped": "Equipado",
-      "locked": "Todos os troféus"
-    }
+    "text": "Esse endereço não existe ou mudou de lugar.",
+    "back": "Voltar para o início"
   }
 }

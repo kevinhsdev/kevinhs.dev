@@ -2,10 +2,14 @@ Technology logos used in the Skills section.
 
 From Devicon 2.17.0 (MIT, https://devicon.dev), original color versions: java, spring, mysql, git,
 javascript, dart, html, css, python, flutter, nodejs, sqlite, docker, postman, maven, intellij,
-vscode, aws. The *-dark.svg files are copies with one dark color lightened for the dark theme.
+vscode, aws, eclipse, supabase, linux. The *-dark.svg files are copies with one dark color lightened for the dark theme.
 
-From Simple Icons 16.34.0 (CC0 1.0, https://simpleicons.org): springboot, claude, filled with
+From Simple Icons 16.34.0 (CC0 1.0, https://simpleicons.org): springboot, claude, insomnia,
+obsidian, filled with
 their brand colors.
+
+Drawn for this site (no official logo exists): jdbc, testing, security, ai-java, oop, dao, rest,
+layers, uml, versioning, lgpd.
 
 All logos are trademarks of their respective owners and are used only to name the technology.
 

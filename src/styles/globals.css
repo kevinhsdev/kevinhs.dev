@@ -1,0 +1,196 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-display: var(--font-anton), "Arial Narrow", Impact, sans-serif;
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@layer base {
+  html {
+    background: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    font-family: var(--font-sans);
+    min-height: 100dvh;
+  }
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* Glass chrome (header pills): the page tinted and blurred behind. */
+.glass {
+  background: color-mix(in srgb, var(--background) 62%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+}
+
+/* theme switch: the new theme grows from the button in a circle (theme-toggle.tsx) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* brand link: the K, then "© Code by Kevin" rolling to the full name on hover */
+.roll-text {
+  display: inline-grid;
+  overflow: hidden;
+}
+.roll-text > span {
+  grid-area: 1 / 1;
+  transition: translate 450ms var(--ease-out-quint);
+}
+.roll-text > span + span {
+  translate: 0 110%;
+}
+@media (hover: hover) and (pointer: fine) {
+  a:hover > .roll-text > span:first-child {
+    translate: 0 -110%;
+  }
+  a:hover > .roll-text > span + span {
+    translate: 0 0;
+  }
+}
+
+/* CTA dock: slides away while a section with its own CTAs is on screen. */
+/* it rises in with a little scale and blur, then its icons follow one after another; leaving
+   runs it backwards: the icons drop out from the last one, then the dock sinks and blurs away */
+.cta-dock {
+  transition:
+    opacity 450ms var(--ease-out-quint),
+    translate 700ms var(--ease-out-quint),
+    scale 700ms var(--ease-out-quint),
+    filter 450ms var(--ease-out-quint);
+}
+.cta-dock .lgd__slot {
+  transition:
+    opacity 400ms var(--ease-out-quint),
+    translate 600ms var(--ease-out-quint);
+}
+.cta-dock[data-visible="true"] .lgd__slot:nth-child(2) {
+  transition-delay: 50ms;
+}
+.cta-dock[data-visible="true"] .lgd__slot:nth-child(3) {
+  transition-delay: 100ms;
+}
+.cta-dock[data-visible="true"] .lgd__slot:nth-child(4) {
+  transition-delay: 150ms;
+}
+.cta-dock[data-visible="false"] .lgd__slot {
+  opacity: 0;
+  translate: 0 0.6rem;
+  transition-duration: 220ms, 300ms;
+  transition-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+}
+.cta-dock[data-visible="false"] .lgd__slot:nth-child(3) {
+  transition-delay: 40ms;
+}
+.cta-dock[data-visible="false"] .lgd__slot:nth-child(2) {
+  transition-delay: 80ms;
+}
+.cta-dock[data-visible="false"] .lgd__slot:nth-child(1) {
+  transition-delay: 120ms;
+}
+.cta-dock .lgd__item:focus-visible {
+  outline-color: var(--accent);
+}
+/* phones: the hero's agents bar sits bottom-centre too, so the dock rides above it */
+@media (max-width: 760px) {
+  html:not(.sem-agentes):has(.barra) .cta-dock {
+    bottom: calc(66px + env(safe-area-inset-bottom));
+  }
+}
+.cta-dock[data-visible="false"] {
+  opacity: 0;
+  translate: 0 1.5rem;
+  scale: 0.92;
+  filter: blur(6px);
+  pointer-events: none;
+  transition-duration: 380ms;
+  transition-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  transition-delay: 140ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-dock,
+  .cta-dock .lgd__slot {
+    transition: opacity 200ms ease;
+    translate: none !important;
+    scale: none !important;
+    filter: none !important;
+  }
+}
+
+/* Shader stages: always-dark islands; clip-path also clips the canvas on iOS Safari. */
+.stage {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  clip-path: inset(0);
+  background: var(--nebula-back);
+  color: var(--stage-ink);
+}
+.stage[data-stage="fluxo"] {
+  background: var(--fluxo-deep);
+}
+.stage[data-stage="tipos"] {
+  background: var(--tipos-4);
+}
+.stage > canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+/* No WebGL: the same palette as a still gradient. */
+.stage[data-fallback="true"] {
+  background:
+    radial-gradient(60% 80% at 85% 20%, var(--nebula-2), transparent 70%),
+    radial-gradient(50% 70% at 10% 90%, var(--nebula-3), transparent 70%), var(--nebula-back);
+}
+.stage[data-stage="fluxo"][data-fallback="true"] {
+  background:
+    radial-gradient(70% 90% at 80% 40%, var(--fluxo-blue), transparent 70%), var(--fluxo-deep);
+}
+.stage[data-stage="tipos"][data-fallback="true"] {
+  background: radial-gradient(60% 80% at 70% 30%, var(--tipos-3), transparent 70%), var(--tipos-4);
+}

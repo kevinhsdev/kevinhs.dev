@@ -1,11 +1,32 @@
 {
+  "brand": { "codeBy": "© Code by Kevin" },
   "meta": {
     "title": "Kevin Henrique · Software Engineering",
-    "description": "Software Engineering student looking for an internship in backend (Java/Spring), DevOps/Cloud and applied AI. I build software a real team relies on every day."
+    "description": "Software Engineering student looking for an internship in backend (Java/Spring), DevOps/Cloud and applied AI. I build software a real team uses every day."
   },
-  "a11y": {
-    "skipToContent": "Skip to content",
-    "todo": "Pending information"
+  "nav": {
+    "home": "Home",
+    "journey": "Journey",
+    "projects": "Projects",
+    "skills": "Skills",
+    "contact": "Contact",
+    "about": "About",
+    "skip": "Skip to content"
+  },
+  "menu": {
+    "open": "Open menu",
+    "close": "Close menu",
+    "closeShort": "Close",
+    "navigation": "Navigation",
+    "label": "Menu",
+    "find": "Find me on"
+  },
+  "theme": {
+    "toggle": "Toggle light/dark theme"
+  },
+  "locale": {
+    "switch": "View in Portuguese",
+    "short": "PT"
   },
   "cta": {
     "downloadCv": "Download CV",
@@ -13,543 +34,232 @@
     "linkedin": "LinkedIn",
     "instagram": "Instagram",
     "github": "GitHub",
-    "email": "Email",
-    "copyEmail": "Copy email",
-    "emailCopied": "Email copied",
-    "emailCopyFailed": "Couldn't copy. The address is {email}"
+    "copyEmail": "Copy e-mail",
+    "emailCopied": "E-mail copied",
+    "emailCopyFailed": "Couldn't copy. The e-mail is {email}",
+    "dock": "Contact shortcuts"
   },
-  "theme": {
-    "label": "Theme",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System",
-    "toggle": "Toggle theme"
-  },
-  "locale": {
-    "switchTo": "Ler em português",
-    "pt": "Português",
-    "en": "English"
-  },
-  "command": {
-    "open": "Open command menu",
-    "placeholder": "Type a command or search…",
-    "empty": "No results.",
-    "groups": {
-      "navigate": "Navigate",
-      "actions": "Actions",
-      "preferences": "Preferences",
-      "links": "Links"
+  "hero": {
+    "role1": "Software Engineering",
+    "role2": "Backend · Cloud · Applied AI",
+    "hello": "Hi, I'm",
+    "cargo": "Software Engineering<br></br>student",
+    "links": "Socials and contact",
+    "availability": "remote, hybrid or on-site",
+    "numbers": "Real project numbers",
+    "bar": {
+      "group": "Agents building the page",
+      "scanning": "Scanning the page…",
+      "agents": "agents",
+      "layers": "layers",
+      "builtBy": "Built by",
+      "agentsIn": "agents in",
+      "tour": "Tour",
+      "touring": "Touring",
+      "speed": "Agent speed: {v}×",
+      "redo": "Build the page again"
+    },
+    "numbersKicker": "In real use",
+    "n": {
+      "pdfDocs": "more documents processed a day (from ~100 to ~300)",
+      "pdfDays": "days to process a class’s documents",
+      "sekStudents": "students covered by the school’s system"
     }
   },
-  "nav": {
-    "home": "Home",
-    "about": "About",
-    "experience": "Journey",
-    "projects": "Projects",
-    "skills": "Skills",
-    "contact": "Contact",
-    "now": "Now",
-    "toolbar": "Display preferences",
-    "achievements": "Achievements"
-  },
-  "timeline": {
-    "filters": {
-      "all": "All",
-      "work": "Work",
-      "study": "Education",
-      "event": "Events"
-    },
-    "present": "present",
-    "done": "completed",
-    "inProgress": "in progress",
-    "expected": "expected"
+  "journey": {
+    "title": "Journey",
+    "saoPaulo": "São Paulo",
+    "malta": "Malta · St. Julian's",
+    "spain": "Madrid · planned",
+    "usa": "Cambridge · planned",
+    "flight": "São Paulo → Malta",
+    "plans": "Next destinations",
+    "plansText": "Madrid, for Spanish, and Cambridge, in the United States, to take my English further.",
+    "outro": "The next destination is your team.",
+    "outroCta": "Let's talk",
+    "photos": "Photos from Malta",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "status": "Photo {i} of {n}",
+    "school": "Where it all started",
+    "schoolYears": "12 years as a student",
+    "present": "present"
   },
   "projects": {
+    "title": "Projects",
+    "count": "{n, plural, one {project} other {projects}}",
+    "soon": "Coming soon",
     "featured": "Featured",
     "other": "Other projects",
-    "caseStudy": "Read the case study",
+    "open": "View project",
     "repo": "Code",
     "demo": "Demo",
-    "video": "Video demo",
     "privateCode": "Internal code (school system)",
-    "team": "Team of {count}",
     "status": {
       "in-use": "In daily use",
       "live": "Live",
       "evolving": "Continuously evolving",
       "in-development": "In development",
       "academic": "Academic project"
-    },
-    "mockupAlt": "Demo screen of {title} with fictional data",
-    "demoNote": "fictional data",
-    "private": "Private"
-  },
-  "skills": {
-    "tiers": {
-      "daily": "Use every day",
-      "experienced": "Have experience with",
-      "learning": "Learning now",
-      "concepts": "Concepts"
     }
   },
-  "now": {
-    "title": "Now",
-    "learning": "Learning",
-    "building": "Building",
-    "updated": "Updated {date}",
-    "about": "A /now page says what I am focused on right now. I update it once a month.",
-    "back": "Back to home"
+  "skills": {
+    "title": "Skills",
+    "tiers": {
+      "daily": "Daily use",
+      "experienced": "Experienced",
+      "learning": "Learning now",
+      "concepts": "Concepts"
+    },
+    "all": "Everything I work with"
   },
   "contact": {
     "title": "Let's talk",
+    "intro": "I'm looking for an internship in backend, DevOps/Cloud or applied AI. Remote, hybrid or on-site, in Brazil or abroad. E-mail is the fastest way.",
+    "orForm": "Or send a message here",
     "name": "Name",
-    "email": "Your email",
+    "email": "Your e-mail",
     "message": "Message",
+    "placeholder": "Write your message…",
     "send": "Send",
     "sending": "Sending…",
-    "sent": "Message sent. I'll get back to you soon.",
-    "fallback": "Direct sending isn't set up. Opening your email app…",
-    "rateLimited": "Too many messages in a short time. Please try again in a few minutes.",
-    "invalid": "Please check the highlighted fields.",
-    "error": "Couldn't send. Email me directly: {email}",
-    "intro": "I'm looking for an internship in backend, DevOps/Cloud or applied AI. Remote, hybrid or on-site, in Brazil or abroad. Email is the fastest way to reach me.",
-    "orForm": "Or send a message here",
-    "honeypot": "Leave this field empty"
+    "sent": "Message sent. I'll reply soon.",
+    "invalid": "Check the fields: name, a valid e-mail and a message of at least 10 characters.",
+    "unconfigured": "Direct sending isn't set up. Opening your e-mail app…",
+    "failed": "Couldn't send. Opening your e-mail app…",
+    "honeypot": "Leave this field empty",
+    "presetsTitle": "Start with",
+    "presets": {
+      "opportunity": {
+        "label": "Opportunity",
+        "text": "Hi Kevin! I came across your portfolio and would love to chat about a role in data/software engineering. Would you be open to a quick call?"
+      },
+      "project": {
+        "label": "Project",
+        "text": "Hi Kevin! I have a project/technical challenge in mind and would like to discuss scope, architecture and your availability."
+      },
+      "general": {
+        "label": "General",
+        "text": "Hi Kevin! I like your work and wanted to connect."
+      }
+    },
+    "chat": {
+      "status": "Open to internships",
+      "hi": "Hi! Glad you made it all the way here.",
+      "orHere": "Or send me a message right below.",
+      "ask": "Tell me: is it about an opportunity, a project or just a hello?",
+      "today": "Today",
+      "typing": "typing…",
+      "idTitle": "So I can get back to you:",
+      "now": "now"
+    }
+  },
+  "project": {
+    "back": "All projects",
+    "problem": "The problem",
+    "built": "What I built",
+    "metrics": "Numbers",
+    "stack": "Stack",
+    "links": "Links",
+    "video": "{title} presentation video",
+    "videoNote": "in Portuguese",
+    "screenshot": "{title} home screen",
+    "previous": "Previous",
+    "next": "Next",
+    "role": "Role",
+    "year": "Year",
+    "team": "Team of {count}",
+    "solo": "Solo",
+    "teamLabel": "Team",
+    "statusLabel": "Status",
+    "stackCount": "{count} technologies",
+    "contents": "In this case study",
+    "play": "Watch the presentation",
+    "nextProject": "Next project"
+  },
+  "about": {
+    "title": "About me",
+    "hand": "who I am",
+    "description": "Who Kevin Henrique is: how he started coding, what he does today and what he enjoys off-screen.",
+    "photos": "Off-screen",
+    "certificates": "Certificates",
+    "certificatesIntro": "Open a folder to see its certificates.",
+    "languages": "Languages",
+    "items": "{n} items",
+    "studying": "Learning now",
+    "nowKicker": "Today",
+    "skills": "All skills",
+    "teaserTitle": "Beyond the code",
+    "teaserWorld": "Where I'm from",
+    "teaserSpin": "drag to spin",
+    "teaserMail": "Say hi",
+    "teaserOff": "when the laptop closes",
+    "teaserTo": "To",
+    "teaserSubject": "Subject",
+    "teaserSubjectText": "Shall we talk?",
+    "teaserCerts": "across {n} folders, from languages to events",
+    "more": "Read my story",
+    "endTitle": "Let's talk",
+    "endText": "Grab my résumé or send me a message.",
+    "endContact": "Go to contact",
+    "certificate": "Certificate",
+    "story": "My story",
+    "inProgress": "In progress",
+    "scroll": "Scroll to explore",
+    "sport": "volleyball",
+    "morePhotos": "More photos",
+    "chapter": "Chapter",
+    "ch1": "I started coding at 15, with OneBitCode's courses.",
+    "ch2": "Software Engineering at UMC. In a school office, I built KIRI and SEK.",
+    "ch3": "Applied AI and Harness Engineering. I learn at events and use Claude Code every day.",
+    "maltaText": "I adapted to a new place and practiced my English.",
+    "statementE": "I study *every* *day.* I build *what* the team uses.",
+    "malta": "malta",
+    "music": "music",
+    "updated": "Updated {date}",
+    "hobbies": "Hobbies",
+    "heroHello": "Behind the code,",
+    "dragHint": "drag the photos ↗",
+    "dio": "DIO",
+    "alura": "Alura",
+    "events": "Events",
+    "certOpen": "Open original",
+    "certPrev": "Previous",
+    "certNext": "Next",
+    "certClose": "Close",
+    "certNoPreview": "No digital file",
+    "live": "Live",
+    "termTitle": "kevin — zsh — 80×24",
+    "termPrompt": "kevin@umc ~ %",
+    "termCommand": "kevin --now",
+    "termLearning": "Learning",
+    "termBuilding": "Building",
+    "termProcesses": "{n} processes"
   },
   "footer": {
-    "saved": "kevin.zip saved (2026 KB)",
-    "remaining": "~{count, plural, one {# scroll} other {# scrolls}} to go",
-    "waitingDownload": "waiting for download",
-    "cvNote": "everything, summed up",
-    "emailNote": "empty, you write it",
-    "backToTop": "back to top",
-    "cvFile": "resume.pdf",
-    "repo": "View the site's source",
-    "snake": {
-      "score": "score",
-      "best": "best",
-      "label": "Snake game. Use the arrow keys or WASD to move; Enter to start.",
-      "start": "▶ ENTER or tap to play",
-      "hint": "arrows / WASD · on a phone, swipe or use the d-pad",
-      "record": "NEW HIGH SCORE!",
-      "pad": "D-pad",
-      "up": "Up",
-      "down": "Down",
-      "left": "Left",
-      "right": "Right"
-    }
+    "rights": "© {year} Kevin Henrique da Silva",
+    "top": "Back to top",
+    "navigate": "Navigate",
+    "elsewhere": "Find me",
+    "built": "Built from scratch with Next.js"
+  },
+  "cv": {
+    "kicker": "Résumé",
+    "title": "My résumé",
+    "intro": "Experience, projects, education and languages. Pick a language and download the PDF.",
+    "langs": {
+      "pt": "Portuguese",
+      "en": "English",
+      "es": "Spanish"
+    },
+    "choose": "Résumé language",
+    "download": "Download PDF",
+    "open": "Open in a new tab",
+    "preview": "Preview of the first page of the {lang} résumé"
   },
   "notFound": {
     "title": "Page not found",
-    "description": "This address doesn't exist, or it has moved. The rest of the portfolio is right here, though.",
-    "back": "Back to home",
-    "projects": "See projects"
-  },
-  "creative": {
-    "kicker": "Software Engineering · São Paulo",
-    "scroll": "Scroll to explore",
-    "statement": ["Spotted a real problem.", "Built the fix.", "It runs every day now."],
-    "otherProjects": "Other projects",
-    "talk": "Let's talk",
-    "skip": "Skip",
-    "editorComment": "Hi! This is me, in Java.",
-    "editorLabel": "Profile as code (Kevin.java)",
-    "telemetryStrip": "Telemetry from real projects",
-    "skillsLabel": "Skill levels",
-    "skillsHint": "Pick a level to see the skills.",
-    "codeBy": "© Code by Kevin",
-    "formFile": "message.md"
-  },
-  "menu": {
-    "open": "Open menu",
-    "close": "Close menu",
-    "navigation": "Navigation",
-    "socials": "Socials",
-    "search": "Search commands",
-    "title": "Menu"
-  },
-  "caseStudy": {
-    "back": "All projects",
-    "kicker": "Case study",
-    "readingTime": "{minutes} min",
-    "role": "Role",
-    "year": "Year",
-    "status": "Status",
-    "stack": "Stack",
-    "team": "Team",
-    "solo": "Solo",
-    "previous": "Previous",
-    "next": "Next",
-    "read": "Read the case study",
-    "sections": "More case studies",
-    "outline": "On this page",
-    "reading": "Reading",
-    "demo": {
-      "decide": "So, what would you do?",
-      "mine": "my pick",
-      "yours": "your pick",
-      "same": "Great minds! 🤝",
-      "different": "Fair! But I went another way:",
-      "reveal": "Here's the way I went:",
-      "skip": "Skip and see the answer",
-      "classifier": {
-        "title": "Try the classifier",
-        "intro": "A simplified version of the rules, running right here in your browser. Pick a sample document or type anything.",
-        "input": "Text extracted from the PDF",
-        "scores": "Score per type",
-        "threshold": "line = minimum threshold ({n} points)",
-        "suggest": "Suggested name:",
-        "because": "Because I found:",
-        "unsure": "Hmm, I'm not sure.",
-        "unsureText": "No type passed the threshold, so the tool asks instead of guessing.",
-        "samples": {
-          "rg": "ID card (RG)",
-          "historico": "School transcript",
-          "atestado": "Medical note",
-          "vago": "Vague text"
-        },
-        "types": {
-          "rg": "ID card (RG)",
-          "historico": "School transcript",
-          "certidao": "Birth certificate",
-          "residencia": "Proof of address",
-          "atestado": "Medical note"
-        },
-        "files": {
-          "rg": "RG",
-          "historico": "HISTORICO_ESCOLAR",
-          "certidao": "CERTIDAO_NASCIMENTO",
-          "residencia": "COMPROVANTE_RESIDENCIA",
-          "atestado": "ATESTADO_MEDICO"
-        }
-      },
-      "conflict": {
-        "title": "Simulator: two people, one record",
-        "intro": "Change a field on Ana's screen and save. Then change one on your screen (which still has the old version) and save too. Try the same field and different fields.",
-        "you": "You",
-        "screen": "{name}'s screen",
-        "save": "Save",
-        "reload": "Reload",
-        "reset": "Start over",
-        "saved": "Saved.",
-        "merged": "Saved! Someone saved first, but a different field: only your field was sent and both people's work stayed.",
-        "conflict": "{name} changed \"{field}\" while you were editing. Reload to see the new version.",
-        "server": "On the server (v{version}):",
-        "fields": {
-          "phone": "Phone",
-          "group": "Class"
-        }
-      },
-      "blood": {
-        "title": "Try the compatibility",
-        "intro": "Click a cell to pick donor and patient. Then record a donation and watch the stock change on its own, like the trigger does in the database.",
-        "grid": "Who can donate to whom",
-        "donorShort": "donor",
-        "patientShort": "patient",
-        "yes": "compatible",
-        "no": "incompatible",
-        "can": "{donor} can donate to {patient}.",
-        "cannot": "{donor} can't donate to {patient}.",
-        "stockIntro": "Stock (sample units):",
-        "stock": "Stock per type",
-        "donate": "Record a {type} donation",
-        "trigger": "INSERT INTO DOACAO … → trigger: UPDATE ESTOQUE SET quantidade = quantidade + 1 WHERE tipo = ''{type}''"
-      }
-    }
-  },
-  "aboutPage": {
-    "title": "About me",
-    "description": "Who Kevin Henrique is: how he started coding, what he does today and what he enjoys away from the screen.",
-    "back": "Back to home",
-    "more": "More about me",
-    "zoom": "Enlarge: {caption}",
-    "close": "Close",
-    "previous": "Previous photo",
-    "next": "Next photo",
-    "facts": {
-      "started": "Started coding",
-      "startedValue": "at {age}",
-      "study": "Studying",
-      "location": "Based in",
-      "languages": "Languages"
-    }
-  },
-  "aboutTeaser": {
-    "startedLabel": "years old when I started coding",
-    "languages": "Languages",
-    "offScreen": "Away from the screen",
-    "learning": "Learning right now",
-    "nowLink": "What I'm up to now"
-  },
-  "achievements": {
-    "title": "Achievements",
-    "player": "P1",
-    "score": "Score",
-    "unlocked": "Unlocked",
-    "statusUnlocked": "Unlocked",
-    "statusProgress": "In progress",
-    "statusLocked": "Locked",
-    "goal": "Goal",
-    "credential": "View certificate",
-    "loading": "Loading",
-    "continue": "Continue?",
-    "continueCta": "Call me for my first internship",
-    "legend": "Achievements scoreboard: {unlocked} of {total} unlocked, {score} points"
-  },
-  "visitorAchievements": {
-    "unlocked": "Achievement unlocked",
-    "dismiss": "Dismiss notification",
-    "case": {
-      "title": "Your trophies",
-      "note": "Scrolling won't cut it: each trophy is a small challenge, and the locked ones hold a hint.",
-      "done": "Platinum! You've seen it all. Thanks for visiting.",
-      "left": "{left} to go",
-      "complete": "complete",
-      "locked": "Locked",
-      "arcade": "Arcade trophies",
-      "reset": "Start over",
-      "resetConfirm": "Erase everything (and switch the arcade off)?"
-    },
-    "items": {
-      "tourist": {
-        "title": "Tourist",
-        "desc": "Visited About, Now and a case study.",
-        "hint": "Visit three pages: About me, Now and a case study."
-      },
-      "reader": {
-        "title": "Dedicated reader",
-        "desc": "Read a case study to the end.",
-        "hint": "Read a whole case study, all the way to the bottom."
-      },
-      "hacker": {
-        "title": "Hacker",
-        "desc": "Ran a command from the palette.",
-        "hint": "Open the command palette (Ctrl+K or ⌘K) and run a command."
-      },
-      "stack": {
-        "title": "Full stack",
-        "desc": "Opened every skills file.",
-        "hint": "Open every file in the skills/ folder."
-      },
-      "konami": {
-        "title": "Cheat code",
-        "desc": "Entered the Konami code.",
-        "hint": "↑ ↑ ↓ ↓ ← → ← → B A on a keyboard. On a phone: tap my name 7 times, fast."
-      },
-      "duality": {
-        "title": "Duality",
-        "desc": "Went to the other side and came back.",
-        "hint": "Switch the site's theme, then switch it back."
-      },
-      "polyglot": {
-        "title": "Polyglot",
-        "desc": "Read the site in two languages.",
-        "hint": "Read the site in the other language."
-      },
-      "collector": {
-        "title": "Collector",
-        "desc": "Found every hidden coin.",
-        "hint": "Coins are hidden around the arcade mode. Collect them all."
-      },
-      "boss": {
-        "title": "Boss slayer",
-        "desc": "Beat the Bug King at the contact form.",
-        "hint": "Face the boss at the end of the page."
-      },
-      "snaker": {
-        "title": "Snake charmer",
-        "desc": "Scored 100 in Snake.",
-        "hint": "Score 100 in the arcade room's Snake."
-      },
-      "cartographer": {
-        "title": "Cartographer",
-        "desc": "Visited every level on the map.",
-        "hint": "Open every level on the journey map."
-      },
-      "chatter": {
-        "title": "Good listener",
-        "desc": "Heard the NPC out.",
-        "hint": "Click the avatar and hear everything it has to say."
-      },
-      "invader": {
-        "title": "Code defender",
-        "desc": "Cleared a full wave in Bug Invaders.",
-        "hint": "Take down every bug in one wave of Bug Invaders in the arcade room."
-      }
-    },
-    "platinum": {
-      "kicker": "Platinum trophy",
-      "title": "Platinum!",
-      "desc": "You unlocked every achievement.",
-      "cta": "See your reward"
-    },
-    "reward": {
-      "title": "Your reward",
-      "note": "A secret theme: the whole site turns into an arcade. Switch it on and off anytime.",
-      "theme": "Arcade theme",
-      "on": "On",
-      "off": "Off",
-      "lockedTitle": "Platinum reward",
-      "lockedNote": "{left, plural, one {# trophy} other {# trophies}} to go to unlock a secret theme: the whole site turns into an arcade, with levels, a boss, minigames and more trophies.",
-      "locked": "Locked"
-    },
-    "legend": {
-      "title": "Legendary reward",
-      "lockedNote": "Get all {total} trophies, arcade ones included ({got}/{total}), to earn the Legend skin (a corrupted green mask, a crown and raining code) and a certificate with your name.",
-      "note": "You beat the whole site. The Legend skin is yours, and so is the certificate.",
-      "name": "Your name on the certificate",
-      "placeholder": "Legendary visitor",
-      "download": "Download PDF",
-      "equip": "Equip Legend skin",
-      "equipped": "Legend skin equipped",
-      "cert": {
-        "brand": "KEVINHS.DEV · PORTFOLIO",
-        "title": "Certificate of Achievement",
-        "kicker": "ARCADE LEGEND",
-        "lead": "This certificate is proudly presented to",
-        "body": "for unlocking all {total} trophies in Kevin Henrique's portfolio,",
-        "body2": "including the secrets hidden in arcade mode.",
-        "dateLabel": "Date of issue",
-        "sign": "Kevin Henrique",
-        "role": "Kevin Henrique · Arcade owner",
-        "id": "Certificate no. {id} · kevinhs.dev",
-        "file": "legend-certificate-kevinhs"
-      },
-      "preview": "Preview of the certificate with your name"
-    }
-  },
-  "arcade": {
-    "hud": {
-      "coin": "Insert coin",
-      "credit": "Credit"
-    },
-    "character": {
-      "title": "Character sheet",
-      "class": "Class",
-      "guild": "Guild",
-      "base": "Home base",
-      "quest": "Current quest",
-      "origin": "Origin",
-      "originText": "Started coding at {age}, {how}",
-      "inventory": "Inventory",
-      "languages": "Languages",
-      "sideQuests": "Side quests",
-      "tree": {
-        "title": "Skill tree",
-        "legend": "Legend",
-        "max": "Daily use",
-        "unlocked": "Unlocked",
-        "training": "Training"
-      },
-      "talkTo": "Talk to the character"
-    },
-    "saves": {
-      "title": "Save points",
-      "note": "Moments saved in 8-bit. Hover or tap a photo to load it in full resolution.",
-      "slot": "Save {n}"
-    },
-    "games": {
-      "title": "Arcade room",
-      "note": "A break to play. 100 points in Snake and a cleared wave in Bug Invaders earn arcade trophies."
-    },
-    "npc": {
-      "talk": "Talk",
-      "title": "Dialog",
-      "name": "Kevin.exe",
-      "next": "Next",
-      "close": "Close",
-      "lines": [
-        "Hey, traveler! I'm Kevin, or at least the version of him that runs in this arcade.",
-        "I study Software Engineering at UMC and have been working since I was 17.",
-        "Today I'm an apprentice in a school's office. There I built PDF Renamer and SEK, which the team uses every day.",
-        "I started coding at 15 with OneBitCode's courses. Never stopped.",
-        "My current quest: an internship. If you have an opening, the boss over at contact is waiting.",
-        "NPC tip: there are coins hidden around the site. Collect them all and something special shows up in the inventory."
-      ]
-    },
-    "coins": {
-      "label": "Grab coin",
-      "hud": "Coins"
-    },
-    "guitar": {
-      "lockedTitle": "Mystery item",
-      "lockedHint": "Collect the coins hidden around the site to unlock it ({got}/{total}).",
-      "title": "Superstrat guitar",
-      "desc": "Blue, white pickguard, HSS pickups and a maple neck. Unlocks the rock skin: pick the look in the wardrobe."
-    },
-    "boss": {
-      "name": "Bug King",
-      "hp": "Boss health",
-      "intro": "Fill in the form to beat the boss. Every valid field is a hit.",
-      "hurt": "Hit! {hp, plural, one {# hit} other {# hits}} to go.",
-      "beaten": "Boss defeated! Now just send it."
-    },
-    "levels": {
-      "note": "Pick a level. Each project is a world, with the power-ups (technologies) I used.",
-      "world": "World {n}",
-      "powerups": "Power-ups",
-      "play": "Play",
-      "code": "See code"
-    },
-    "map": {
-      "note": "The journey's map. Walk the levels (click or use the arrow keys) and visit them all to earn a trophy.",
-      "level": "Level",
-      "current": "In progress",
-      "progress": "Levels visited",
-      "hint": "← → to walk",
-      "goalLabel": "Final level",
-      "goalTitle": "Internship",
-      "goalText": "The castle is still locked: it's the next level, an internship in backend, DevOps/Cloud or applied AI. If you have the key, the boss over at contact is waiting.",
-      "goalCta": "Open the gate"
-    },
-    "credits": {
-      "title": "Credits",
-      "thanks": "Thanks for playing!",
-      "top": "Play again",
-      "roles": [
-        {
-          "role": "Direction, code and design",
-          "name": "{name}"
-        },
-        {
-          "role": "Main character",
-          "name": "Kevin.exe"
-        },
-        {
-          "role": "Final boss",
-          "name": "Bug King"
-        },
-        {
-          "role": "Soundtrack",
-          "name": "Your playlist"
-        },
-        {
-          "role": "Playtesters",
-          "name": "You, for making it this far"
-        }
-      ]
-    },
-    "gameOver": {
-      "sub": "This level doesn't exist. Pick a path below to continue."
-    },
-    "invaders": {
-      "score": "score",
-      "best": "best",
-      "wave": "wave",
-      "lives": "lives",
-      "record": "NEW HIGH SCORE!",
-      "label": "Bug Invaders game. The ship fires on its own: use the arrow keys or A/D to dodge; Enter to start.",
-      "start": "▶ ENTER or tap to play",
-      "hint": "arrows / A-D · on a phone, drag across the board"
-    },
-    "skins": {
-      "label": "Avatar wardrobe",
-      "hacker": "Hacker",
-      "rock": "Rock",
-      "legend": "Legend",
-      "equip": "Equip",
-      "equipped": "Equipped",
-      "locked": "Every trophy"
-    }
+    "text": "This address doesn't exist or has moved.",
+    "back": "Back to the home page"
   }
 }

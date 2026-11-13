@@ -1,150 +1,173 @@
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
-import {
-  AboutFrame,
-  CtaButtons,
-  FactSheet,
-  Portrait,
-  ProjectLinks,
-} from "@/components/creative/about-parts";
-import { Mosaic } from "@/components/creative/mosaic";
-import { Text } from "@/components/shared/text";
-import { about, gallery, pick, profile } from "@/content";
-import { resolveLocale } from "@/i18n/locale";
+import { Caveat, Gloock, League_Gothic } from "next/font/google";
+import Image from "next/image";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { NowTerminal } from "@/components/about/now-terminal";
+import { CertificatesView } from "@/components/about/certificates-view";
+import { certificateFolders } from "@/components/about/data";
+import { AboutStory, Kicker } from "@/components/about/stories";
+import { BrandLente } from "@/components/shell/brand-lente";
+import { MetalCvButton } from "@/components/shell/ctas";
+import { SiteFooter } from "@/components/shell/footer";
+import { Esteira } from "@/components/ui/esteira";
+import { now, pick, profile } from "@/content";
+import type { Locale } from "@/i18n/routing";
+import "@/components/about/about.css";
+
+/** Tall condensed capitals for titles, a high-contrast serif for the soft words. */
+const tall = League_Gothic({ variable: "--font-tall", subsets: ["latin"] });
+const serif = Gloock({ variable: "--font-serif", weight: "400", subsets: ["latin"] });
+/** The handwriting from the home hero, over the name in the opening. */
+const hand = Caveat({ variable: "--font-hand", weight: "600", subsets: ["latin"] });
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/about">): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({
-    locale: locale === "en" ? "en" : "pt",
-    namespace: "aboutPage",
-  });
-  return {
-    title: t("title"),
-    description: t("description"),
-    openGraph: {
-      type: "profile",
-      siteName: profile.fullName,
-      locale: locale === "en" ? "en_US" : "pt_BR",
-      title: `${t("title")} · ${profile.name}`,
-      description: t("description"),
-    },
-    alternates: {
-      canonical: `/${locale}/about`,
-      languages: { "pt-BR": "/pt/about", en: "/en/about" },
-    },
-  };
+  const t = await getTranslations({ locale, namespace: "about" });
+  return { title: `${t("title")} · Kevin Henrique`, description: t("description") };
 }
 
 /**
- * About me, led by photos: Kevin's portrait beside who he is, the fact sheet,
- * then the themes of his life (src/content/about.ts), each a big title, a few
- * lines in his words and a mosaic of photos that enlarge on click.
+ * About, after Leclerc's "The man" and Lando's "Off track". The top half is in stories.tsx;
+ * below it, on night blue: the certificate belt with its glass folders and the grid of every
+ * certificate, what he's studying and building as a timing tower, and the K in glass.
  */
 export default async function AboutPage({ params }: PageProps<"/[locale]/about">) {
-  const locale = await resolveLocale(params);
-  const t = await getTranslations("aboutPage");
-  const labels = {
-    zoom: t.raw("zoom") as string,
-    close: t("close"),
-    previous: t("previous"),
-    next: t("next"),
-  };
+  const { locale: raw } = await params;
+  setRequestLocale(raw);
+  const locale = raw as Locale;
+  const t = await getTranslations("about");
+
+  const folders = certificateFolders(locale);
+  // dealt from each folder in turn, so the belt mixes them instead of eight Alura blues in a row
+  const groups = folders.map((f) => f.files.map((file) => ({ ...file, group: t(f.key) })));
+  const certs = Array.from({ length: Math.max(...groups.map((g) => g.length)) }, (_, i) =>
+    groups.flatMap((g) => g[i] ?? []),
+  ).flat();
+  // the real first page where there is one; a paper card for the one without a file
+  const certCards = certs.map((c) =>
+    c.preview ? (
+      <article key={c.id} className="cert cert--img">
+        <Image
+          src={c.preview.src}
+          alt=""
+          width={c.preview.width}
+          height={c.preview.height}
+          sizes="360px"
+        />
+      </article>
+    ) : (
+      <article key={c.id} className="cert">
+        <div className="flex items-start justify-between gap-4">
+          <span className="cert-kicker">{t("certificate")}</span>
+          <span className="cert-group">{c.group}</span>
+        </div>
+        <p className="cert-name">{c.name}</p>
+        <div className="flex items-end justify-between">
+          <span className="cert-meta">{c.meta}</span>
+          <span className="cert-seal" aria-hidden="true">
+            K
+          </span>
+        </div>
+      </article>
+    ),
+  );
 
   return (
-    <AboutFrame
-      locale={locale}
-      hero={
-        <div className="grid gap-8 px-4 sm:px-8 lg:grid-cols-12 lg:gap-12">
-          {/* On wide screens the portrait runs the full height of the text beside it. */}
-          <Portrait
-            locale={locale}
-            className="aspect-[4/5] w-full max-w-sm lg:col-span-4 lg:aspect-auto lg:max-w-none"
-          />
-          <div className="flex flex-col gap-6 lg:col-span-8">
-            <h1 className="font-display text-[clamp(4.5rem,13vw,11rem)] leading-[0.85]">
-              {t("title")}
-            </h1>
-            <Text as="p" className="text-2xl leading-snug font-medium text-pretty sm:text-3xl">
-              {pick(about.lede, locale)}
-            </Text>
-            <div className="flex max-w-2xl flex-col gap-4 text-lg leading-relaxed text-pretty">
-              {about.intro.map((paragraph) => (
-                <Text key={paragraph.en} as="p">
-                  {pick(paragraph, locale)}
-                </Text>
-              ))}
-            </div>
-          </div>
-        </div>
-      }
-    >
-      <FactSheet locale={locale} className="mx-4 sm:mx-8" />
+    <>
+      <main id="main" className={`about ax ${tall.variable} ${serif.variable} ${hand.variable}`}>
+        <AboutStory locale={locale} />
 
-      {about.themes.map((theme) => {
-        const photos = theme.photos.flatMap((id) => {
-          const photo = gallery.find((item) => item.id === id);
-          return photo
-            ? [
-                {
-                  id: photo.id,
-                  src: photo.src,
-                  alt: pick(photo.alt, locale),
-                  caption: pick(photo.caption, locale),
-                  width: photo.width,
-                  height: photo.height,
-                },
-              ]
-            : [];
-        });
-        return (
-          <section
-            key={theme.id}
-            id={theme.id}
-            aria-labelledby={`theme-${theme.id}`}
-            className="flex scroll-mt-24 flex-col gap-8 border-t border-border px-4 pt-12 sm:px-8 sm:pt-16"
-          >
-            <div data-reveal className="flex flex-col gap-5">
-              <h2
-                id={`theme-${theme.id}`}
-                className="font-display text-[clamp(3.5rem,9vw,8rem)] leading-[0.9] text-balance"
-              >
-                {pick(theme.title, locale)}
+        <div className="ax-night ax-tail">
+          {/* certificates riding a conveyor behind the title, the glass folders in front */}
+          <section id="certificates" aria-labelledby="certs-title" className="about-certs">
+            <div className="about-certs-belt" aria-hidden="true">
+              {/* the second row starts halfway down the list, so the rows never line up */}
+              <Esteira
+                rows={[certCards, [...certCards.slice(6), ...certCards.slice(0, 6)].reverse()]}
+                label={t("certificates")}
+              />
+            </div>
+            <div className="about-certs-front">
+              <h2 id="certs-title" className="ax-h2">
+                {t("certificates")}
               </h2>
-              <div className="flex max-w-3xl flex-col gap-4 text-lg leading-relaxed text-pretty sm:text-xl">
-                {theme.text.map((paragraph) => (
-                  <Text key={paragraph.en} as="p">
-                    {pick(paragraph, locale)}
-                  </Text>
-                ))}
-              </div>
-              {theme.projects.length > 0 && (
-                <div className="max-w-3xl">
-                  <ProjectLinks slugs={theme.projects} locale={locale} />
-                </div>
-              )}
+              <p className="mx-auto mt-4 max-w-md text-lg text-muted">{t("certificatesIntro")}</p>
+              <CertificatesView
+                folders={folders.map((f) => ({
+                  ...f,
+                  label: t(f.key),
+                  count: t("items", { n: f.files.length }),
+                }))}
+                labels={{
+                  open: t("certOpen"),
+                  prev: t("certPrev"),
+                  next: t("certNext"),
+                  close: t("certClose"),
+                  noPreview: t("certNoPreview"),
+                }}
+              />
             </div>
-            <Mosaic photos={photos} labels={labels} />
           </section>
-        );
-      })}
 
-      <section
-        aria-labelledby="next-title"
-        className="flex flex-col gap-6 border-t border-border px-4 pt-12 sm:px-8 sm:pt-16"
-      >
-        <h2
-          id="next-title"
-          className="font-display text-[clamp(3.5rem,9vw,8rem)] leading-[0.9] text-balance"
-        >
-          {pick(about.next.heading, locale)}
-        </h2>
-        <p className="max-w-3xl text-lg leading-relaxed text-pretty sm:text-xl">
-          {pick(about.next.text, locale)}
-        </p>
-        <CtaButtons />
-      </section>
-    </AboutFrame>
+          {/* studying now, after the drivers' sites: a terminal that types `kevin --now` and
+              prints what he's studying and what he's building */}
+          <section id="now" aria-labelledby="now-title" className="ax-tt">
+            <div className="ax-tt-head">
+              <div>
+                <Kicker>{t("nowKicker")}</Kicker>
+                <h2 id="now-title" className="ax-h2 mt-6">
+                  {t("studying")}
+                </h2>
+              </div>
+              <p className="ax-tt-live">
+                <span className="ahd-dot" aria-hidden="true" />
+                {t("live")} · {t("updated", { date: now.updatedAt.split("-").reverse().join("/") })}
+              </p>
+            </div>
+            <NowTerminal
+              learning={now.learning.map((item) => ({
+                name: pick(item.title, locale),
+                text: pick(item.text, locale),
+                status: item.status && pick(item.status, locale),
+                progress: item.progress,
+              }))}
+              building={now.building.map((b) => {
+                const [name, text] = pick(b, locale).split(/[:,]\s(.*)/s);
+                return { name: name!.replace(/\.$/, ""), text };
+              })}
+              labels={{
+                title: t("termTitle"),
+                prompt: t("termPrompt"),
+                command: t("termCommand"),
+                learning: t("termLearning"),
+                building: t("termBuilding"),
+                processes: t("termProcesses", { n: now.building.length }),
+                inProgress: t("inProgress"),
+              }}
+            />
+          </section>
+
+          {/* closing call: the K in glass, then a fade into the footer's black */}
+          <section aria-labelledby="about-end-title" className="about-end">
+            <div className="mx-auto max-w-7xl px-5 pt-10 pb-24 text-center sm:px-8 lg:pb-32">
+              <BrandLente label={profile.name} className="about-lente mx-auto" />
+              <h2 id="about-end-title" className="ax-h2">
+                {t("endTitle")}
+              </h2>
+              <p className="mx-auto mt-5 max-w-md text-lg text-muted">{t("endText")}</p>
+              <div className="mt-9 flex flex-wrap items-center justify-center gap-5">
+                <MetalCvButton />
+                <a href={`/${locale}#contact`} className="about-end-link">
+                  {t("endContact")} →
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

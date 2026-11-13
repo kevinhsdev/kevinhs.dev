@@ -1,207 +1,311 @@
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
-import { CreativeHeader } from "@/components/creative/hero";
-import { CreativeMotion } from "@/components/creative/motion";
-import { CreativeFooter } from "@/components/creative/sections";
-import { CreativeShell } from "@/components/creative/shell";
-import { RegisterCommandNavigation } from "@/components/shared/command-menu";
-import { CtaDock } from "@/components/shared/cta-dock";
-import { CaseOutline } from "@/components/case-study/outline";
-import { hasMockup, mockups } from "@/components/shared/mockups";
-import { SiteMenu } from "@/components/shared/site-menu";
-import { getAdjacentCaseStudies, getProject, pick, profile } from "@/content";
-import { resolveLocale } from "@/i18n/locale";
-import { Link } from "@/i18n/navigation";
 import {
-  caseStudyOutline,
-  caseStudySlugs,
-  loadCaseStudy,
-  readingMinutes,
-} from "@/lib/case-studies";
-import { HOME_PATH } from "@/lib/site";
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Box,
+  Database,
+  Lock,
+  MousePointer2,
+  Sparkles,
+  Terminal,
+  Zap,
+} from "lucide-react";
+import type { Metadata } from "next";
+import { Caveat } from "next/font/google";
+import { notFound } from "next/navigation";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { Logo } from "@/components/home/skills-view";
+import { CaseToc } from "@/components/project/case-toc";
+import { caseStudySections, loadCaseStudy } from "@/components/project/case-study";
+import { Metrics } from "@/components/project/metrics";
+import { GitHubIcon } from "@/components/shell/brand-icons";
+import { SiteFooter } from "@/components/shell/footer";
+import { VideoPlayer } from "@/components/project/video-player";
+import { ShaderStage } from "@/components/stage/shader-stage";
+import { getAdjacentProjects, getProject, pick, projectParams } from "@/content";
+import { Link } from "@/i18n/navigation";
+import type { Locale } from "@/i18n/routing";
+import "@/components/project/project.css";
+
+const hand = Caveat({ variable: "--font-hand", weight: "600", subsets: ["latin"] });
 
 export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return caseStudySlugs.map((slug) => ({ slug }));
-}
+export const generateStaticParams = projectParams;
 
 export async function generateMetadata({
   params,
 }: PageProps<"/[locale]/projects/[slug]">): Promise<Metadata> {
   const { locale, slug } = await params;
-  const project = getProject(slug);
-  if (!project) return {};
-  const t = await getTranslations({
-    locale: locale === "en" ? "en" : "pt",
-    namespace: "caseStudy",
-  });
-  const title = `${project.title} · ${t("kicker")}`;
-  const description = pick(project.tagline, locale === "en" ? "en" : "pt");
+  const p = getProject(slug);
+  if (!p) return {};
   return {
-    title,
-    description,
-    openGraph: {
-      type: "article",
-      siteName: profile.fullName,
-      locale: locale === "en" ? "en_US" : "pt_BR",
-      title,
-      description,
-    },
-    alternates: {
-      canonical: `/${locale}/projects/${slug}`,
-      languages: { "pt-BR": `/pt/projects/${slug}`, en: `/en/projects/${slug}` },
-    },
+    title: `${pick(p.title, locale as Locale)} · Kevin Henrique`,
+    description: pick(p.tagline, locale as Locale),
   };
 }
 
-export default async function CaseStudyPage({ params }: PageProps<"/[locale]/projects/[slug]">) {
-  const locale = await resolveLocale(params);
-  const { slug } = await params;
-  const project = getProject(slug);
-  if (!project?.hasCaseStudy) notFound();
+/** The logo of each stack item (the same files as the skills section); a plain icon when none exists. */
+const STACK_LOGO: Record<string, { file: string; dark?: boolean }> = {
+  "Node.js": { file: "nodejs" },
+  "node:sqlite": { file: "sqlite", dark: true },
+  JavaScript: { file: "javascript" },
+  HTML: { file: "html" },
+  CSS: { file: "css" },
+  "Java 17": { file: "java" },
+  "Java 25": { file: "java" },
+  JDBC: { file: "jdbc" },
+  "MySQL 8": { file: "mysql", dark: true },
+  Maven: { file: "maven" },
+  DAO: { file: "dao" },
+  "Spring Boot": { file: "springboot" },
+  "Spring Data JPA": { file: "spring" },
+  Docker: { file: "docker", dark: true },
+  "Claude Code": { file: "claude" },
+};
+const STACK_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
+  PowerShell: Terminal,
+  PostgreSQL: Database,
+  "GitHub Pages": GitHubIcon,
+  "Three.js": Box,
+  GSAP: Sparkles,
+  Lenis: MousePointer2,
+  Vite: Zap,
+};
 
-  const t = await getTranslations();
-  const Content = await loadCaseStudy(slug, locale);
-  const minutes = readingMinutes(slug, locale);
-  const outline = caseStudyOutline(slug, locale);
-  const { previous, next } = getAdjacentCaseStudies(slug);
-  const Mockup = hasMockup(slug) ? mockups[slug] : null;
+function StackMark({ name }: { name: string }) {
+  const logo = STACK_LOGO[name];
+  if (logo) return <Logo logo={logo} className="pj-stack-logo" />;
+  const Icon = STACK_ICON[name];
+  return Icon ? <Icon aria-hidden className="pj-stack-logo text-accent" /> : null;
+}
 
-  const meta = [
-    { label: t("caseStudy.role"), value: project.role ? pick(project.role, locale) : "-" },
-    {
-      label: t("caseStudy.team"),
-      value: project.teamSize
-        ? t("projects.team", { count: project.teamSize })
-        : t("caseStudy.solo"),
-    },
-    { label: t("caseStudy.year"), value: String(project.year) },
-    { label: t("caseStudy.status"), value: t(`projects.status.${project.status}`) },
-    { label: t("caseStudy.reading"), value: t("caseStudy.readingTime", { minutes }) },
-  ];
+const pill =
+  "inline-flex h-12 items-center gap-2 rounded-full border border-border px-5 text-sm font-semibold transition-colors hover:border-accent hover:text-accent";
+
+/** A numbered section with a big title that rises in as it scrolls into view. */
+function Section({
+  id,
+  title,
+  wide,
+  children,
+}: {
+  id: string;
+  title: string;
+  wide?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      aria-labelledby={id}
+      className={`pj-sec mx-auto px-5 py-20 sm:px-8 lg:py-28 ${wide ? "max-w-7xl" : "max-w-6xl"}`}
+    >
+      <h2 id={id} className="pj-sec-title">
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * A project: Tipos header with the facts strip → the video, growing as it scrolls in → the
+ * problem, lit word by word → what was built (the case study with its side index) → the
+ * numbers → the stack rolling past → links → the next project, full screen.
+ */
+export default async function ProjectPage({ params }: PageProps<"/[locale]/projects/[slug]">) {
+  const { locale: raw, slug } = await params;
+  const p = getProject(slug);
+  if (!p) notFound();
+  setRequestLocale(raw);
+  const locale = raw as Locale;
+  const t = await getTranslations("project");
+  const tp = await getTranslations("projects");
+  const CaseStudy = p.hasCaseStudy ? await loadCaseStudy(slug, locale) : null;
+  const sections = p.hasCaseStudy ? await caseStudySections(slug, locale) : [];
+  const { previous, next } = getAdjacentProjects(slug);
+  const title = pick(p.title, locale);
+  const words = pick(p.summary, locale).split(" ");
 
   return (
-    <CreativeShell>
-      <CreativeMotion>
-        <RegisterCommandNavigation
-          items={[
-            { label: t("caseStudy.back"), href: `${HOME_PATH}#projects` },
-            { label: t("nav.contact"), href: `${HOME_PATH}#contact` },
-          ]}
-        />
-        <CreativeHeader />
-        <main id="main">
-          <header id="hero" className="flex flex-col gap-8 px-4 pt-28 pb-12 sm:px-8 sm:pt-32">
+    <>
+      <div className="pj-progress" aria-hidden="true" />
+      <main id="main" className="pj-main">
+        <ShaderStage kind="tipos" as="section" aria-labelledby="project-title" className="dark">
+          <div className="pj-hero-in mx-auto flex min-h-[86svh] max-w-7xl flex-col justify-end gap-6 px-5 pt-32 pb-12 sm:px-8">
             <Link
-              href={`${HOME_PATH}#projects`}
-              className="inline-flex min-h-11 items-center gap-2 self-start font-mono text-xs tracking-widest text-muted uppercase transition-colors duration-150 hover:text-foreground"
+              href="/#projects"
+              className="inline-flex w-fit items-center gap-2 text-sm text-[var(--stage-muted)] hover:text-accent-strong"
             >
-              <ArrowLeft aria-hidden className="size-4" />
-              {t("caseStudy.back")}
+              <ArrowLeft aria-hidden className="size-4" /> {t("back")}
             </Link>
-
-            <div className="flex flex-col gap-4">
-              <h1 className="font-display text-[clamp(3.5rem,11vw,10rem)]">{project.title}</h1>
-              <p className="max-w-3xl text-xl text-pretty text-muted sm:text-2xl">
-                {pick(project.tagline, locale)}
-              </p>
+            {/* the giant name, with the project's status written over it by hand */}
+            <div className={`pj-title ${hand.variable}`}>
+              <p className="pj-hand">{tp(`status.${p.status}`)}</p>
+              <h1
+                id="project-title"
+                className="font-display text-[clamp(3.5rem,11vw,10rem)] leading-[0.88] text-balance text-[var(--stage-ink)] uppercase"
+              >
+                {title}
+              </h1>
             </div>
-
-            <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border lg:grid-cols-3">
-              {meta.map((item) => (
-                <div key={item.label} className="flex flex-col gap-1 bg-background p-4">
-                  <dt className="font-mono text-[11px] tracking-widest text-muted uppercase">
-                    {item.label}
-                  </dt>
-                  <dd className="text-sm font-medium">{item.value}</dd>
-                </div>
-              ))}
-              <div className="flex flex-col gap-1 bg-background p-4 lg:col-span-1">
-                <dt className="font-mono text-[11px] tracking-widest text-muted uppercase">
-                  {t("caseStudy.stack")}
-                </dt>
-                <dd className="text-sm font-medium">{project.stack.join(" · ")}</dd>
+            <p className="max-w-2xl text-lg text-[var(--stage-muted)] sm:text-xl">
+              {pick(p.tagline, locale)}
+            </p>
+            {p.role && (
+              <p className="max-w-2xl text-sm text-[var(--stage-muted)]">
+                <span className="mr-2 font-mono text-xs tracking-widest uppercase">
+                  {t("role")}
+                </span>
+                <span className="text-[var(--stage-ink)]">{pick(p.role, locale)}</span>
+              </p>
+            )}
+            {/* the facts, in a strip like a driver's card */}
+            <dl className="pj-facts">
+              <div>
+                <dt>{t("year")}</dt>
+                <dd>{p.year}</dd>
+              </div>
+              <div>
+                <dt>{t("teamLabel")}</dt>
+                <dd>
+                  {p.teamSize && p.teamSize > 1 ? t("team", { count: p.teamSize }) : t("solo")}
+                </dd>
+              </div>
+              <div>
+                <dt>{t("statusLabel")}</dt>
+                <dd>{tp(`status.${p.status}`)}</dd>
+              </div>
+              <div>
+                <dt>{t("stack")}</dt>
+                <dd>{t("stackCount", { count: p.stack.length })}</dd>
               </div>
             </dl>
-          </header>
-
-          {Mockup && (
-            <div className="px-4 sm:px-8" data-reveal>
-              <div className="mx-auto max-w-5xl rounded-3xl border border-border bg-surface p-4 sm:p-10">
-                <Mockup
-                  label={t("projects.mockupAlt", { title: project.title })}
-                  demoNote={t("projects.demoNote")}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Wide screens: the outline beside the article, like a docs page. */}
-          <div className="mx-auto max-w-3xl px-4 py-16 sm:py-24 xl:grid xl:max-w-[66rem] xl:grid-cols-[14rem_minmax(0,48rem)] xl:gap-16 xl:px-8">
-            <aside className="hidden xl:sticky xl:top-28 xl:block xl:self-start">
-              <CaseOutline items={outline} label={t("caseStudy.outline")} />
-            </aside>
-            <article className="case-study">
-              <Content />
-              <div aria-hidden data-outline-end />
-            </article>
           </div>
+        </ShaderStage>
 
-          <nav
-            id="case-end"
-            aria-label={t("caseStudy.sections")}
-            className="grid gap-px border-y border-border bg-border sm:grid-cols-2"
-          >
-            {[
-              { item: previous, label: t("caseStudy.previous"), icon: "prev" as const },
-              { item: next, label: t("caseStudy.next"), icon: "next" as const },
-            ].map(({ item, label, icon }) =>
-              item ? (
-                <Link
-                  key={icon}
-                  href={`/projects/${item.slug}`}
-                  className={`group flex flex-col gap-4 bg-background px-4 py-14 transition-colors duration-200 hover:bg-surface sm:px-8 sm:py-20 ${icon === "next" ? "sm:items-end sm:text-right" : ""}`}
-                >
-                  <span className="inline-flex items-center gap-2 font-mono text-xs tracking-widest text-muted uppercase">
-                    {icon === "prev" && <ArrowLeft aria-hidden className="size-4" />}
-                    {label}
-                    {icon === "next" && <ArrowRight aria-hidden className="size-4" />}
-                  </span>
-                  <span className="font-display text-4xl transition-colors duration-200 group-hover:text-accent sm:text-6xl">
-                    {item.title}
-                  </span>
-                </Link>
-              ) : icon === "prev" ? (
-                <Link
-                  key={icon}
-                  href={`${HOME_PATH}#projects`}
-                  className="group flex flex-col gap-4 bg-background px-4 py-14 transition-colors duration-200 hover:bg-surface sm:px-8 sm:py-20"
-                >
-                  <span className="inline-flex items-center gap-2 font-mono text-xs tracking-widest text-muted uppercase">
-                    <ArrowLeft aria-hidden className="size-4" />
-                    {t("caseStudy.back")}
-                  </span>
-                  <span className="font-display text-4xl transition-colors duration-200 group-hover:text-accent sm:text-6xl">
-                    {t("nav.projects")}
-                  </span>
-                </Link>
-              ) : (
-                <span key={icon} aria-hidden className="hidden bg-background sm:block" />
-              ),
+        {(p.presentation || p.cover) && (
+          <figure className="pj-media mx-auto max-w-[90rem] px-3 pt-10 sm:px-6 lg:pt-16">
+            {p.presentation ? (
+              <VideoPlayer
+                src={p.presentation.src}
+                title={title}
+                duration={p.presentation.duration}
+                label={t("video", { title })}
+                cta={t("play")}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element -- static screenshot
+              <img
+                src={p.cover}
+                alt={t("screenshot", { title })}
+                className="aspect-video w-full bg-surface object-cover object-top"
+              />
             )}
-          </nav>
-        </main>
-        <CreativeFooter locale={locale} updatedAt={new Date()} />
-        <SiteMenu linkClassName="font-display text-5xl sm:text-6xl" />
-        <CtaDock
-          watch={["hero", "site-footer"]}
-          source="case-study-dock"
-          itemClassName="bg-surface text-foreground ring-1 ring-border hover:bg-accent hover:text-accent-contrast"
-        />
-      </CreativeMotion>
-    </CreativeShell>
+            {p.presentation && (
+              <figcaption className="mt-3 px-2 font-mono text-xs text-muted">
+                {t("video", { title })} · {p.presentation.duration} · {t("videoNote")}
+              </figcaption>
+            )}
+          </figure>
+        )}
+
+        <Section id="problem" title={t("problem")}>
+          {/* each word lights up as the paragraph scrolls past */}
+          <p className="pj-lit">
+            {words.map((w, i) => (
+              <span key={i} style={{ "--p": i / words.length } as React.CSSProperties}>
+                {w}{" "}
+              </span>
+            ))}
+          </p>
+        </Section>
+
+        {(CaseStudy || p.highlights.length > 0) && (
+          <Section id="built" title={t("built")} wide>
+            {CaseStudy ? (
+              <div className="pj-case">
+                {sections.length > 1 && <CaseToc label={t("contents")} sections={sections} />}
+                <div className="case-study max-w-3xl">
+                  <CaseStudy />
+                </div>
+              </div>
+            ) : (
+              <ul className="grid gap-4 sm:grid-cols-2">
+                {p.highlights.map((h, i) => (
+                  <li
+                    key={i}
+                    className="pj-card rounded-3xl border border-border bg-surface p-6 leading-relaxed"
+                  >
+                    <span className="mb-3 block font-mono text-xs text-accent">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    {pick(h, locale)}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
+        )}
+
+        {p.metrics.length > 0 && (
+          <Section id="metrics" title={t("metrics")} wide>
+            <Metrics
+              items={p.metrics.map((m) => ({ value: m.value, label: pick(m.label, locale) }))}
+            />
+          </Section>
+        )}
+
+        <Section id="stack" title={t("stack")} wide>
+          <ol className="pj-stack">
+            {p.stack.map((s, i) => (
+              <li key={s}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <StackMark name={s} />
+                {s}
+              </li>
+            ))}
+          </ol>
+        </Section>
+
+        <Section id="links" title={t("links")}>
+          <div className="flex flex-wrap gap-3">
+            {p.links.repo && (
+              <a href={p.links.repo} target="_blank" rel="noopener noreferrer" className={pill}>
+                {tp("repo")} <ArrowUpRight aria-hidden className="size-4" />
+              </a>
+            )}
+            {p.links.demo && (
+              <a href={p.links.demo} target="_blank" rel="noopener noreferrer" className={pill}>
+                {tp("demo")} <ArrowUpRight aria-hidden className="size-4" />
+              </a>
+            )}
+            {p.privateCode && (
+              <p className="inline-flex items-center gap-2 text-sm text-muted">
+                <Lock aria-hidden className="size-4" /> {tp("privateCode")}
+              </p>
+            )}
+          </div>
+        </Section>
+
+        {/* previous and next, side by side; the name slides and the arrow runs on hover */}
+        <nav aria-label={`${t("previous")} / ${t("next")}`} className="pj-adj">
+          {[
+            { q: previous, k: t("previous"), dir: "prev" },
+            { q: next, k: t("nextProject"), dir: "next" },
+          ].map(({ q, k, dir }) => (
+            <Link key={dir} href={`/projects/${q.slug}`} className="pj-adj-link" data-dir={dir}>
+              <span className="pj-adj-k">
+                {dir === "prev" && <ArrowLeft aria-hidden className="size-4" />}
+                {k}
+                {dir === "next" && <ArrowRight aria-hidden className="size-4" />}
+              </span>
+              <span className="pj-adj-name">{pick(q.title, locale)}</span>
+              <span className="pj-adj-tag">{pick(q.tagline, locale)}</span>
+            </Link>
+          ))}
+        </nav>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

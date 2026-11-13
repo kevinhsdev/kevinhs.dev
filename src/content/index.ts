@@ -1,19 +1,16 @@
 import { z } from "zod";
 import type { Locale } from "@/i18n/routing";
 import { about as rawAbout } from "./about";
-import { achievements as rawAchievements } from "./achievements";
 import { gallery as rawGallery } from "./gallery";
 import { now as rawNow } from "./now";
 import { profile as rawProfile } from "./profile";
 import { projects as rawProjects } from "./projects";
 import {
   aboutSchema,
-  achievementSchema,
   gallerySchema,
   nowSchema,
   profileSchema,
   projectSchema,
-  skillBranchSchema,
   skillGroupSchema,
   timelineItemSchema,
   type Localized,
@@ -21,7 +18,6 @@ import {
   type TimelineItem,
   type TimelineKind,
 } from "./schema";
-import { skillTree as rawSkillTree } from "./skill-tree";
 import { skills as rawSkills } from "./skills";
 import { timeline as rawTimeline } from "./timeline";
 
@@ -34,30 +30,12 @@ export const projects = z
   .refine((list) => new Set(list.map((p) => p.slug)).size === list.length, "Duplicate slug")
   .parse(rawProjects);
 export const skills = z.array(skillGroupSchema).parse(rawSkills);
-/** Every node must be a skill in skills.ts (by English name), so its tier is known. */
-export const skillTree = z
-  .array(skillBranchSchema)
-  .parse(rawSkillTree)
-  .map((branch) => ({
-    ...branch,
-    nodes: branch.nodes.map((key) => {
-      for (const group of skills)
-        for (const item of group.items)
-          if ((typeof item === "string" ? item : item.en) === key)
-            return { key, item, tier: group.tier };
-      throw new Error(`skill-tree.ts: "${key}" is not in skills.ts`);
-    }),
-  }));
 export const now = nowSchema.parse(rawNow);
-/** Unlocked first (newest first), then in progress, then locked goals. */
-export const achievements = z
-  .array(achievementSchema)
-  .parse(rawAchievements)
-  .sort((a, b) => {
-    const order = { unlocked: 0, progress: 1, locked: 2 } as const;
-    return order[a.status] - order[b.status] || (b.date ?? "").localeCompare(a.date ?? "");
-  });
-export const gallery = z.array(gallerySchema).min(3).parse(rawGallery);
+export const gallery = z
+  .array(gallerySchema)
+  .min(3)
+  .refine((list) => new Set(list.map((g) => g.id)).size === list.length, "Duplicate photo id")
+  .parse(rawGallery);
 export const timeline = sortTimeline(z.array(timelineItemSchema).parse(rawTimeline));
 /** Every photo id and project slug the About page names must exist, or the build fails. */
 export const about = aboutSchema
@@ -83,12 +61,16 @@ export function getProject(slug: string): Project | undefined {
   return projects.find((p) => p.slug === slug);
 }
 
-/** Previous/next navigation between case studies. */
-export function getAdjacentCaseStudies(slug: string) {
-  const list = projects.filter((p) => p.hasCaseStudy);
-  const index = list.findIndex((p) => p.slug === slug);
-  if (index === -1) return { previous: undefined, next: undefined };
-  return { previous: list[index - 1], next: list[index + 1] };
+/** Static params for /projects/[slug]: every project gets a page. */
+export function projectParams(): { slug: string }[] {
+  return projects.map((p) => ({ slug: p.slug }));
+}
+
+/** Previous/next project, wrapping around the list. */
+export function getAdjacentProjects(slug: string) {
+  const i = projects.findIndex((p) => p.slug === slug);
+  const n = projects.length;
+  return { previous: projects[(i - 1 + n) % n]!, next: projects[(i + 1) % n]! };
 }
 
 export function filterTimeline(items: TimelineItem[], kind: TimelineKind | "all") {

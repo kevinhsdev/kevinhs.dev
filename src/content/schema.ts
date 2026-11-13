@@ -48,6 +48,7 @@ export const profileSchema = z.object({
   cv: z.object({
     pt: sitePath,
     en: sitePath.nullable(),
+    es: sitePath.nullable(),
   }),
   photo: z.object({ src: sitePath, alt: localized }).nullable(),
   languages: z.array(
@@ -79,8 +80,14 @@ export type Profile = z.infer<typeof profileSchema>;
  * project slugs.
  */
 export const aboutSchema = z.object({
+  /** The About page's opening line, in the display face. */
+  headline: localized,
   lede: localized,
   intro: z.array(localized).default([]),
+  /** The opening in three short steps: where it started, today, what's next. */
+  chapters: z.array(z.object({ label: localized, text: localized })).default([]),
+  /** Big numbers beside the opening; each one must be a fact stated elsewhere. */
+  facts: z.array(z.object({ value: z.string(), label: localized })).default([]),
   themes: z
     .array(
       z.object({
@@ -164,7 +171,8 @@ export type Metric = z.infer<typeof metricSchema>;
 
 export const projectSchema = z.object({
   slug: z.string().regex(/^[a-z0-9-]+$/),
-  title: z.string(),
+  /** A plain string when the name is the same in both languages. */
+  title: z.union([z.string(), localized]),
   tier: z.enum(["featured", "other"]),
   status: z.enum(projectStatuses),
   year: z.number().int().min(2020),
@@ -184,6 +192,14 @@ export const projectSchema = z.object({
       video: z.union([z.url(), z.literal("TODO")]).optional(),
     })
     .default({}),
+  /** Self-hosted presentation video (in Portuguese), shown on the featured card. */
+  presentation: z
+    .object({ src: sitePath, poster: sitePath, duration: z.string().regex(/^\d+:\d{2}$/) })
+    .optional(),
+  /** A short muted loop for the home card only (the project page keeps `presentation`). */
+  teaser: z.object({ src: sitePath, poster: sitePath }).optional(),
+  /** A screenshot: the home card's image, and the page's figure when there's no video. */
+  cover: sitePath.optional(),
   /** Source code is not public (school systems). */
   privateCode: z.boolean().default(false),
   hasCaseStudy: z.boolean().default(false),
@@ -200,47 +216,19 @@ export const skillGroupSchema = z.object({
 });
 export type SkillGroup = z.infer<typeof skillGroupSchema>;
 
-/**
- * One branch of the arcade skill tree. `nodes` are skill names in English
- * (keys of skills.ts), in the order they build on each other; each node's
- * status comes from its tier there.
- */
-export const skillBranchSchema = z.object({
-  id: z.string(),
-  label: localized,
-  nodes: z.array(z.string()).min(1),
-});
-export type SkillBranch = z.infer<typeof skillBranchSchema>;
-
-export const achievementStatuses = ["unlocked", "progress", "locked"] as const;
-export type AchievementStatus = (typeof achievementStatuses)[number];
-export const achievementKinds = ["cert", "event", "language", "career", "competition"] as const;
-export type AchievementKind = (typeof achievementKinds)[number];
-
-/**
- * One trophy in the arcade Achievements section. `locked` ones are goals and
- * need a `hint` saying what unlocks them. `credentialUrl` links the certificate.
- */
-export const achievementSchema = z
-  .object({
-    id: z.string(),
-    status: z.enum(achievementStatuses),
-    kind: z.enum(achievementKinds),
-    title: localized,
-    org: z.string().optional(),
-    date: partialDate.optional(),
-    /** What unlocks it (locked) or what is left (in progress). */
-    hint: localized.optional(),
-    /** Arcade score for the HUD: flavor, not a claim. */
-    xp: z.number().int().positive(),
-    credentialUrl: z.string().url().optional(),
-  })
-  .refine((a) => a.status !== "locked" || a.hint, "A locked achievement needs a hint");
-export type Achievement = z.infer<typeof achievementSchema>;
-
 export const nowSchema = z.object({
   updatedAt: partialDate,
-  learning: z.array(localized).min(1),
+  learning: z
+    .array(
+      z.object({
+        title: localized,
+        text: localized,
+        status: localized.optional(),
+        /** how far along, 0–100; without it the card shows a bar that keeps running */
+        progress: z.number().min(0).max(100).optional(),
+      }),
+    )
+    .min(1),
   building: z.array(localized).min(1),
 });
 export type Now = z.infer<typeof nowSchema>;

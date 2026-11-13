@@ -1,0 +1,1473 @@
+/*
+ * Kairo (ProfitizeBuild) adapted to the portfolio (ported from the v1 site's port): the hero is assembled live by
+ * a swarm of cursors. enxame.css, barra.css and hero.css come from the bundle;
+ * only the brand color moved from red to the site's electric blue, and the fonts
+ * map to the site's (Anton, Geist) plus Caveat for the handwriting.
+ * The hero is always a dark stage, like the shader stages.
+ */
+:root {
+  --texto: #f1f4fb;
+  --branco: #fff;
+  --texto-2: #aab3c7;
+  --texto-3: #7a8499;
+  --positive: #3ddc84;
+  --fio: rgba(255, 255, 255, 0.09);
+  --fio-forte: rgba(255, 255, 255, 0.16);
+
+  --brilho-1: rgba(40, 90, 255, 0.26);
+  --brilho-2: rgba(20, 40, 120, 0.2);
+
+  /* agent tooling: Figma-like cyan selection so it reads apart from the brand blue */
+  --sel: #22d3ee;
+  --sel-etiqueta: #0891b2;
+  --marcador: rgba(158, 164, 178, 0.2);
+  --marcador-grande: rgba(158, 164, 178, 0.05);
+  --marcador-quadro: rgba(128, 134, 150, 0.025);
+
+  --u: max(100vw / 1440 * 0.8, min(100vw / 1440, 100svh / 900));
+  --margem: calc(56 * var(--u));
+
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-troca: cubic-bezier(0.77, 0, 0.175, 1);
+  --t-micro: 0.16s;
+}
+@media (max-width: 760px) {
+  :root {
+    --u: calc(100vw / 390);
+    --margem: 20px;
+  }
+}
+
+/* Font tokens live where next/font defines its variables (the shell div, the hero), not on :root,
+   or var(--font-display) would be undefined there and invalidate every font shorthand. */
+.hero,
+.barra,
+.enxame {
+  /* brand from the site tokens (these elements carry .dark, so they read the dark set) */
+  --pagina: var(--background);
+  --vermelho: var(--accent);
+  --vermelho-hover: var(--accent-strong);
+  --vermelho-texto: var(--accent-strong);
+  --vermelho-sombra: color-mix(in srgb, var(--accent) 50%, transparent);
+  --display: var(--font-display), "Anton", "Arial Narrow", Impact, sans-serif;
+  --mao: var(--font-hand), "Segoe Script", cursive;
+  --sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---- bits of the bundle's base.css / secao.css the hero needs, scoped to it ---- */
+.hero {
+  background: var(--pagina);
+  color: var(--texto);
+  font-family: var(--sans);
+  line-height: 1.5;
+}
+.hero :where(h1, p, ul, figure) {
+  margin: 0;
+  padding: 0;
+}
+.hero ul {
+  list-style: none;
+}
+.hero b,
+.hero strong {
+  font-weight: inherit;
+}
+.hero img,
+.hero svg {
+  display: block;
+  max-width: 100%;
+}
+.ico {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ponto {
+  display: inline-block;
+  flex: none;
+  width: 0.62em;
+  height: 0.62em;
+  border-radius: 50%;
+  background: var(--positive);
+  box-shadow: 0 0 0.6em color-mix(in srgb, var(--positive) 60%, transparent);
+}
+.anel {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1.5px solid var(--vermelho);
+  border-radius: 50%;
+  color: var(--vermelho-texto);
+  transition:
+    background-color var(--t-micro) var(--ease),
+    color var(--t-micro) var(--ease);
+}
+.anel svg {
+  width: 19px;
+  height: 19px;
+}
+.sel {
+  position: relative;
+}
+.sel:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 4px;
+}
+.sel {
+  transition: scale 0.14s var(--ease);
+}
+.sel:active {
+  scale: 0.97;
+}
+.enx-marca {
+  width: 100%;
+  height: 100%;
+  padding: 14px;
+  fill: var(--vermelho-texto);
+}
+/* the swarm stage covers the body: the body must be its containing block */
+body {
+  position: relative;
+}
+main {
+  overflow-x: clip;
+}
+
+/* Montagem pelos agentes.
+   Enquanto a página monta (html.monta), o que ainda não foi montado fica invisível, mas no lugar: o layout já é o
+   final e os agentes medem cada bloco antes de desenhar a caixa dele. */
+html.monta
+  [data-camada]:not([data-camada="quadro"]):not([data-camada="marca"]):not(.c-pronta):not(
+    .c-viva
+  ):not(:has([data-camada])),
+html.monta [data-camada="texto"]:not(.c-pronta):not(.c-viva) {
+  opacity: 0;
+}
+/* camada com outras dentro (o bloco vermelho do nome, o chip, o botão): some só o fundo e a borda dela */
+html.monta [data-camada]:not(.c-pronta):has([data-camada]) {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html.monta [data-camada]:has([data-camada]) {
+  transition:
+    background-color 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    box-shadow 0.5s var(--ease),
+    scale 0.14s var(--ease),
+    opacity 0.35s var(--ease),
+    translate 0.14s var(--ease);
+}
+html.monta [data-camada="quadro"]:not(.c-pronta)::before {
+  opacity: 0;
+}
+html.monta [data-camada="titulo"].c-viva .letra {
+  opacity: 0;
+}
+.ch {
+  opacity: 0;
+}
+.ch.on {
+  opacity: 1;
+}
+.c-ja,
+.c-ja::before,
+.c-ja::after {
+  transition: none !important;
+}
+
+/* palco dos agentes: cobre o body inteiro, rola com a página e não aumenta a rolagem */
+.enxame {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  overflow: clip;
+  pointer-events: none;
+}
+
+/* cursores: seta colorida (andando), mira (desenhando uma caixa), barra de texto (digitando) */
+.ag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  will-change: transform;
+}
+.ag svg {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  max-width: none; /* o .ag não tem largura: sem isso o reset encolhe o SVG a zero */
+  overflow: visible;
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.6));
+}
+.ag__seta {
+  left: -3.6px;
+  top: -2.4px;
+}
+.ag__seta path {
+  fill: var(--c);
+  stroke: #fff;
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+}
+.ag__mira,
+.ag__ibeam {
+  left: -10px;
+  top: -10px;
+  display: none;
+}
+.ag__mira path {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.ag__mira path.f {
+  stroke: #fff;
+  stroke-width: 4.8;
+}
+.ag__ibeam path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+.ag__ibeam path.f {
+  stroke: rgba(0, 0, 0, 0.75);
+  stroke-width: 3.8;
+}
+.ag.is-mira .ag__seta,
+.ag.is-texto .ag__seta {
+  display: none;
+}
+.ag.is-mira .ag__mira,
+.ag.is-texto .ag__ibeam {
+  display: block;
+}
+
+/* clique de um agente ao aplicar uma camada */
+.clique {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border: 1.5px solid var(--c);
+  border-radius: 50%;
+}
+
+/* caixa de seleção: fio azul, quatro alças, etiqueta de medida embaixo e o placeholder cinza */
+.cx {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 1px solid var(--sel);
+}
+.cx__fill {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--marcador);
+  opacity: 0;
+}
+.cx__fill--grande {
+  background: var(--marcador-grande);
+}
+.cx__fill--fundo {
+  background: var(--marcador-quadro);
+} /* depois da grande: o fundo do hero também é grande */
+.cx__fill svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.5);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cx__h {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border: 1px solid var(--sel);
+  opacity: 0;
+}
+.cx__h:nth-of-type(1) {
+  left: -3.5px;
+  top: -3.5px;
+}
+.cx__h:nth-of-type(2) {
+  right: -3.5px;
+  top: -3.5px;
+}
+.cx__h:nth-of-type(3) {
+  left: -3.5px;
+  bottom: -3.5px;
+}
+.cx__h:nth-of-type(4) {
+  right: -3.5px;
+  bottom: -3.5px;
+}
+.cx.fixa .cx__h {
+  opacity: 1;
+}
+.cx__tam {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  translate: -50% 0;
+  padding: 3px 5px;
+  border-radius: 3px;
+  background: var(--sel-etiqueta);
+  color: var(--branco);
+  font: 600 12px / 1 var(--sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.cx.digitando .cx__tam,
+.cx.digitando .cx__h,
+.cx.sem-medida .cx__tam {
+  opacity: 0;
+}
+
+/* cursor de texto piscando enquanto um agente digita */
+.caret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  background: #fff;
+  animation: caret 0.9s steps(1) infinite;
+}
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* o símbolo que os agentes rodeiam enquanto escaneiam a página */
+.enx-logo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  border-radius: 15px;
+  background: #000;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* copiar: a seta ganha o quadradinho com "+" do alt-arrastar */
+.ag.is-copia::after {
+  content: "+";
+  position: absolute;
+  left: 13px;
+  top: 15px;
+  display: grid;
+  place-items: center;
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  background: var(--c);
+  box-shadow: 0 0 0 1px #fff;
+  font: 700 12px / 1 var(--sans);
+  color: #111;
+}
+
+/* a cópia que um agente arrasta até o lugar do item novo */
+.fantasma {
+  outline: 1px solid var(--sel);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  opacity: 0.94;
+}
+
+/* linha-guia de alinhamento que pisca quando um elemento encaixa */
+.guia {
+  position: absolute;
+  background: #ff3e9a;
+  box-shadow: 0 0 6px rgba(255, 62, 154, 0.6);
+}
+
+/* fios que não são camada (linhas dos números e rodapé do hero): só aparecem quando algo dentro deles foi montado */
+.hero__numeros li,
+.hero__pe {
+  transition: border-color 0.4s var(--ease);
+}
+html.monta .hero__numeros li:not(:has(.c-pronta)),
+html.monta .hero__pe:not(:has(.c-pronta)) {
+  border-color: transparent;
+}
+
+/* Barra dos agentes, fixa no pé ao centro: interface de ferramenta, em px fixos (não escala com a cena). */
+.barra {
+  position: fixed;
+  z-index: 70;
+  left: 50%;
+  bottom: 14px;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 42px;
+  padding: 0 5px 0 12px;
+  background: rgba(10, 14, 26, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 13px;
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+  font: 600 12px / 1 var(--sans);
+  color: var(--texto);
+  white-space: nowrap;
+}
+
+.barra__scan,
+.barra__info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.barra__scan {
+  display: none;
+  color: var(--texto-2);
+}
+.barra[data-estado="escaneando"] .barra__scan {
+  display: flex;
+}
+.barra[data-estado="escaneando"] .barra__info {
+  display: none;
+}
+
+.barra__avatares {
+  display: flex;
+  padding-left: 6px;
+}
+.barra__avatares i {
+  width: 18px;
+  height: 18px;
+  margin-left: -6px;
+  border-radius: 50%;
+  border: 2px solid #0c1120;
+  background: var(--c, #888);
+}
+.barra__fim {
+  display: none;
+  color: var(--texto-2);
+}
+.barra__fim b {
+  color: var(--texto);
+  font-variant-numeric: tabular-nums;
+}
+.barra[data-estado="fim"] .barra__fim {
+  display: inline;
+}
+.barra[data-estado="fim"] .barra__agentes,
+.barra[data-estado="fim"] .barra__camadas {
+  display: none;
+}
+.barra__agentes b,
+.barra__camadas b {
+  font-variant-numeric: tabular-nums;
+}
+.barra__camadas {
+  color: var(--texto-2);
+  font-variant-numeric: tabular-nums;
+}
+.barra__feitas {
+  color: var(--texto);
+}
+
+.barra__trilho {
+  position: relative;
+  width: 64px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.barra__trilho > i {
+  position: absolute;
+  inset: 0;
+  background: var(--sel);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+.barra__acoes {
+  display: flex;
+  gap: 2px;
+  padding-left: 8px;
+  border-left: 1px solid var(--fio);
+}
+.barra__btn {
+  display: grid;
+  place-items: center;
+  height: 30px;
+  min-width: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font: 600 12px / 1 var(--sans);
+  color: var(--texto-2);
+  transition:
+    background-color var(--t-micro) var(--ease),
+    color var(--t-micro) var(--ease),
+    scale 0.14s var(--ease);
+}
+.barra__btn:active {
+  scale: 0.95;
+}
+.barra__btn:focus-visible {
+  outline: 2px solid var(--sel);
+  outline-offset: 1px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .barra__btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--texto);
+  }
+}
+.barra__tour[aria-pressed="true"] {
+  background: var(--sel-etiqueta);
+  color: var(--branco);
+}
+.barra__vel {
+  min-width: 40px;
+  font-variant-numeric: tabular-nums;
+}
+.barra__refaz {
+  padding: 0;
+}
+.barra__refaz svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* movimento reduzido: a página já abre pronta e não há agentes */
+html.sem-agentes .barra {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .barra {
+    bottom: 12px;
+    gap: 10px;
+    height: 44px;
+    padding-left: 10px;
+  }
+  .barra__agentes,
+  .barra__progresso,
+  .barra[data-estado="fim"] .barra__palavra,
+  .barra__palavra {
+    display: none;
+  }
+  .barra__scan .barra__trilho {
+    width: 48px;
+  }
+}
+
+/* Hero: um pôster de uma tela, na escala de cena (--u, quadro de 1440×900). PORTFÓLIO cheio em vermelho que escurece
+   para baixo, na largura toda; a foto recortada de perfil na frente dele, sumindo no preto; nome e texto à
+   esquerda, lema e números à direita, faixa de rodapé com fio. */
+.hero {
+  position: relative;
+  height: calc(900 * var(--u));
+  min-height: 560px;
+  overflow: clip;
+}
+.hero__quadro {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero__quadro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 34% 46% at 52% 48%, var(--brilho-1), transparent 70%),
+    radial-gradient(ellipse 70% 60% at 50% 40%, var(--brilho-2), transparent 75%);
+  transition: opacity 1s var(--ease);
+}
+
+.hero__a,
+.hero__dir,
+.hero__pe {
+  position: absolute;
+}
+.hero__a {
+  inset: 0;
+  z-index: 1;
+}
+
+/* rótulos do alto */
+.hero__papel,
+.hero__status {
+  position: absolute;
+  top: calc(64px + 26 * var(--u));
+  font: 700 max(12px, calc(13.5 * var(--u))) / 1.45 var(--sans);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.hero__papel {
+  left: var(--margem);
+}
+.hero__papel span {
+  display: block;
+}
+.hero__papel-1 {
+  color: var(--vermelho-texto);
+}
+.hero__papel-2 {
+  color: var(--texto-2);
+}
+.hero__status {
+  right: var(--margem);
+  font-weight: 500;
+  color: var(--texto-2);
+}
+.hero__status .ponto {
+  width: 6px;
+  height: 6px;
+  margin-right: 12px;
+  vertical-align: 0.15em;
+}
+
+/* PORTFÓLIO: cada letra leva o mesmo degradê (as letras piscam uma a uma quando o título acende) */
+.hero__titulo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(172 * var(--u));
+  z-index: 1;
+  text-align: center;
+  font: 400 min(calc(400 * var(--u)), calc((100vw - 2 * var(--margem)) / 3.9)) / 0.86 var(--display);
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  user-select: none;
+}
+.hero__titulo > span,
+.hero__titulo .letra {
+  background: linear-gradient(
+    180deg,
+    var(--titulo-topo) 8%,
+    var(--titulo-meio) 52%,
+    var(--titulo-pe) 96%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* foto recortada: na frente do título, some no preto embaixo */
+.hero__foto {
+  position: absolute;
+  z-index: 2;
+  left: calc(50% - 290 * var(--u));
+  bottom: calc(70 * var(--u));
+  width: calc(560 * var(--u));
+  pointer-events: none;
+}
+.hero__retrato {
+  display: block;
+}
+.hero__retrato img {
+  width: 100%;
+  height: auto;
+  -webkit-mask-image:
+    linear-gradient(180deg, #000 66%, transparent 98%),
+    linear-gradient(90deg, transparent 1%, #000 16%, #000 84%, transparent 99%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(180deg, #000 66%, transparent 98%),
+    linear-gradient(90deg, transparent 1%, #000 16%, #000 84%, transparent 99%);
+  mask-composite: intersect;
+}
+
+/* esquerda: quem, cargo, texto, botão, onde */
+.hero__esq {
+  position: absolute;
+  z-index: 3;
+  left: var(--margem);
+  top: calc(318 * var(--u));
+  width: calc(440 * var(--u));
+}
+.hero__quem {
+  display: block;
+  font-weight: 400;
+}
+.hero__ola {
+  display: block;
+  width: max-content;
+  margin-left: calc(6 * var(--u));
+  font: 600 calc(60 * var(--u)) / 1 var(--mao);
+  color: var(--texto);
+  rotate: -6deg;
+  transform-origin: 0 100%;
+}
+.hero__nome {
+  display: block;
+  margin-top: calc(-4 * var(--u));
+  font: 400 calc(124 * var(--u)) / 0.9 var(--display);
+  letter-spacing: -0.005em;
+  color: var(--texto);
+}
+.hero__cargo {
+  margin-top: calc(20 * var(--u));
+  font: 800 calc(23 * var(--u)) / 1.12 var(--sans);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--vermelho-texto);
+}
+.hero__texto {
+  margin-top: calc(18 * var(--u));
+  max-width: calc(380 * var(--u));
+  font: 400 max(14px, calc(16.5 * var(--u))) / 1.55 var(--sans);
+  color: var(--texto-2);
+}
+.hero__botao {
+  display: inline-flex;
+  margin-top: calc(24 * var(--u));
+  background-color: var(--vermelho);
+  transition:
+    background-color var(--t-micro) var(--ease),
+    scale 0.14s var(--ease);
+}
+.hero__botao > span {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(44 * var(--u));
+  height: max(44px, calc(50 * var(--u)));
+  padding: 0 calc(26 * var(--u));
+  font: 600 max(14px, calc(16 * var(--u))) / 1 var(--sans);
+  color: var(--accent-contrast);
+}
+.hero__botao svg {
+  width: 18px;
+  height: 18px;
+  transition: translate 0.2s var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  html:not(.rolando) .hero__botao:hover {
+    background-color: var(--vermelho-hover);
+  }
+  html:not(.rolando) .hero__botao:hover svg {
+    translate: 0 3px;
+  }
+}
+.hero__local {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: calc(22 * var(--u));
+  font: 500 max(12px, calc(13 * var(--u))) / 1 var(--sans);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--texto-2);
+}
+.hero__local svg {
+  width: 16px;
+  height: 16px;
+  color: var(--vermelho-texto);
+}
+
+/* direita: lema e números */
+.hero__dir {
+  z-index: 3;
+  right: var(--margem);
+  top: calc(462 * var(--u));
+  width: calc(284 * var(--u));
+}
+.hero__lema {
+  display: flex;
+  align-items: center;
+  gap: calc(22 * var(--u));
+  font: 500 max(14px, calc(17 * var(--u))) / 1.5 var(--sans);
+  color: var(--texto);
+}
+.hero__aster {
+  width: calc(64 * var(--u));
+  height: calc(64 * var(--u));
+}
+.hero__aster svg {
+  width: 46%;
+  height: 46%;
+  stroke-width: 1.3;
+}
+.hero__numeros {
+  margin-top: calc(26 * var(--u));
+}
+.hero__numeros li {
+  border-bottom: 1px solid var(--fio-forte);
+}
+.hero__num-link {
+  display: grid;
+  grid-template-columns: calc(118 * var(--u)) 1fr;
+  align-items: center;
+}
+.hero__numeros li:not(:has(a)) {
+  display: grid;
+  grid-template-columns: calc(118 * var(--u)) 1fr;
+  align-items: center;
+}
+.hero__numeros li {
+  padding: calc(11 * var(--u)) 0;
+}
+.hero__numeros strong {
+  font: 400 calc(58 * var(--u)) / 1 var(--display);
+  color: var(--vermelho-texto);
+}
+.hero__numeros strong .mais {
+  font-size: 0.5em;
+}
+.hero__numeros li > span,
+.hero__num-link > span {
+  font: 500 max(12px, calc(13 * var(--u))) / 1.45 var(--sans);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--texto-2);
+}
+.hero__num-link > span {
+  color: var(--texto);
+}
+.hero__num-link svg {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-left: 10px;
+  color: var(--vermelho-texto);
+  vertical-align: -0.1em;
+  transition: translate 0.2s var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  html:not(.rolando) .hero__num-link:hover svg {
+    translate: 2px -2px;
+  }
+}
+
+/* rodapé do hero: fio e três textos (o meio fica para a barra dos agentes) */
+.hero__pe {
+  z-index: 3;
+  left: var(--margem);
+  right: var(--margem);
+  bottom: 0;
+  height: calc(70 * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--fio-forte);
+}
+.hero__caso {
+  display: flex;
+  align-items: center;
+  gap: calc(18 * var(--u));
+  font: 600 max(12px, calc(13.5 * var(--u))) / 1 var(--sans);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.hero__play {
+  width: calc(48 * var(--u));
+  height: calc(48 * var(--u));
+  color: var(--texto);
+}
+.hero__play svg {
+  width: 40%;
+  height: 40%;
+}
+.hero__caso-tipo {
+  margin-left: calc(16 * var(--u));
+  color: var(--texto-3);
+  font-weight: 500;
+}
+@media (hover: hover) and (pointer: fine) {
+  html:not(.rolando) .hero__caso:hover .hero__play {
+    background-color: var(--vermelho);
+    border-color: var(--vermelho);
+  }
+}
+.hero__anos {
+  font: 500 max(12px, calc(13 * var(--u))) / 1 var(--sans);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--texto-2);
+}
+
+/* ---------- celular: coluna, em três montagens (data-parte) ---------- */
+@media (max-width: 760px) {
+  .hero {
+    height: auto;
+    min-height: 0;
+    padding: 78px var(--margem) 0;
+    overflow: clip;
+  }
+  .hero__a,
+  .hero__dir,
+  .hero__pe {
+    position: relative;
+    inset: auto;
+  }
+  .hero__papel,
+  .hero__status {
+    position: static;
+    font-size: 12px;
+  }
+  .hero__status {
+    margin-top: 14px;
+  }
+  .hero__titulo {
+    position: relative;
+    top: auto;
+    margin-top: 34px;
+    font-size: calc((100vw - 2 * var(--margem)) / 3.9);
+  }
+  .hero__foto {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 92%;
+    margin: -24% auto 0;
+  }
+  .hero__esq {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    margin-top: -12%;
+  }
+  .hero__ola {
+    font-size: 52px;
+  }
+  .hero__nome {
+    font-size: 104px;
+  }
+  .hero__cargo {
+    font-size: 22px;
+    margin-top: 18px;
+  }
+  .hero__texto {
+    max-width: none;
+    font-size: 16px;
+  }
+  .hero__botao {
+    display: flex;
+  }
+  .hero__botao > span {
+    width: 100%;
+    justify-content: space-between;
+    height: 52px;
+    font-size: 16px;
+  }
+  .hero__local {
+    font-size: 12px;
+  }
+  .hero__dir {
+    right: auto;
+    top: auto;
+    width: auto;
+    margin-top: 56px;
+  }
+  .hero__lema {
+    font-size: 16px;
+    gap: 18px;
+  }
+  .hero__aster {
+    width: 56px;
+    height: 56px;
+  }
+  .hero__numeros {
+    margin-top: 26px;
+  }
+  .hero__numeros li {
+    padding: 14px 0;
+  }
+  .hero__numeros li:not(:has(a)),
+  .hero__num-link {
+    grid-template-columns: 104px 1fr;
+  }
+  .hero__numeros strong {
+    font-size: 58px;
+  }
+  .hero__numeros li > span,
+  .hero__num-link > span {
+    font-size: 12px;
+  }
+  .hero__pe {
+    left: auto;
+    right: auto;
+    bottom: auto;
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-top: 44px;
+    padding: 22px 0 28px;
+  }
+  .hero__play {
+    width: 46px;
+    height: 46px;
+  }
+  .hero__caso {
+    font-size: 12px;
+    gap: 14px;
+  }
+  .hero__caso-tipo {
+    display: none;
+  }
+  .hero__anos {
+    font-size: 12px;
+  }
+}
+
+/* notebook: a barra dos agentes encosta no rótulo do caso */
+@media (max-width: 1360px) and (min-width: 761px) {
+  .hero__caso-tipo {
+    display: none;
+  }
+}
+
+/* ---------- portfolio additions ---------- */
+/* the shader lights up with the frame layer (the bundle only fades the ::before glow) */
+.hero__quadro > .stage {
+  /* .stage (creative.css, unlayered) sets position: relative, which beats Tailwind's absolute */
+  position: absolute;
+  inset: 0;
+  transition: opacity 1.2s var(--ease);
+}
+html.monta .hero__quadro:not(.c-pronta) > .stage {
+  opacity: 0;
+}
+/* CTAs: the CV is the red (now blue) block button; LinkedIn, Instagram and copy e-mail are rings */
+.hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(18 * var(--u));
+  margin-top: calc(24 * var(--u));
+}
+.hero__botao--cv {
+  margin-top: 0;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: calc(44 * var(--u));
+  height: max(44px, calc(50 * var(--u)));
+  padding: 0 calc(26 * var(--u));
+  font: 600 max(14px, calc(16 * var(--u))) / 1 var(--sans);
+  color: var(--accent-contrast);
+}
+.hero__botao--cv svg {
+  width: 18px;
+  height: 18px;
+}
+@media (hover: hover) and (pointer: fine) {
+  html:not(.rolando) .hero__botao--cv:hover svg {
+    translate: 0 3px;
+  }
+}
+.hero__redes {
+  display: flex;
+  gap: calc(10 * var(--u));
+}
+.hero__redes .anel {
+  width: max(44px, calc(50 * var(--u)));
+  height: max(44px, calc(50 * var(--u)));
+  color: var(--texto);
+}
+@media (max-width: 760px) {
+  .hero__ctas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero__botao--cv {
+    width: 100%;
+    justify-content: space-between;
+    height: 52px;
+  }
+}
+
+/* Kevin's numbers ("3 → 1", "~535") are wider than Kairo's: wider column, one line */
+.hero__dir {
+  width: calc(330 * var(--u));
+}
+.hero__numeros li:not(:has(a)),
+.hero__num-link {
+  grid-template-columns: calc(150 * var(--u)) 1fr;
+}
+.hero__numeros strong {
+  white-space: nowrap;
+  font-size: calc(50 * var(--u));
+}
+@media (max-width: 760px) {
+  .hero__dir {
+    width: auto;
+  }
+  .hero__numeros li:not(:has(a)),
+  .hero__num-link {
+    grid-template-columns: 128px 1fr;
+  }
+  .hero__numeros strong {
+    font-size: 48px;
+  }
+}
+
+/* portfolio: the bar leaves with the agents once the hero is built (and isn't shown on a page that opens built) */
+.barra[data-estado="saiu"],
+.barra[data-estado="pronta"] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.6s ease,
+    visibility 0s linear 0.6s;
+}
+
+/* ---------- shader hero (no photo, no giant title) ----------
+   The frame layer is the Tipos shader on the right. */
+.hero {
+}
+.hero__quadro::before {
+  display: none;
+}
+.hero__esq {
+  top: calc(250 * var(--u));
+  width: calc(470 * var(--u));
+}
+/* full-height on the right, fading into the page on its left edge */
+.hero__quadro {
+  inset: 0 0 0 calc(540 * var(--u));
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 28%);
+  mask-image: linear-gradient(90deg, transparent, black 28%);
+}
+/* the numbers sit over the shader on a dark glass card */
+.hero__dir {
+  top: auto;
+  bottom: calc(130 * var(--u));
+  right: calc(var(--margem) + 24 * var(--u));
+  width: calc(330 * var(--u));
+  padding: calc(22 * var(--u)) calc(26 * var(--u)) calc(10 * var(--u));
+  border: 1px solid var(--fio-forte);
+  border-radius: calc(22 * var(--u));
+  background: color-mix(in srgb, var(--pagina) 62%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.hero__numeros li:last-child {
+  border-bottom: 0;
+}
+@media (max-width: 760px) {
+  .hero__esq {
+    top: auto;
+    width: auto;
+    margin-top: 48vw;
+  }
+  /* phone: the shader fills the top of the hero and fades out behind the name */
+  .hero__quadro {
+    inset: 0 0 auto;
+    height: 82vw;
+    border-radius: 0;
+    -webkit-mask-image: linear-gradient(180deg, black 55%, transparent);
+    mask-image: linear-gradient(180deg, black 55%, transparent);
+  }
+  .hero__dir {
+    bottom: auto;
+    right: auto;
+    width: auto;
+    padding: 18px 20px 6px;
+    border-radius: 18px;
+  }
+}
+/* the status label sits over the shader: give it a dark pill so it stays readable */
+.hero__status {
+  z-index: 3;
+  margin-top: -6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--pagina) 72%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+@media (max-width: 760px) {
+  .hero__status {
+    display: inline-block;
+    margin-top: 14px;
+  }
+}
+/* Fluxo waves as the full hero background (replaces the right-side Tipos panel) */
+.hero__quadro {
+  inset: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+/* soft dark scrim behind the left column so the small text reads over the waves */
+.hero__quadro::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--pagina) 78%, transparent),
+    color-mix(in srgb, var(--pagina) 40%, transparent) 30%,
+    transparent 50%
+  );
+}
+@media (max-width: 760px) {
+  .hero__quadro::after {
+    display: none;
+  }
+}
+
+/* the CV download is the Mercúrio button */
+.hero__metal.metal-btn {
+  height: max(48px, calc(58 * var(--u)));
+  padding-left: max(22px, calc(28 * var(--u)));
+  font-size: max(14px, calc(16 * var(--u)));
+}
+.hero__metal .metal-btn__orb {
+  --orb: max(36px, calc(44 * var(--u)));
+}
+@media (max-width: 760px) {
+  .hero__metal.metal-btn {
+    justify-content: space-between;
+    width: 100%;
+    height: 54px;
+  }
+}
+
+/* the round buttons: the accent fills from the center, the ring lifts, the glyph pops */
+.hero__redes .anel {
+  isolation: isolate;
+  overflow: hidden;
+  transition:
+    color 0.35s var(--ease),
+    border-color 0.35s var(--ease),
+    translate 0.35s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.35s var(--ease);
+}
+.hero__redes .anel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 50%;
+  background: var(--vermelho);
+  opacity: 1;
+  scale: 0;
+  transition: scale 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.hero__redes .anel svg {
+  transition: scale 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  html:not(.rolando) .hero__redes .anel:hover {
+    color: var(--accent-contrast);
+    border-color: var(--vermelho);
+    translate: 0 -2px;
+    box-shadow: 0 10px 28px -10px color-mix(in srgb, var(--vermelho) 80%, transparent);
+  }
+  html:not(.rolando) .hero__redes .anel:hover::before {
+    scale: 1;
+  }
+  html:not(.rolando) .hero__redes .anel:hover svg {
+    scale: 1.12;
+  }
+}
+
+/* the status dot pings */
+.hero__status .ponto {
+  position: relative;
+}
+.hero__status .ponto::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: hero-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes hero-ping {
+  75%,
+  100% {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__status .ponto::after {
+    animation: none;
+  }
+}
+
+/* the numbers card: a short kicker, even padding, each row names its project and links to it */
+.hero__dir {
+  padding: calc(20 * var(--u)) calc(24 * var(--u));
+}
+.hero__kicker {
+  font: 500 max(11px, calc(11.5 * var(--u))) / 1 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--vermelho-texto);
+}
+.hero__dir .hero__numeros {
+  margin-top: calc(10 * var(--u));
+}
+.hero__numeros li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.hero__num-link > span {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: max(13px, calc(14 * var(--u)));
+  line-height: 1.35;
+  color: var(--texto);
+}
+.hero__fonte {
+  display: block;
+  margin-top: 4px;
+  font: 500 max(10.5px, calc(11 * var(--u))) / 1 var(--font-mono);
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texto-3);
+  transition: color 0.25s var(--ease);
+}
+.hero__fonte svg {
+  margin-left: 6px;
+  width: 11px;
+  height: 11px;
+}
+@media (hover: hover) and (pointer: fine) {
+  html:not(.rolando) .hero__num-link:hover .hero__fonte {
+    color: var(--vermelho-texto);
+  }
+}
+@media (max-width: 760px) {
+  .hero__dir {
+    padding: 16px 18px;
+  }
+}
+@media (min-width: 761px) {
+  .hero__dir {
+    width: calc(380 * var(--u));
+  }
+}
+
+/* ---- the seam: the hero fades into the page, and two crossed tapes run over the line ---- */
+:root {
+  /* the page's own background, computed here so the always-dark hero can fade into it */
+  --page-bg: var(--background);
+}
+.hero__quadro::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  height: min(
+    20%,
+    150px
+  ); /* only under the last line of text: white text can't fade into a light page */
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--page-bg) 55%, transparent) 55%,
+    var(--page-bg)
+  );
+  pointer-events: none;
+}
+.seam {
+  position: relative;
+  z-index: 6;
+  height: 0;
+  overflow-x: clip; /* the tilted tapes are wider than the page: no sideways scroll */
+  pointer-events: none;
+}
+.seam__tape {
+  position: absolute;
+  top: 0;
+  left: -5vw;
+  width: 110vw;
+  overflow: hidden;
+  translate: 0 -50%;
+}
+.seam__tape--front {
+  rotate: -2.2deg;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  box-shadow: 0 20px 50px -20px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.seam__tape--back {
+  rotate: 2deg;
+  border-block: 1px solid color-mix(in srgb, var(--foreground) 18%, transparent);
+  background: color-mix(in srgb, var(--page-bg) 82%, transparent);
+  backdrop-filter: blur(6px);
+  color: var(--muted);
+}
+.seam__track {
+  display: flex;
+  width: max-content;
+  animation: seam-run 38s linear infinite;
+}
+.seam__tape--back .seam__track {
+  animation-direction: reverse;
+  animation-duration: 46s;
+}
+.seam__run {
+  display: flex;
+  flex: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.seam__run li {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 0.7rem 0 0.7rem 1.75rem;
+  font: 400 clamp(1.1rem, 1.9vw, 1.6rem) / 1 var(--font-display);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.seam__run li::after {
+  content: "✦";
+  font-size: 0.7em;
+  opacity: 0.7;
+}
+.seam__tape--back .seam__run li {
+  padding-block: 0.55rem;
+  font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+}
+@keyframes seam-run {
+  to {
+    translate: -50% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seam__track {
+    animation: none;
+  }
+}
+
+/* the hero on the light theme (Ondas only: Fluxo keeps the hero dark) */
+html:not(.dark) .hero--tema {
+  --texto: #0b1226;
+  --texto-2: #3d4862;
+  --texto-3: #626c86;
+  --fio: rgba(11, 18, 38, 0.1);
+  --fio-forte: rgba(11, 18, 38, 0.18);
+  --brilho-1: rgba(40, 90, 255, 0.1);
+  --brilho-2: rgba(20, 40, 120, 0.05);
+}

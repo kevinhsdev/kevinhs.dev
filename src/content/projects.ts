@@ -5,7 +5,7 @@ import type { projectSchema } from "./schema";
 export const projects = [
   {
     slug: "sek",
-    title: "SEK · Gestão Escolar",
+    title: { pt: "SEK · Gestão Escolar", en: "SEK · School Management" },
     tier: "featured",
     status: "in-use",
     year: 2026,
@@ -50,12 +50,18 @@ export const projects = [
       },
     ],
     stack: ["Node.js", "node:sqlite", "JavaScript", "HTML", "CSS", "PowerShell"],
+    presentation: {
+      src: "/projects/sek/apresentacao.mp4",
+      poster: "/projects/sek/poster.jpg",
+      duration: "1:05",
+    },
+    teaser: { src: "/projects/sek/trailer.mp4", poster: "/projects/sek/trailer-poster.jpg" },
     privateCode: true,
     hasCaseStudy: true,
   },
   {
-    slug: "pdf-renamer",
-    title: "PDF Renamer",
+    slug: "kiri",
+    title: "KIRI",
     tier: "featured",
     status: "in-use",
     year: 2026,
@@ -99,14 +105,76 @@ export const projects = [
       "Anthropic API",
     ],
     links: {
-      repo: "https://github.com/kevinhsdev/pdf-renamer",
-      demo: "https://kevinhsdev.github.io/pdf-renamer/",
+      repo: "https://github.com/kevinhsdev/kiri",
+      demo: "https://kevinhsdev.github.io/kiri/",
+    },
+    presentation: {
+      src: "/projects/kiri/apresentacao.mp4",
+      poster: "/projects/kiri/poster.jpg",
+      duration: "1:11",
     },
     hasCaseStudy: true,
   },
   {
+    slug: "rumo",
+    title: "RUMO",
+    tier: "featured",
+    status: "live",
+    year: 2026,
+    tagline: {
+      pt: "Landing page 3D feita inteira por agentes de IA, sem eu escrever uma linha de código",
+      en: "A 3D landing page built entirely by AI agents, without me writing a line of code",
+    },
+    summary: {
+      pt: "Landing page conceitual de uma agência de viagens fictícia. O site é um filme preso à rolagem: a câmera atravessa a janela de um avião em 3D, desce pelas nuvens até o destino, os cards voam para um globo de pontos e o globo desenrola num cartão de embarque. Todo o código foi escrito por agentes de IA; o meu trabalho foi a direção, a revisão e o harness que guia os agentes.",
+      en: "A concept landing page for a fictional travel agency. The site is a film tied to the scroll: the camera passes through a 3D airplane window, drops through the clouds to the destination, the cards fly into a dotted globe and the globe unrolls into a boarding pass. AI agents wrote all of the code; my work was the direction, the review and the harness that guides the agents.",
+    },
+    impact: {
+      pt: "Do zero ao ar com zero linhas de código escritas à mão",
+      en: "From zero to live with zero lines of hand-written code",
+    },
+    role: {
+      pt: "Direção, revisão e harness engineering; o código é dos agentes",
+      en: "Direction, review and harness engineering; the agents wrote the code",
+    },
+    metrics: [
+      { value: "0", label: { pt: "linhas escritas à mão", en: "hand-written lines" } },
+      { value: "60 fps", label: { pt: "cena 3D ao vivo", en: "live 3D scene" } },
+    ],
+    highlights: [
+      {
+        pt: "Harness para os agentes: um guia do projeto (CLAUDE.md) com a identidade, as regras que não podem quebrar, onde mexer em cada coisa e um roteiro de verificação em desktop e celular.",
+        en: "A harness for the agents: a project guide (CLAUDE.md) with the identity, the rules that must not break, where to change each thing and a check script for desktop and phone.",
+      },
+      {
+        pt: "Cena 3D ao vivo com Three.js: janelas de avião modeladas em código, persianas com shader e um globo de pontos com rotas que desenrola num mapa plano.",
+        en: "A live Three.js scene: airplane windows modeled in code, shader-driven blinds and a dotted globe with routes that unrolls into a flat map.",
+      },
+      {
+        pt: "Um único palco preso à rolagem (GSAP ScrollTrigger + Lenis): o scroll dirige a câmera e o tempo dirige o texto.",
+        en: "One stage pinned to the scroll (GSAP ScrollTrigger + Lenis): the scroll drives the camera and time drives the text.",
+      },
+      {
+        pt: "Hover, foco e toque em todo elemento clicável, suporte a movimento reduzido e layout responsivo, sem framework.",
+        en: "Hover, focus and touch states on every clickable element, reduced-motion support and a responsive layout, with no framework.",
+      },
+    ],
+    stack: ["Claude Code", "Three.js", "GSAP", "Lenis", "Vite", "JavaScript", "GitHub Pages"],
+    links: {
+      repo: "https://github.com/kevinhsdev/rumo",
+      demo: "https://kevinhsdev.github.io/rumo/",
+    },
+    presentation: {
+      src: "/projects/rumo/apresentacao.mp4",
+      poster: "/projects/rumo/poster.jpg",
+      duration: "0:47",
+    },
+    teaser: { src: "/projects/rumo/trailer.mp4", poster: "/projects/rumo/trailer-poster.jpg" },
+    hasCaseStudy: true,
+  },
+  {
     slug: "blood-bank",
-    title: "Sistema Hemocentro",
+    title: { pt: "Sistema Hemocentro", en: "Blood Bank System" },
     tier: "featured",
     status: "academic",
     year: 2026,
@@ -174,10 +242,12 @@ export const projects = [
       repo: "https://github.com/kevinhsdev/AMATUS",
       demo: "https://kevinhsdev.github.io/AMATUS/",
     },
+    cover: "/projects/amatus/cover.webp",
   },
   {
     slug: "site-lut",
-    title: "Site do Luterano",
+    cover: "/projects/site-lut/cover.webp",
+    title: "I. E. Luterano",
     tier: "other",
     status: "in-development",
     year: 2026,
@@ -197,7 +267,8 @@ export const projects = [
   },
   {
     slug: "finance-api",
-    title: "API de Controle Financeiro",
+    // TODO(kevin): final name; "in development" until then.
+    title: { pt: "Em desenvolvimento", en: "In development" },
     tier: "other",
     status: "in-development",
     year: 2026,

@@ -1,32 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 3100;
-const isCI = Boolean(process.env.CI);
-
 export default defineConfig({
   testDir: "tests/e2e",
-  fullyParallel: true,
-  // The dev machine has little free RAM; CI uses the default.
-  workers: isCI ? undefined : 2,
-  forbidOnly: isCI,
-  retries: isCI ? 1 : 0,
-  reporter: isCI ? [["github"], ["html", { open: "never" }]] : "list",
-  use: {
-    baseURL: `http://localhost:${PORT}`,
-    trace: "retain-on-failure",
-  },
-  // Locally, reuse the installed Edge instead of downloading Chromium.
-  projects: [
-    {
-      name: "desktop",
-      use: { ...devices["Desktop Chrome"], channel: isCI ? undefined : "msedge" },
-    },
-    { name: "mobile", use: { ...devices["Pixel 7"], channel: isCI ? undefined : "msedge" } },
-  ],
+  timeout: 90_000,
+  workers: 1,
+  use: { baseURL: "http://localhost:7778", ...devices["Desktop Chrome"] },
   webServer: {
-    command: `npm run start -- --port ${PORT}`,
-    port: PORT,
-    reuseExistingServer: !isCI,
-    timeout: 120_000,
+    command: "npm run dev",
+    url: "http://localhost:7778/pt",
+    reuseExistingServer: true,
+    timeout: 180_000,
   },
 });

@@ -1,0 +1,522 @@
+/* Projects: a grid of media cards (video, poster or a typographic cover), in the theme's colours. */
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  --pc-shade: rgb(10 20 48 / 0.22);
+}
+.dark .pc-grid {
+  --pc-shade: rgb(0 0 0 / 0.75);
+}
+.pc {
+  grid-column: span 12;
+  height: 26rem;
+  opacity: 0;
+  translate: 0 48px;
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.8, 0.2, 1),
+    translate 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pc[data-in="true"] {
+  opacity: 1;
+  translate: none;
+}
+/* the ones with a video: the app plays in a framed window (its screens are light, so no
+   overlay on them); stacked on phones, side by side with the text from 768px */
+.pc:has(video) {
+  height: auto;
+}
+.pc:has(video) .pc-link {
+  background:
+    radial-gradient(
+      60% 90% at 78% 50%,
+      color-mix(in srgb, var(--accent) 20%, transparent),
+      transparent 70%
+    ),
+    var(--surface);
+}
+.pc:has(video) .pc-media {
+  position: relative;
+  z-index: 0;
+  margin: 1rem 1rem 0;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  border-radius: 14px;
+  background: #f4f6fa;
+  box-shadow:
+    0 30px 80px -24px var(--pc-shade),
+    0 0 0 6px color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+.pc:has(video) .pc-media::after {
+  content: none;
+}
+.pc:has(video) .pc-body {
+  position: relative;
+}
+@media (hover: hover) {
+  .pc-link:hover .pc-media {
+    scale: 1.045;
+  }
+  .pc:has(video) .pc-link:hover .pc-media {
+    scale: 1.02;
+  }
+}
+
+@media (min-width: 768px) {
+  .pc:has(video) {
+    height: clamp(26rem, 32vw, 31rem);
+  }
+  .pc:has(video) .pc-media {
+    position: absolute;
+    inset: 50% clamp(1.5rem, 3vw, 2.5rem) auto auto;
+    width: 57%;
+    max-height: calc(100% - 3rem);
+    margin: 0;
+    translate: 0 -50%;
+  }
+  .pc:has(video) .pc-body {
+    position: absolute;
+    inset: 0 auto 0 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 40%;
+  }
+  .pc:has(video) .pc-arrow {
+    right: auto;
+    left: 1.1rem;
+  }
+}
+
+.pc-link {
+  position: relative;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+  border-radius: 28px;
+  background: var(--surface);
+  color: var(--foreground);
+  isolation: isolate;
+}
+.pc-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* media */
+.pc-media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transition: scale 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pc-media video,
+.pc-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pc-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to top,
+      var(--surface) 0%,
+      color-mix(in srgb, var(--surface) 60%, transparent) 38%,
+      transparent 70%
+    ),
+    linear-gradient(to bottom, color-mix(in srgb, var(--surface) 35%, transparent), transparent 25%);
+}
+/* the typographic cover for projects without media */
+.pc-cover {
+  position: relative;
+  display: grid;
+  height: 100%;
+  overflow: hidden;
+  padding: 1.5rem;
+  background:
+    radial-gradient(
+      70% 80% at 85% 0%,
+      color-mix(in srgb, var(--accent) 55%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(
+        transparent 0 calc(100% - 1px),
+        color-mix(in srgb, var(--foreground) 6%, transparent) 0
+      )
+      0 0 / 100% 48px,
+    linear-gradient(
+        90deg,
+        transparent 0 calc(100% - 1px),
+        color-mix(in srgb, var(--foreground) 6%, transparent) 0
+      )
+      0 0 / 48px 100%,
+    var(--surface);
+}
+/* "Coming soon" where the screenshot will go: a light sweeping across the outlined words,
+   the dots taking turns */
+.pc-soon {
+  position: absolute;
+  top: 1.4rem;
+  left: 1.5rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  font: 400 clamp(3rem, 5.5vw, 4.75rem) / 0.9 var(--font-display);
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--accent-strong) 55%, transparent);
+  background: linear-gradient(
+      100deg,
+      transparent 35%,
+      color-mix(in srgb, var(--accent-strong) 85%, transparent) 50%,
+      transparent 65%
+    )
+    0 0 / 250% 100% no-repeat;
+  background-clip: text;
+  animation: pc-sweep 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.pc-soon__dots {
+  display: flex;
+  gap: 0.3rem;
+  padding-bottom: 0.35rem;
+}
+.pc-soon__dots i {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent-strong);
+  animation: pc-dot 1.4s ease-in-out infinite;
+}
+.pc-soon__dots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.pc-soon__dots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes pc-sweep {
+  from {
+    background-position: 130% 0;
+  }
+  to {
+    background-position: -30% 0;
+  }
+}
+@keyframes pc-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    translate: 0 0;
+  }
+  30% {
+    opacity: 1;
+    translate: 0 -0.35rem;
+  }
+}
+
+/* top-right arrow */
+.pc-arrow {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 22%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  backdrop-filter: blur(8px);
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    rotate 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@media (hover: hover) {
+  .pc-link:hover .pc-arrow {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+    rotate: 45deg;
+  }
+}
+
+/* text */
+.pc-body {
+  position: absolute;
+  inset: auto 0 0;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+}
+.pc-title {
+  margin-top: 0.6rem;
+  font: 400 clamp(2rem, 3.4vw, 3.25rem) / 0.95 var(--font-display);
+  text-transform: uppercase;
+}
+.pc-tag {
+  display: -webkit-box;
+  max-width: 34rem;
+  margin-top: 0.6rem;
+  overflow: hidden;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.pc-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+.pc-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+.pc-metric b {
+  font: 400 clamp(2.25rem, 3.6vw, 3.5rem) / 1 var(--font-display);
+  color: var(--accent-strong);
+}
+.pc-metric span {
+  max-width: 11rem;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: var(--muted);
+}
+.pc-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pc-stack li {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 16%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
+  font: 500 0.7rem/1 var(--font-mono);
+  backdrop-filter: blur(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pc {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+  .pc-media {
+    transition: none;
+  }
+  .pc-soon,
+  .pc-soon__dots i {
+    animation: none;
+  }
+  .pc-soon__dots i {
+    opacity: 0.6;
+  }
+}
+
+/* The other projects: a list of wide rows; on hover the row's picture floats by the cursor
+   (--px/--py, set on the list by view.tsx). On touch screens it sits small beside the name. */
+.pl-list {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--foreground);
+}
+.pl-item {
+  opacity: 0;
+  translate: 0 32px;
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+    translate 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pl-item[data-in="true"] {
+  opacity: 1;
+  translate: none;
+}
+.pl-row {
+  display: grid;
+  grid-template:
+    "num main thumb" auto
+    ". stack thumb" auto
+    ". status thumb" auto / 2.25rem minmax(0, 1fr) 5.5rem;
+  gap: 0.35rem 1rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+.pl-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+.pl-num {
+  grid-area: num;
+  padding-top: 0.35rem;
+  font: 500 0.75rem/1 var(--font-mono);
+  color: var(--muted);
+}
+.pl-main {
+  grid-area: main;
+  display: grid;
+  gap: 0.4rem;
+}
+.pl-title {
+  font: 400 clamp(1.75rem, 3vw, 2.75rem) / 0.95 var(--font-display);
+  text-transform: uppercase;
+  transition:
+    color 0.3s,
+    translate 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pl-tag {
+  max-width: 34rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.pl-stack,
+.pl-status {
+  font: 500 0.7rem/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pl-stack {
+  grid-area: stack;
+}
+.pl-status {
+  grid-area: status;
+}
+.pl-arrow {
+  display: none;
+}
+.pl-thumb {
+  grid-area: thumb;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
+  border-radius: 10px;
+  background: var(--surface);
+  pointer-events: none;
+}
+.pl-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.pl-thumb .pc-cover {
+  padding: 0;
+}
+.pl-thumb .pc-soon {
+  top: auto;
+  bottom: 0.6rem;
+  left: 0.6rem;
+  font-size: 0;
+}
+.pl-thumb .pc-soon__dots i {
+  width: 0.35rem;
+  height: 0.35rem;
+}
+
+@media (min-width: 768px) {
+  .pl-row {
+    grid-template:
+      "num main stack status arrow" auto / 4rem minmax(0, 1.5fr) minmax(0, 1fr)
+      auto 2.75rem;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.75rem 0;
+  }
+  .pl-num,
+  .pl-stack,
+  .pl-status {
+    padding: 0;
+  }
+  .pl-status {
+    text-align: right;
+    white-space: nowrap;
+  }
+  .pl-arrow {
+    grid-area: arrow;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid color-mix(in srgb, var(--foreground) 22%, transparent);
+    border-radius: 999px;
+    transition:
+      background-color 0.3s,
+      color 0.3s,
+      rotate 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+/* with a mouse: the picture leaves the row and floats over the list, by the cursor */
+@media (hover: hover) and (min-width: 768px) {
+  .pl-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: clamp(16rem, 24vw, 22rem);
+    border-radius: 14px;
+    box-shadow: 0 30px 70px -20px rgb(10 20 48 / 0.35);
+    opacity: 0;
+    scale: 0.85;
+    translate: calc(var(--px, 0px) - 50%) calc(var(--py, 0px) - 50%);
+    transition:
+      opacity 0.3s,
+      scale 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .dark .pl-thumb {
+    box-shadow: 0 30px 70px -20px rgb(0 0 0 / 0.8);
+  }
+  .pl-thumb .pc-soon {
+    top: 1rem;
+    bottom: auto;
+    left: 1.1rem;
+    font-size: 2.6rem;
+  }
+  .pl-row:hover .pl-thumb {
+    opacity: 1;
+    scale: 1;
+  }
+  .pl-row:hover .pl-title {
+    color: var(--accent-strong);
+    translate: 0.75rem 0;
+  }
+  .pl-row:hover .pl-arrow {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+    rotate: 45deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-item {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+  .pl-title,
+  .pl-thumb {
+    transition: none;
+  }
+}

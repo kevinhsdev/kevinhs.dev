@@ -1,0 +1,324 @@
+/*
+ * The globe journey: one pinned screen. The Earth turns and zooms behind (journey-globe.tsx),
+ * the photo cards come out of their places on it, the titles sit bottom-left on their own clock.
+ */
+.jr {
+  --cx: 62%;
+  --pad: clamp(1.25rem, 5vw, 4.5rem);
+  position: relative;
+  height: 100svh;
+  overflow: clip;
+  background: var(--background);
+  color: var(--foreground);
+  isolation: isolate;
+}
+/* space behind the globe (the section is dark in both themes): two tiles of stars drifting
+   a little with the scroll (--s, set by journey-stage) */
+.jr::before {
+  content: "";
+  position: absolute;
+  inset: -20% 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(1px 1px at 8% 12%, #fff, transparent),
+    radial-gradient(1px 1px at 31% 47%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 52% 9%, #fff, transparent),
+    radial-gradient(1px 1px at 74% 63%, #fff, transparent),
+    radial-gradient(1px 1px at 91% 28%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 19% 81%, #fff, transparent),
+    radial-gradient(1px 1px at 63% 88%, #fff, transparent),
+    radial-gradient(1px 1px at 22% 33%, #cfe0ff, transparent),
+    radial-gradient(1px 1px at 68% 21%, #cfe0ff, transparent),
+    radial-gradient(1.5px 1.5px at 87% 72%, #fff, transparent),
+    radial-gradient(1px 1px at 44% 66%, #cfe0ff, transparent);
+  background-size:
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    430px 390px,
+    670px 610px,
+    670px 610px,
+    670px 610px,
+    670px 610px;
+  opacity: 0.5;
+  translate: 0 calc(var(--s, 0) * -1.6vh);
+}
+
+/* the distance flown, by the plane */
+.jg-label.jg-km {
+  background: color-mix(in srgb, var(--background) 70%, transparent);
+  color: var(--foreground);
+  backdrop-filter: blur(6px);
+  font-variant-numeric: tabular-nums;
+  transform: translate(14px, 10px);
+}
+
+/* The globe fills the screen; its canvases draw the sphere where the scroll puts it. */
+.jr-globe {
+  position: absolute;
+  inset: 0;
+}
+.jg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* labels: placed on their city every frame; the side keeps neighbours apart */
+.jg-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--background);
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(6px);
+  transition:
+    opacity 0.5s,
+    filter 0.5s;
+}
+.jg-label[data-on="true"] {
+  opacity: 1;
+  filter: none;
+}
+.jg-label[data-side="top"] {
+  transform: translate(-50%, calc(-100% - 12px));
+}
+.jg-label[data-side="right"] {
+  transform: translate(12px, -50%);
+}
+.jg-label[data-side="left"] {
+  transform: translate(calc(-100% - 12px), -50%);
+}
+
+/* the photo cards: placed next to their marker every frame, one at a time */
+.jr-cards {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+.jg-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(150px, 15vw, 230px);
+  opacity: 0;
+  scale: 0.92;
+  transform-origin: 0 100%;
+  transition:
+    opacity 0.45s cubic-bezier(0.23, 1, 0.32, 1),
+    scale 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.jg-card[data-on="true"] {
+  opacity: 1;
+  scale: 1;
+}
+.jg-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--foreground) 14%, transparent);
+  box-shadow: 0 24px 50px -22px rgb(0 0 0 / 0.7);
+}
+.jg-cap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--background) 78%, transparent);
+  backdrop-filter: blur(8px);
+  font: 500 0.7rem/1 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.jg-cap i {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Titles: bottom-left, above the scenes. */
+.jr-titles {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  bottom: 14svh;
+  width: min(34rem, 38vw);
+  pointer-events: none;
+}
+.jr-title {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  visibility: hidden;
+}
+.jr-kicker {
+  margin: 0 0 0.75rem;
+  font: 500 0.8rem/1.2 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.jr-heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5.2vw, 5.4rem);
+  font-weight: 400;
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.jr-line {
+  margin: 1rem 0 0;
+  max-width: 28rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.jr-cta {
+  display: inline-flex;
+  align-items: center;
+  height: 3rem;
+  margin-top: 1.5rem;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 600;
+  pointer-events: auto;
+}
+
+/* Phone: globe centered, cards next to their place, titles at the bottom. */
+@media (max-width: 760px) {
+  .jr {
+    --cx: 50%;
+  }
+  /* above the CTA dock */
+  .jr-titles {
+    width: auto;
+    right: var(--pad);
+    bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+  .jr-heading {
+    font-size: clamp(2.1rem, 10vw, 2.9rem);
+  }
+  .jr-line {
+    font-size: 0.95rem;
+  }
+  .jg-card {
+    width: 38vw;
+  }
+}
+
+/* Reduced motion: no pin; the chapters stack and every title is shown. */
+.jr[data-static="true"] {
+  height: auto;
+  padding: 12svh var(--pad);
+  display: grid;
+  gap: 4rem;
+}
+.jr[data-static="true"] .jr-globe {
+  position: relative;
+  inset: auto;
+  width: min(36rem, 90vw);
+  aspect-ratio: 1;
+  justify-self: center;
+}
+.jr[data-static="true"] .jr-cards {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.jr[data-static="true"] .jg-card {
+  position: static;
+  opacity: 1;
+  scale: 1;
+}
+.jr[data-static="true"] .jr-titles {
+  position: static;
+  width: auto;
+  display: grid;
+  gap: 3rem;
+  order: -1;
+}
+.jr[data-static="true"] .jr-title {
+  position: static;
+  visibility: visible;
+}
+
+/* how far through the journey, along the top of the pinned screen */
+.jr-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  height: 3px;
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+  pointer-events: none;
+}
+.jr-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform-origin: left;
+  scale: calc(var(--s, 0) / var(--screens)) 1;
+}
+
+/* story bars on top of each photo: done, filling (--p, from journey-globe), still to come */
+.jg-bars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 0.5rem;
+}
+.jg-bars i {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 22%, transparent);
+}
+.jg-bars i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--foreground);
+  transform-origin: left;
+  scale: 0 1;
+}
+.jg-bars i[data-state="done"]::after {
+  scale: 1 1;
+}
+.jg-bars i[data-state="now"]::after {
+  scale: var(--p, 0) 1;
+}
+.jr[data-static="true"] .jr-progress,
+.jr[data-static="true"] .jg-bars {
+  display: none;
+}

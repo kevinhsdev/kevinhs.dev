@@ -1,70 +1,28 @@
-import { ArrowLeft } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-import { CreativeHeader } from "@/components/creative/hero";
-import { MissingPath } from "@/components/creative/missing-path";
-import { CreativeShell } from "@/components/creative/shell";
-import { CvButton } from "@/components/shared/ctas";
-import { Link } from "@/i18n/navigation";
-import { HOME_PATH } from "@/lib/site";
+import { getLocale, getTranslations } from "next-intl/server";
+import { BrandLente } from "@/components/shell/brand-lente";
+import { profile } from "@/content";
 
+/** 404: the K revealed by a drop of glass, a short line and the way back home. */
 export default async function NotFound() {
-  const t = await getTranslations();
-  const button =
-    "inline-flex h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-semibold tracking-wide uppercase transition-[scale,opacity,border-color] duration-150 active:scale-[0.97]";
-
+  const locale = await getLocale();
+  const t = await getTranslations("notFound");
   return (
-    <CreativeShell>
-      <CreativeHeader />
-      <main
-        id="main"
-        className="relative isolate flex min-h-dvh flex-col justify-center gap-8 overflow-hidden px-4 pt-24 pb-12 sm:px-8"
+    <main
+      id="main"
+      className="mx-auto flex min-h-svh max-w-3xl flex-col items-center justify-center px-5 pt-28 pb-20 text-center"
+    >
+      <BrandLente label={profile.name} className="h-[min(22rem,45svh)] w-full max-w-md" />
+      <p className="mt-6 font-mono text-xs tracking-widest text-accent uppercase">404</p>
+      <h1 className="mt-3 font-display text-5xl leading-none uppercase sm:text-7xl">
+        {t("title")}
+      </h1>
+      <p className="mt-5 max-w-md text-lg text-muted">{t("text")}</p>
+      <a
+        href={`/${locale}`}
+        className="mt-8 font-semibold underline underline-offset-[0.3em] hover:text-accent"
       >
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_80%_100%,color-mix(in_srgb,var(--accent)_22%,transparent),transparent_60%)]"
-        />
-        <p
-          aria-hidden
-          data-arcade-hide
-          className="font-display text-[clamp(8rem,38vw,30rem)] leading-[0.8] text-accent"
-        >
-          404
-        </p>
-        {/* under the arcade theme, a lost page is a game over */}
-        <div data-arcade-only aria-hidden className="px-gameover">
-          <p className="font-display text-accent">GAME OVER</p>
-          <p className="px-gameover-sub">{t("arcade.gameOver.sub")}</p>
-          <p className="px-gameover-count">
-            CONTINUE? <span>9</span>
-          </p>
-        </div>
-        <div className="flex max-w-2xl flex-col gap-4">
-          <h1 className="font-display text-5xl sm:text-7xl">{t("notFound.title")}</h1>
-          <p className="text-lg text-pretty text-muted">{t("notFound.description")}</p>
-        </div>
-        <div className="max-w-2xl">
-          <MissingPath />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Link
-            href={HOME_PATH}
-            className={`${button} bg-accent text-accent-contrast hover:opacity-90`}
-          >
-            <ArrowLeft aria-hidden className="size-4" />
-            {t("notFound.back")}
-          </Link>
-          <Link
-            href={`${HOME_PATH}#projects`}
-            className={`${button} border border-foreground/25 hover:border-foreground`}
-          >
-            {t("notFound.projects")}
-          </Link>
-          <CvButton
-            source="not-found"
-            className={`${button} border border-foreground/25 hover:border-foreground`}
-          />
-        </div>
-      </main>
-    </CreativeShell>
+        {t("back")} →
+      </a>
+    </main>
   );
 }

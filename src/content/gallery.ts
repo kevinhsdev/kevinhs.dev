@@ -203,6 +203,7 @@ export const gallery = [
       en: "UMC's blue and white campus building among trees under a blue sky",
     },
     caption: { pt: "UMC, onde estudo", en: "UMC, where I study" },
+    focus: "60% 62%",
   },
   {
     id: "cna",

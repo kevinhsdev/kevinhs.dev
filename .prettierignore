@@ -4,3 +4,8 @@ package-lock.json
 public
 playwright-report
 test-results
+docs/prompts
+src/components/ui
+src/components/hero/engine
+.superpowers
+.impeccable
