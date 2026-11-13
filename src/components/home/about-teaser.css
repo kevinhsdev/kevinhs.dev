@@ -1,246 +1,701 @@
-/*
- * About teaser: three lines light up one by one while photos land around them like prints on
- * a desk. JS writes --p (0..1); each line and print has --b, the beat it belongs to.
- */
-.abv {
-  --p: 0;
-  --w: 1;
-  --cta: clamp(0, (var(--p) - 0.8) * 6, 1);
-}
-.abv-stage {
-  border-radius: 2rem;
-}
-.abv-inner {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 2rem;
-  align-items: center;
-  padding: 2.5rem 1.5rem;
-}
-.abv-kicker {
-  margin-bottom: 0.5rem;
-  font-family: var(--font-hand), cursive;
-  font-size: clamp(2rem, 3.5vw, 3rem);
-  line-height: 1;
-  color: var(--accent-strong);
-  rotate: -4deg;
-}
-.abv-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  margin-top: 2.5rem;
-  padding: 0.85rem 1.4rem;
-  border: 1px solid color-mix(in srgb, var(--stage-ink) 25%, transparent);
-  border-radius: 999px;
-  font-weight: 600;
-  color: var(--stage-ink);
-  /* sits on the shader's bright patches too */
-  background: color-mix(in srgb, var(--nebula-back) 70%, transparent);
-  backdrop-filter: blur(8px);
-  opacity: var(--cta);
-  translate: 0 calc((1 - var(--cta)) * 1rem);
-  transition:
-    border-color 0.25s,
-    color 0.25s;
-}
-.abv-cta:hover {
-  border-color: var(--accent-strong);
-  color: var(--accent-strong);
+/* About on the home page: a bento of previews, each card a door into one part of About. */
+.abt {
+  padding-block: clamp(6rem, 12vw, 10rem);
 }
 
-/* ── the lines ── */
-.abc-center {
-  position: relative;
-  z-index: 1;
-  max-width: 44rem;
-  margin-inline: auto;
-  text-align: center;
-  pointer-events: none;
-}
-/* a soft pool of dark behind the words, so they read on the shader's bright patches */
-.abc-center::before {
-  content: "";
-  position: absolute;
-  inset: -20% -15%;
-  z-index: -1;
-  background: radial-gradient(closest-side, var(--nebula-back) 55%, transparent);
-  opacity: 0.85;
-}
-.abc-center a {
-  pointer-events: auto;
-}
-.abv-headline {
-  font: 400 clamp(2rem, 3.9vw, 3.8rem) / 1.08 var(--font-display);
-  text-transform: uppercase;
-  text-wrap: balance;
-  color: var(--stage-ink);
-}
-.abv-headline > span {
-  --lit: clamp(0, (var(--p) - 0.08 - var(--b) * 0.25) / 0.15, 1);
-  --m: clamp(0, (var(--p) - 0.17 - var(--b) * 0.25) / 0.1, 1);
-  /* a filter, not opacity: the dim words are a passing state, the lines are read in full */
-  filter: opacity(calc(0.14 + var(--lit) * 0.86));
-}
-.abv-headline mark {
-  position: relative;
-  /* one box, so the stroke can't land on the next line when it wraps */
-  display: inline-block;
-  background: none;
-  color: var(--accent-strong);
-}
-/* the number gets a stroke under it once its line is lit */
-.abv-headline mark::after {
-  content: "";
-  position: absolute;
-  left: -0.05em;
-  right: -0.05em;
-  bottom: -0.1em;
-  height: 0.12em;
-  border-radius: 999px;
-  background: var(--accent);
-  transform-origin: left;
-  scale: var(--m) 1;
-  rotate: -2deg;
-}
-
-/* ── the prints ── */
-.abc-prints {
+.abt-head {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
 }
-.abc-prints span {
-  /* 0 → 1 as it falls onto the desk, a beat after its line lights up */
-  --a: clamp(0, (var(--p) - 0.1 - var(--b) * 0.25 - var(--j) * 0.06) / 0.12, 1);
-  --lift: calc(1 - var(--a));
-  width: 3.6rem;
-  /* on phones they overlap a little, a small pile */
-  margin-inline: -0.15rem;
-  padding: 0.3rem 0.3rem 0.25rem;
-  background: #f4f3ee;
-  border-radius: 0.2rem;
-  /* lifted: big soft shadow; landed: a tight one */
-  box-shadow: 0 calc(0.5rem + var(--lift) * 3rem) calc(1rem + var(--lift) * 3rem)
-    rgb(0 0 0 / calc(0.5 - var(--lift) * 0.2));
-  rotate: calc(var(--r) * (1 + var(--lift) * 2.5));
-  scale: calc(1 + var(--lift) * 0.25);
-  translate: 0 calc(var(--lift) * -40vh);
-  filter: opacity(min(var(--a) * 3, 1));
-  transition:
-    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-    z-index 0s 0.35s;
+.abt-kicker {
+  font:
+    600 clamp(1.8rem, 3vw, 2.6rem) / 1 var(--font-hand),
+    cursive;
+  color: var(--accent);
+  rotate: -3deg;
+  translate: -0.2rem 0;
 }
-.abc-prints span[data-wide] {
-  width: 5.4rem;
-}
-.abc-prints img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-.abc-prints em {
-  display: block;
-  margin-top: 0.3rem;
-  font: 500 0.55rem/1 var(--font-mono);
-  font-style: normal;
-  letter-spacing: 0.06em;
-  text-align: center;
+.abt-title {
+  margin-top: 0.6rem;
+  font: 400 clamp(2.6rem, 5.4vw, 4.8rem) / 0.95 var(--font-display);
   text-transform: uppercase;
-  color: #3a3a40;
 }
-
-/* the shader sinks into the same dark Contact starts with, so the seam has nothing to show */
-.abv-stage::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  z-index: -1;
-  height: 30%;
-  background: linear-gradient(transparent, var(--nebula-back));
-  pointer-events: none;
-}
-
-/* and rises out of it at the top */
-.abv-stage::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 22%;
-  background: linear-gradient(var(--nebula-back), transparent);
-  pointer-events: none;
-}
-
-/* ── the seam: a window that opens as the block comes up and closes as it leaves ── */
-.abv-stage {
-  clip-path: inset(calc(var(--w) * 6%) calc(var(--w) * 8%) round 2rem);
+/* the grid: the story tall on the left, the other three around it */
+.abt-grid {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 @media (min-width: 640px) {
-  .abv-inner {
-    padding: 3rem;
+  .abt-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .abt-story,
+  .abt-off {
+    grid-column: span 2;
   }
 }
-@media (min-width: 1024px) {
-  .abv {
-    height: 210vh;
+/* desktop: the story 2x2 on the left; on the right the wide globe, then the portrait and the
+   e-mail; under it all, hobbies (wide), the terminal and the certificates */
+@media (min-width: 640px) {
+  .abt-world {
+    grid-column: span 2;
   }
-  .abv-stage {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    border-radius: 0;
-    clip-path: inset(calc(var(--w) * 14vh) calc(var(--w) * 16vw) round calc(var(--w) * 4rem));
-    /* the stage spans the screen though the section is a 7xl column */
-    margin-inline: calc(50% - 50vw);
+}
+@media (min-width: 1000px) {
+  .abt-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(17rem, auto);
   }
-  .abv-inner {
-    height: 100%;
-    max-width: 90rem;
-    margin-inline: auto;
-    padding: 0 2rem;
+  .abt-story {
+    grid-row: span 2;
   }
-  .abc-prints {
-    position: absolute;
-    /* clear of the header at the top */
-    inset: 14vh 2rem 6vh;
-    display: block;
+}
+
+/* every card */
+.abt-card {
+  position: relative;
+  min-height: 16rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1.75rem;
+  background: var(--surface);
+  transition:
+    translate 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 350ms,
+    border-color 350ms;
+}
+.abt-link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  color: inherit;
+}
+.abt-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -4px;
+  border-radius: inherit;
+}
+.abt-card:has(.abt-link:hover) {
+  translate: 0 -4px;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  box-shadow: 0 1.5rem 3rem -1.5rem color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.abt-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font: 500 0.75rem/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.abt-label::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.abt-arrow {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.6rem;
+  border-radius: 50%;
+  background: var(--background);
+  color: var(--foreground);
+  transition:
+    rotate 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 250ms,
+    color 250ms;
+}
+.abt-link:hover .abt-arrow,
+.abt-link:focus-visible .abt-arrow {
+  rotate: 45deg;
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+/* the story: a timeline, three chapters joined by a thread, a photo on each stop */
+.abt-tl {
+  position: relative;
+  display: grid;
+  flex: 1;
+  align-content: space-evenly;
+  gap: 1.4rem;
+  margin: 0;
+  padding: 1.5rem 0 0;
+  list-style: none;
+}
+/* the thread through the photos */
+.abt-tl::before {
+  content: "";
+  position: absolute;
+  top: 4rem;
+  bottom: 3rem;
+  left: calc(clamp(5rem, 8vw, 7.5rem) / 2 - 1px);
+  width: 2px;
+  background: linear-gradient(var(--accent), color-mix(in srgb, var(--accent) 15%, transparent));
+}
+.abt-tl-item {
+  display: grid;
+  grid-template-columns: clamp(5rem, 8vw, 7.5rem) 1fr;
+  align-items: center;
+  gap: 1.25rem;
+}
+.abt-tl-ph {
+  position: relative;
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border: 4px solid var(--surface);
+  border-radius: 1.1rem;
+  box-shadow: 0 0.6rem 1.4rem -0.6rem #0a143059;
+  transition:
+    rotate 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    scale 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.abt-tl-ph img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.abt-tl-item:nth-child(odd) .abt-tl-ph {
+  rotate: -4deg;
+}
+.abt-tl-item:nth-child(even) .abt-tl-ph {
+  rotate: 3deg;
+}
+.abt-link:hover .abt-tl-ph {
+  rotate: 0deg;
+  scale: 1.06;
+}
+.abt-tl-body {
+  display: grid;
+  gap: 0.3rem;
+}
+.abt-tl-h {
+  font: 400 clamp(1.7rem, 2.6vw, 2.3rem) / 1 var(--font-display);
+  text-transform: uppercase;
+}
+.abt-tl-p {
+  max-width: 34ch;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.abt-num {
+  font: 500 0.75rem/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+/* full-bleed photo layer, used by the portrait */
+.abt-bg,
+.abt-bg img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.abt-bg img {
+  scale: 1.02;
+  transition: scale 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.abt-link:hover .abt-bg img {
+  scale: 1.08;
+}
+.abt-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* the globe: drag to spin, the route under it */
+.abt-world {
+  min-height: 17rem;
+}
+.abt-world .abt-link {
+  pointer-events: none;
+}
+.abt-world-line {
+  position: relative;
+  z-index: 1;
+  margin-top: auto;
+}
+.abt-globe {
+  position: absolute;
+  top: 50%;
+  right: -2.5rem;
+  width: clamp(18rem, 27vw, 23rem);
+  translate: 0 -50%;
+  aspect-ratio: 1;
+  pointer-events: auto;
+}
+@media (max-width: 639px) {
+  .abt-world {
+    min-height: 22rem;
   }
-  .abc-prints span {
-    position: absolute;
-    left: var(--x);
-    margin: 0;
-    top: var(--y);
-    width: clamp(9rem, 12vw, 13rem);
-    padding: 0.55rem 0.55rem 0.5rem;
-    /* after landing, a slow drift with the scroll: nearer prints move more */
-    translate: 0 calc(var(--lift) * -60vh + (0.6 - var(--p)) * (3vh + var(--j) * 4vh));
+  .abt-globe {
+    top: auto;
+    right: -4rem;
+    bottom: -6rem;
+    width: 19rem;
+    translate: none;
   }
-  .abc-prints span[data-wide] {
-    width: clamp(12rem, 17vw, 18rem);
+}
+.abt-globe .cg-label--marker {
+  background: var(--foreground);
+  color: var(--background);
+}
+.abt-globe .cg-label--marker .cg-label__tip {
+  border-top-color: var(--foreground);
+}
+.abt-world-line {
+  font: 400 clamp(2rem, 3vw, 2.6rem) / 1 var(--font-display);
+  text-transform: uppercase;
+}
+.abt-world .abt-dim {
+  color: var(--accent);
+}
+.abt-hint {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.6rem;
+  font: 500 0.7rem/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* the portrait: full bleed, the status in a glass pill at the foot */
+.abt-me {
+  min-height: 19rem;
+  border-color: transparent;
+  background: #05070d;
+}
+.abt-me .abt-bg img {
+  object-position: 50% 25%;
+}
+.abt-me .abt-bg::after {
+  background: linear-gradient(to top, #05070dcc, transparent 45%);
+}
+.abt-me .abt-label {
+  color: #c4c8d4;
+}
+.abt-status {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.55rem;
+  margin-top: auto;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid #ffffff33;
+  border-radius: 999px;
+  background: #ffffff1f;
+  backdrop-filter: blur(10px);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+}
+.abt-pulse {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #28c840;
+}
+.abt-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #28c840;
+  animation: abt-ping 2s ease-out infinite;
+}
+@keyframes abt-ping {
+  to {
+    scale: 3;
+    opacity: 0;
   }
-  .abc-prints em {
-    margin-top: 0.5rem;
-    font-size: 0.7rem;
+}
+
+/* the e-mail: a "new message" window; send copies the address */
+.abt-email-btn {
+  width: 100%;
+  gap: 1rem;
+  text-align: left;
+  cursor: pointer;
+}
+.abt-compose {
+  display: grid;
+  margin-top: auto;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--background);
+}
+.abt-compose-row {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.7rem 0.9rem;
+}
+.abt-compose-row + .abt-compose-row {
+  border-top: 1px solid var(--border);
+}
+.abt-k {
+  font: 500 0.65rem/1 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.abt-email {
+  overflow: hidden;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.abt-subject {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.95rem;
+}
+.abt-caret {
+  width: 2px;
+  height: 1.05em;
+  margin-left: 2px;
+  background: var(--accent);
+  animation: abt-blink 1.05s steps(1) infinite;
+}
+@keyframes abt-blink {
+  50% {
+    opacity: 0;
   }
-  /* pick one up: it straightens and comes to the top */
-  .abc-prints span:hover {
-    z-index: 2;
-    transform: rotate(calc(var(--r) * -1)) scale(1.08);
-    transition:
-      transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
-      z-index 0s;
+}
+.abt-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition:
+    background-color 250ms,
+    gap 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.abt-email-btn:hover .abt-send {
+  gap: 0.85rem;
+  background: var(--accent-strong);
+}
+.abt-email-btn[data-copied] .abt-send {
+  background: #1f9d55;
+  color: #fff;
+}
+.abt-email-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -4px;
+  border-radius: inherit;
+}
+.abt-card:has(.abt-email-btn:hover) {
+  translate: 0 -4px;
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+/* off the screen, as a scrapbook page: dotted paper, two prints held by tape, captions in
+   handwriting and a couple of doodles; on hover the prints straighten up and lift */
+.abt-off {
+  background-color: var(--surface);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--foreground) 14%, transparent) 1px,
+    transparent 1.2px
+  );
+  background-size: 18px 18px;
+}
+.abt-off-note {
+  position: relative;
+  z-index: 1;
+  max-width: 11ch;
+  margin-top: auto;
+  font:
+    600 clamp(2rem, 3vw, 2.6rem) / 0.95 var(--font-hand),
+    cursive;
+  rotate: -3deg;
+}
+.abt-prints {
+  position: absolute;
+  right: 4.25rem;
+  bottom: 1.1rem;
+  display: flex;
+}
+.abt-print {
+  position: relative;
+  display: grid;
+  width: clamp(8.5rem, 12vw, 10.5rem);
+  padding: 0.5rem 0.5rem 0.4rem;
+  background: #fffdf8;
+  box-shadow:
+    0 1px 0 #0a14300d,
+    0 1rem 1.8rem -0.9rem #0a143066;
+  transition:
+    rotate 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    translate 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.abt-print:first-child {
+  z-index: 1;
+  rotate: -6deg;
+  translate: 1.2rem 0.4rem;
+}
+.abt-print:last-child {
+  rotate: 5deg;
+  translate: 0 -0.6rem;
+}
+.abt-link:hover .abt-print:first-child {
+  rotate: -2deg;
+  translate: 0.4rem -0.4rem;
+}
+.abt-link:hover .abt-print:last-child {
+  rotate: 2deg;
+  translate: 0.6rem -1.2rem;
+}
+.abt-print-ph {
+  display: block;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+.abt-print-ph img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.abt-print-cap {
+  padding-top: 0.25rem;
+  font:
+    600 1.5rem/1 var(--font-hand),
+    cursive;
+  text-align: center;
+  color: #1a1f2e;
+}
+/* a strip of translucent tape across the top of each print */
+.abt-tape {
+  position: absolute;
+  top: -0.7rem;
+  left: 50%;
+  z-index: 1;
+  width: 4.2rem;
+  height: 1.3rem;
+  background: color-mix(in srgb, var(--accent) 30%, #ffffff99);
+  box-shadow: 0 1px 2px #0a14301a;
+  translate: -50% 0;
+  rotate: -4deg;
+}
+.abt-print:last-child .abt-tape {
+  rotate: 6deg;
+}
+.abt-doodle {
+  position: absolute;
+  color: var(--accent);
+  pointer-events: none;
+  transition: rotate 600ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.abt-doodle--note {
+  top: 3.2rem;
+  left: 46%;
+  font-size: 2rem;
+  rotate: -12deg;
+}
+.abt-doodle--star {
+  right: 1.4rem;
+  bottom: 1.2rem;
+  font-size: 1.4rem;
+}
+.abt-link:hover .abt-doodle--note {
+  rotate: 8deg;
+}
+.abt-link:hover .abt-doodle--star {
+  rotate: 90deg;
+}
+@media (max-width: 639px) {
+  .abt-off {
+    min-height: 21rem;
+  }
+  .abt-prints {
+    right: 1rem;
+  }
+  .abt-print {
+    width: 7.5rem;
+  }
+  .abt-off-note {
+    margin-top: 0.6rem;
+  }
+  .abt-doodle--note {
+    display: none;
+  }
+}
+
+/* studying now: a terminal in miniature, dark in both themes */
+.abt-now {
+  border-color: #1c2847;
+  background: #0b0f17;
+  color: #eef2fb;
+}
+.abt-now .abt-arrow {
+  background: #1a2133;
+  color: #eef2fb;
+}
+.abt-lights {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.abt-lights i {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+.abt-lights i:nth-child(2) {
+  background: #febc2e;
+}
+.abt-lights i:nth-child(3) {
+  background: #28c840;
+}
+.abt-now .abt-label {
+  color: #8e9ab5;
+}
+.abt-term {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: auto;
+  font: 500 0.8rem/1.35 var(--font-mono);
+  color: #c4c8d4;
+}
+.abt-term-cmd {
+  color: #eef2fb;
+}
+.abt-dim {
+  color: #5b6680;
+}
+.abt-term-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  white-space: nowrap;
+}
+.abt-spin {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+  border: 2px solid #28c84055;
+  border-top-color: #28c840;
+  border-radius: 50%;
+  animation: abt-spin 900ms linear infinite;
+}
+.abt-term-row:nth-child(3) .abt-spin {
+  animation-delay: -300ms;
+}
+.abt-term-row:nth-child(4) .abt-spin {
+  animation-delay: -600ms;
+}
+@keyframes abt-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* certificates: a seal; the folders' names turn round the count, faster on hover */
+.abt-seal {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 12.5rem);
+  aspect-ratio: 1;
+  margin: auto;
+}
+.abt-seal-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: abt-turn 24s linear infinite;
+}
+.abt-link:hover .abt-seal-ring {
+  animation-duration: 6s;
+}
+.abt-seal-ring text {
+  font: 600 13px/1 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  fill: var(--muted);
+}
+.abt-seal-core {
+  display: grid;
+  place-items: center;
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow:
+    inset 0 0 0 6px color-mix(in srgb, var(--accent-contrast) 22%, transparent),
+    0 1rem 2rem -1rem color-mix(in srgb, var(--accent) 70%, transparent);
+  transition: scale 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.abt-link:hover .abt-seal-core {
+  scale: 1.07;
+}
+.abt-big {
+  font: 400 clamp(3rem, 4.4vw, 3.8rem) / 1 var(--font-display);
+  color: var(--accent-contrast);
+}
+@keyframes abt-turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+/* the cards rise into place one after another as the grid scrolls in */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .abt-card {
+      animation: abt-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry calc(60% + var(--i) * 8%);
+    }
+  }
+}
+@keyframes abt-rise {
+  from {
+    opacity: 0;
+    translate: 0 3rem;
+    scale: 0.96;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .abv {
-    height: auto;
-  }
-  .abv-stage {
-    position: relative;
-    height: auto;
-  }
-  .abc-prints span {
-    transition: none;
+  .abt-card,
+  .abt-card *,
+  .abt-spin {
+    transition: none !important;
+    animation: none !important;
   }
 }

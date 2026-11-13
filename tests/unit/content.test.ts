@@ -6,7 +6,7 @@ import { featuredProjects, gallery, otherProjects, projects } from "@/content";
 const inPublic = (src: string) => existsSync(join("public", src));
 
 test("featured and other projects follow the content tiers", () => {
-  expect(featuredProjects.map((p) => p.slug)).toEqual(["sek", "kiri", "blood-bank"]);
+  expect(featuredProjects.map((p) => p.slug)).toEqual(["sek", "kiri", "rumo", "blood-bank"]);
   expect(otherProjects).toHaveLength(4);
 });
 

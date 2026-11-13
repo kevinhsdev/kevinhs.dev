@@ -1,0 +1,95 @@
+<Tldr>
+  Uma landing page em 3D, presa à rolagem, que foi **do zero ao ar sem eu escrever uma linha de
+  código**. Os agentes de IA escreveram tudo; eu dirigi, revisei e montei o harness que diz a eles
+  como trabalhar neste projeto.
+</Tldr>
+
+## Contexto e problema
+
+Eu queria provar uma coisa na prática: dá para entregar um front-end ambicioso, com cena 3D,
+animação presa ao scroll e versão para celular, **só dirigindo agentes de IA**? Escolhi um tema
+que exige muito do navegador: a **Rumo**, uma agência de viagens fictícia em que o site inteiro é um
+filme.
+
+A câmera atravessa a janela de um avião, desce pelas nuvens até o destino, os cards voam para um
+globo de pontos, o globo desenrola num cartão de embarque e a página volta para a cabine, à noite,
+com o formulário.
+
+## Meu papel
+
+Não toquei no código. Meu trabalho foi o de quem lidera a obra:
+
+- **Direção**: o que cada cena mostra, a identidade da marca, o que entra e o que sai.
+- **Revisão**: olhar cada entrega no navegador, em desktop e no celular, e pedir a correção.
+- **Harness engineering**: escrever o ambiente em que os agentes trabalham, para que acertem sem
+  depender de eu repetir as regras a cada pedido.
+
+## Restrições
+
+- **Zero linhas escritas à mão**: qualquer ajuste, até de uma cor, passava pelos agentes.
+- **Sem framework**: Vite puro, para o 3D e as animações rodarem leves.
+- **60 fps** com uma cena Three.js ao vivo atrás do texto.
+- **Acessível**: foco visível, toque no celular e respeito a quem pede movimento reduzido.
+
+## O harness
+
+O centro do projeto é um guia (`CLAUDE.md`) que todo agente lê antes de mexer em qualquer coisa.
+Ele transforma gosto pessoal em regra verificável:
+
+| Parte do guia   | O que diz                                                                                                   |
+| --------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Identidade**  | Paleta em tokens, um único acento laranja, as fontes dos títulos e do corpo, onde ficam o logo e o favicon. |
+| **Regras**      | Cores só por tokens, curvas só de um arquivo de easing, títulos em no máximo 2 linhas, um pin só.           |
+| **Movimento**   | O scroll dirige a câmera e a imagem; o tempo dirige o texto. Nenhuma cena só aparece: cada uma passa a vez. |
+| **Onde mexer**  | Uma tabela que leva de "quero mudar o preço" ao arquivo exato.                                              |
+| **Como checar** | Os tamanhos de tela para conferir, cena por cena, mais console limpo e build passando.                      |
+
+Com isso, um pedido curto como "troque o acento para laranja" vira uma mudança consistente no CSS,
+no shader das paredes e nas rotas do globo, sem eu apontar cada arquivo.
+
+## Arquitetura
+
+<Diagram
+  label="Como o site é montado"
+  flow={[
+    { title: "Lenis", detail: "rolagem suave" },
+    { title: "Palco (ScrollTrigger)", detail: "um pin para a página inteira" },
+    { title: "Cenas", detail: "abertura, voo, destinos, mundo, cartão, noite, fecho" },
+    { title: "Cena 3D (Three.js)", detail: "cabine, janelas, globo e rotas" },
+  ]}
+  asideLabel="Harness"
+  aside={[
+    { title: "CLAUDE.md", detail: "identidade, regras e onde mexer" },
+    { title: "Roteiro de verificação", detail: "desktop, celular, console e build" },
+    { title: "Tokens e easing", detail: "um lugar só para cor e curva" },
+  ]}
+/>
+
+## Destaques de implementação
+
+- **Janelas de avião modeladas em código**, com persianas animadas por shader e a vista montada
+  em camadas de foto.
+- **Globo de pontos com rotas** que se desenha e depois desenrola num mapa plano, impresso no
+  cartão de embarque.
+- **Texto com máscara de linha** entrando no tempo certo, independente da velocidade do scroll.
+- **Movimento reduzido**: sem rolagem suave, cortes secos e só opacidade.
+
+## Resultado e impacto
+
+O site está **no ar no GitHub Pages** desde novembro de 2026: cerca de 4.200 linhas de JavaScript e CSS em 38 arquivos, nenhuma digitada por mim.
+
+A lição que levo para a prática: **com agentes, o gargalo deixa de ser digitar e passa a ser
+especificar e revisar**. Quanto melhor o harness, menos retrabalho e mais consistente o resultado.
+
+## O que eu faria diferente e próximos passos
+
+A estrutura e as animações partiram de uma template de landing page, e as fotos ainda são as da
+demonstração. O próximo passo é gerar fotos próprias para cada destino (as receitas já estão no
+repositório) e ligar o formulário a um envio de verdade, que hoje só confirma na tela.
+
+Marca, números, preços e contatos do site são fictícios.
+
+## Links
+
+- [Código no GitHub](https://github.com/kevinhsdev/rumo)
+- [Site no ar](https://kevinhsdev.github.io/rumo/)

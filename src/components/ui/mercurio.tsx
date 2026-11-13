@@ -9,12 +9,15 @@ export function MetalButton({
   children,
   onClick,
   href,
+  download = true,
   className = "",
 }: {
   children: ReactNode;
   onClick?: () => void;
   /** Renders a download link instead of a button. */
   href?: string;
+  /** With `href`: false makes it a plain link (arrow pointing right) instead of a download. */
+  download?: boolean;
   className?: string;
 }) {
   const metalRef = useRef<HTMLSpanElement>(null);
@@ -35,7 +38,8 @@ export function MetalButton({
     };
   }, []);
   // a download link points down and slides down; a button points right and slides right
-  const arrow = href ? "M8 3v10M4 9l4 4 4-4" : "M3 8h10M9 4l4 4-4 4";
+  const down = href && download;
+  const arrow = down ? "M8 3v10M4 9l4 4 4-4" : "M3 8h10M9 4l4 4-4 4";
   const inner = (
     <>
       <span ref={metalRef} className="metal-btn__metal" aria-hidden="true" />
@@ -51,7 +55,11 @@ export function MetalButton({
     </>
   );
   return href ? (
-    <a className={`metal-btn metal-btn--down ${className}`} href={href} download>
+    <a
+      className={`metal-btn ${down ? "metal-btn--down" : ""} ${className}`}
+      href={href}
+      download={down || undefined}
+    >
       {inner}
     </a>
   ) : (

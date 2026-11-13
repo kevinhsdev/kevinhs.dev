@@ -1,11 +1,6 @@
-/* the page background under the About window, going to black right before Contact so that
-   seam doesn't show */
+/* the page background under the About window; Contact follows on the same ground */
 .cv {
-  background: linear-gradient(
-    180deg,
-    var(--background) calc(100% - 18rem),
-    var(--nebula-back) 100%
-  );
+  background: var(--background);
 }
 .cv-label {
   font: 500 0.72rem/1 var(--font-mono);

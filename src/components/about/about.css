@@ -1,6 +1,6 @@
 /* About, after the driver sites: light ground, characterful type, few big photos, motion on scroll. */
 
-/* ───────── grounds: the top half follows the site theme; the bottom half is always night ───────── */
+/* ───────── grounds: both halves follow the site theme; the bottom one rises as its own sheet ───────── */
 .ax-light {
   --bg-line: rgb(10 20 48 / 0.05);
   background-color: var(--background);
@@ -26,7 +26,11 @@ html.dark .ax-light {
   background: var(--background);
   color: var(--foreground);
 }
-/* the night rises over the light page with rounded shoulders */
+html:not(.dark) .ax-night {
+  --background: #ffffff;
+  box-shadow: 0 -30px 60px -40px rgb(10 20 48 / 0.25);
+}
+/* the bottom sheet rises over the page with rounded shoulders */
 .ax-tail {
   position: relative;
   z-index: 1;
@@ -168,13 +172,18 @@ html:has(main.ax) .cta-dock {
   rotate: -6deg;
   transform-origin: 0 100%;
 }
+/* the line masks the letters as they rise in; the mask lets go once the page scrolls, so they
+   can fly off above it */
 .ax-d-full {
   display: block;
-  overflow: clip;
+  clip-path: inset(0 -50vw);
 }
 .ax-d-full > span {
   display: block;
   padding-block: 0.05em 0.06em;
+}
+.ax-d-ch {
+  display: inline-block;
 }
 .ax-d-cue {
   position: absolute;
@@ -936,7 +945,12 @@ html:has(main.ax) .cta-dock {
   }
 }
 
-/* studying now: a live timing tower, on track and in the garage */
+/* decorations (the big story numbers) may hang past the edge on phones; never scroll sideways */
+main.ax {
+  overflow-x: clip;
+}
+
+/* studying now: a terminal */
 .ax-tt {
   max-width: 84rem;
   margin-inline: auto;
@@ -958,132 +972,176 @@ html:has(main.ax) .cta-dock {
   text-transform: uppercase;
   color: var(--muted);
 }
-.ax-tt-boards {
-  display: grid;
-  gap: 1.25rem;
+/* the terminal: a real-looking window (traffic lights, a tab), a mono prompt, CLI output */
+.nt {
+  --nt-bg: #0b0f17;
+  --nt-fg: #d6deeb;
+  --nt-dim: #7f8ba3;
+  --nt-green: #3ddc84;
+  --nt-cyan: #7fdbff;
+  --nt-yellow: #ffcb6b;
   margin-top: 3rem;
-}
-@media (min-width: 1024px) {
-  .ax-tt-boards {
-    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-    align-items: start;
-  }
-}
-.ax-tt-board {
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 1.25rem;
-  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 0.9rem;
+  background: var(--nt-bg);
+  color: var(--nt-fg);
+  box-shadow:
+    0 50px 120px -50px rgb(0 0 0 / 0.75),
+    0 0 0 1px rgb(0 0 0 / 0.4);
+  font-family: var(--font-mono), ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: clamp(0.78rem, 1.05vw, 0.95rem);
+  line-height: 1.7;
+  font-variant-ligatures: none;
 }
-.ax-tt-label {
+.nt-bar {
+  position: relative;
   display: flex;
-  justify-content: space-between;
-  padding: 1rem 1.4rem;
-  border-bottom: 1px solid var(--border);
-  font: 600 0.7rem/1 var(--font-mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.ax-tt-label span + span {
-  color: var(--muted);
-}
-.ax-tt-row {
-  display: grid;
-  grid-template-columns: 3.4rem minmax(0, 1fr);
-  gap: 0.4rem 1rem;
   align-items: center;
-  padding: 1.2rem 1.4rem;
-  border-bottom: 1px solid var(--border);
-  transition: background-color 0.25s;
+  height: 2.4rem;
+  padding-inline: 0.9rem;
+  background: #161b26;
+  border-bottom: 1px solid rgb(0 0 0 / 0.5);
 }
-.ax-tt-row:last-child {
-  border-bottom: 0;
-}
-.ax-tt-row:hover {
-  background: color-mix(in srgb, var(--accent) 7%, transparent);
-}
-.ax-tt-pos {
-  grid-row: span 2;
-  align-self: start;
-  font-family: var(--font-tall), var(--font-display), sans-serif;
-  font-size: 2.6rem;
-  line-height: 0.9;
-  color: transparent;
-  -webkit-text-stroke: 1.2px color-mix(in srgb, var(--foreground) 45%, transparent);
-}
-.ax-tt-row:first-child .ax-tt-pos {
-  color: var(--accent);
-  -webkit-text-stroke: 0;
-}
-.ax-tt-name {
-  font-family: var(--font-tall), var(--font-display), sans-serif;
-  font-size: clamp(1.7rem, 2.6vw, 2.3rem);
-  font-weight: 400;
-  line-height: 1;
-  text-transform: uppercase;
-}
-.ax-tt-text {
-  margin-top: 0.25rem;
-  color: var(--muted);
-}
-.ax-tt-text::first-letter {
-  text-transform: uppercase;
-}
-/* three sectors, like the timing screens: they light one after another while it runs */
-.ax-tt-sectors {
+.nt-lights {
   display: flex;
+  gap: 0.5rem;
+}
+.nt-lights i {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+.nt-lights i:nth-child(2) {
+  background: #febc2e;
+}
+.nt-lights i:nth-child(3) {
+  background: #28c840;
+}
+.nt-tab {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
+  font-size: 0.78rem;
+  color: var(--nt-dim);
+  white-space: nowrap;
+}
+.nt-body {
+  min-height: 24rem;
+  padding: 1.1rem clamp(1rem, 2.5vw, 1.8rem) 1.4rem;
+}
+.nt-cmd {
+  display: flex;
+  align-items: center;
+  white-space: pre;
+}
+.nt-prompt {
+  margin-right: 0.6ch;
+  color: var(--nt-green);
+  font-weight: 700;
+}
+.nt-cursor {
+  display: inline-block;
+  width: 0.62em;
+  height: 1.15em;
+  margin-left: 1px;
+  background: var(--nt-fg);
+}
+.nt:not([data-out]) .nt-out,
+.nt[data-armed]:not([data-started]) .nt-out,
+.nt[data-armed]:not([data-started]) .nt-typed {
+  visibility: hidden;
+}
+.nt-head {
+  margin-top: 1.1rem;
+  font-weight: 700;
+  color: var(--nt-cyan);
+}
+.nt-head > span:first-child {
+  color: var(--nt-dim);
+}
+.nt-dim {
+  font-weight: 400;
+  color: var(--nt-dim);
+}
+.nt-rows {
+  margin: 0.2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+/* columns line up like CLI output: icon, name, bar, status, then the note under them */
+.nt-row {
+  display: grid;
+  grid-template-columns: 2ch minmax(0, 1fr);
+  column-gap: 1ch;
+  padding-block: 0.15rem;
+}
+.nt-row > :not(.nt-icon) {
   grid-column: 2;
-  gap: 0.3rem;
 }
-.ax-tt-sectors i {
-  width: 2.6rem;
-  height: 0.4rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--foreground) 14%, transparent);
+.nt-icon {
+  color: var(--nt-yellow);
 }
-.ax-tt-sectors:not([data-lap]) i:nth-child(1) {
-  background: linear-gradient(90deg, var(--accent) calc(var(--p) * 300%), transparent 0)
-    color-mix(in srgb, var(--foreground) 14%, transparent);
+.nt-live {
+  color: var(--nt-green);
 }
-.ax-tt-sectors:not([data-lap]) i:nth-child(2) {
-  background: linear-gradient(90deg, var(--accent) calc(var(--p) * 300% - 100%), transparent 0)
-    color-mix(in srgb, var(--foreground) 14%, transparent);
+.nt-name {
+  font-weight: 700;
+  color: #fff;
 }
-.ax-tt-sectors:not([data-lap]) i:nth-child(3) {
-  background: linear-gradient(90deg, var(--accent) calc(var(--p) * 300% - 200%), transparent 0)
-    color-mix(in srgb, var(--foreground) 14%, transparent);
+.nt-meter {
+  white-space: pre;
+  color: var(--nt-dim);
 }
-.ax-tt-status {
-  grid-column: 2;
-  font: 600 0.68rem/1.3 var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--foreground);
+.nt-fill {
+  color: var(--accent);
 }
-@media (min-width: 768px) {
-  .ax-tt-board:first-child .ax-tt-row {
-    grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+.nt-pct,
+.nt-status {
+  color: var(--nt-fg);
+}
+.nt-note {
+  color: var(--nt-dim);
+  font-style: italic;
+}
+@media (min-width: 900px) {
+  .nt-row {
+    grid-template-columns: 2ch 26ch auto minmax(0, 1fr);
+    align-items: baseline;
   }
-  .ax-tt-board:first-child .ax-tt-pos {
-    grid-row: span 2;
+  .nt-row > :not(.nt-icon) {
+    grid-column: auto;
   }
-  .ax-tt-sectors {
-    grid-column: 3;
-    grid-row: 1;
-    justify-self: end;
+  .nt-note {
+    grid-column: 2 / -1 !important;
   }
-  .ax-tt-status {
-    grid-column: 3;
-    grid-row: 2;
-    justify-self: end;
-    text-align: right;
+  .nt-proc .nt-wide {
+    grid-column: 3 / -1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .nt-blink {
+    animation: nt-blink 1.05s steps(1) infinite;
+  }
+}
+@keyframes nt-blink {
+  50% {
+    opacity: 0;
   }
 }
 
-/* the last stretch eases into the footer's black, so the page doesn't end on a hard line */
-.about-end {
-  background: linear-gradient(180deg, transparent calc(100% - 14rem), #05070d);
+/* the closing call sits on the theme's ground; the fade into the footer's black comes after it */
+.about-end::after {
+  content: "";
+  display: block;
+  height: clamp(10rem, 22vh, 16rem);
+  background: linear-gradient(180deg, var(--background), #05070d);
+}
+html:not(.dark) .about-end::after {
+  height: 2.5rem;
+  border-radius: 2.5rem 2.5rem 0 0;
+  background: #05070d;
 }
 .about-lente {
   width: min(28rem, 100%);
@@ -1096,24 +1154,18 @@ html:has(main.ax) .cta-dock {
   .ax-d-hello {
     animation: ax-fade 1s ease 0.7s both;
   }
-  .ax-d-full > span {
-    animation: ax-char 1.3s cubic-bezier(0.2, 0.9, 0.2, 1) 0.2s both;
+  .ax-d-panel {
+    animation: ax-d-open 1.1s cubic-bezier(0.77, 0, 0.175, 1) both;
+  }
+  .ax-d-ch {
+    animation: ax-d-letter 1.1s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    animation-delay: calc(0.45s + var(--c) * 40ms);
   }
   .ax-d-cue {
     animation: ax-fade 1s ease 0.9s both;
   }
   .ahd-dot::after {
     animation: ahd-ping 2s ease-out infinite;
-  }
-  /* no number yet: the sectors light one after another, a lap that never ends */
-  .ax-tt-sectors[data-lap] i {
-    animation: ax-tt-lap 2.4s ease-in-out infinite;
-  }
-  .ax-tt-sectors[data-lap] i:nth-child(2) {
-    animation-delay: 0.4s;
-  }
-  .ax-tt-sectors[data-lap] i:nth-child(3) {
-    animation-delay: 0.8s;
   }
 }
 
@@ -1128,22 +1180,51 @@ html:has(main.ax) .cta-dock {
 
     /* the opening is pinned while the panel breaks into bands that slide away */
     .ax-d-hero {
-      height: 220svh;
+      height: 200svh;
       view-timeline: --dh block;
     }
     .ax-d-stage {
       position: sticky;
       top: 0;
+      z-index: 2;
+      pointer-events: none;
     }
+    /* the intro rises from below while the curtain lifts, so the page never sits empty */
+    .ax-d-hero + .ax-d-intro {
+      position: relative;
+      z-index: 1;
+      margin-top: -100svh;
+    }
+    /* the panel lifts like a curtain; the letters fly up ahead of it in a cascade */
     .ax-d-panel > .ax-d-bands {
-      animation: ax-d-close linear both;
+      animation: ax-d-lift linear both;
       animation-timeline: --dh;
-      animation-range: contain 0% contain 85%;
+      animation-range: contain 5% contain 95%;
     }
-    .ax-d-name {
-      animation: ax-d-grow linear both;
+    .ax-d-ch {
+      animation:
+        ax-d-letter 1.1s cubic-bezier(0.2, 0.9, 0.2, 1) both,
+        ax-d-fly linear both;
+      animation-delay: calc(0.45s + var(--c) * 40ms), 0s;
+      animation-timeline: auto, --dh;
+      animation-range:
+        normal,
+        contain calc(2% + var(--c) * 1.5%) contain calc(45% + var(--c) * 2%);
+    }
+    .ax-d-full {
+      animation: ax-d-unclip linear both;
       animation-timeline: --dh;
-      animation-range: contain 0% contain 70%;
+      animation-range: contain 0% contain 2%;
+    }
+    .ax-d-hello {
+      --m: -2;
+      animation:
+        ax-fade 1s ease 0.7s both,
+        ax-d-fly linear both;
+      animation-timeline: auto, --dh;
+      animation-range:
+        normal,
+        contain 0% contain 35%;
     }
     .ax-d-cue {
       animation: ax-fade-out linear both;
@@ -1269,20 +1350,34 @@ html:has(main.ax) .cta-dock {
     scale: 0 1;
   }
 }
-@keyframes ax-d-close {
+@keyframes ax-d-open {
+  from {
+    clip-path: inset(50% 0 50% 0 round 1.5rem);
+  }
   to {
-    clip-path: inset(14vh 16vw round 3rem);
+    clip-path: inset(0 round 1.5rem);
   }
 }
-@keyframes ax-tt-lap {
-  20%,
-  55% {
-    background-color: var(--accent);
+@keyframes ax-d-letter {
+  from {
+    translate: 0 110%;
   }
 }
-@keyframes ax-d-grow {
+@keyframes ax-d-lift {
   to {
-    scale: 0.74;
+    clip-path: inset(0 0 100% 0 round 1.5rem 1.5rem 3rem 3rem);
+  }
+}
+@keyframes ax-d-unclip {
+  to {
+    clip-path: inset(-100vh -50vw);
+  }
+}
+@keyframes ax-d-fly {
+  to {
+    transform: translateY(-60svh) rotate(calc(var(--m) * 3deg));
+    opacity: 0;
+    filter: blur(6px);
   }
 }
 @keyframes ax-open-up {

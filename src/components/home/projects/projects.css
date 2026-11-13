@@ -24,12 +24,12 @@
   opacity: 1;
   translate: none;
 }
-/* the two with a video: the app plays in a framed window (its screens are light, so no
+/* the ones with a video: the app plays in a framed window (its screens are light, so no
    overlay on them); stacked on phones, side by side with the text from 768px */
-.pc:nth-child(-n + 2) {
+.pc:has(video) {
   height: auto;
 }
-.pc:nth-child(-n + 2) .pc-link {
+.pc:has(video) .pc-link {
   background:
     radial-gradient(
       60% 90% at 78% 50%,
@@ -38,7 +38,7 @@
     ),
     var(--surface);
 }
-.pc:nth-child(-n + 2) .pc-media {
+.pc:has(video) .pc-media {
   position: relative;
   z-index: 0;
   margin: 1rem 1rem 0;
@@ -51,27 +51,26 @@
     0 30px 80px -24px var(--pc-shade),
     0 0 0 6px color-mix(in srgb, var(--foreground) 3%, transparent);
 }
-.pc:nth-child(-n + 2) .pc-media::after {
+.pc:has(video) .pc-media::after {
   content: none;
 }
-.pc:nth-child(-n + 2) .pc-body {
+.pc:has(video) .pc-body {
   position: relative;
 }
 @media (hover: hover) {
   .pc-link:hover .pc-media {
     scale: 1.045;
   }
-  .pc:nth-child(-n + 2) .pc-link:hover .pc-media {
+  .pc:has(video) .pc-link:hover .pc-media {
     scale: 1.02;
   }
 }
 
 @media (min-width: 768px) {
-  .pc:nth-child(1),
-  .pc:nth-child(2) {
+  .pc:has(video) {
     height: clamp(26rem, 32vw, 31rem);
   }
-  .pc:nth-child(-n + 2) .pc-media {
+  .pc:has(video) .pc-media {
     position: absolute;
     inset: 50% clamp(1.5rem, 3vw, 2.5rem) auto auto;
     width: 57%;
@@ -79,7 +78,7 @@
     margin: 0;
     translate: 0 -50%;
   }
-  .pc:nth-child(-n + 2) .pc-body {
+  .pc:has(video) .pc-body {
     position: absolute;
     inset: 0 auto 0 0;
     display: flex;
@@ -87,7 +86,7 @@
     justify-content: center;
     width: 40%;
   }
-  .pc:nth-child(-n + 2) .pc-arrow {
+  .pc:has(video) .pc-arrow {
     right: auto;
     left: 1.1rem;
   }

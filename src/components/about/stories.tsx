@@ -94,7 +94,21 @@ export async function AboutStory({ locale }: Props) {
               <h1 id="about-title" className="ax-d-name">
                 <span className="ax-d-hello">{t("heroHello")}</span>
                 <span className="ax-d-full">
-                  <span>{profile.name}</span>
+                  <span className="sr-only">{profile.name}</span>
+                  {/* letter by letter: they rise in on load and fly off in a cascade on scroll */}
+                  <span aria-hidden="true">
+                    {[...profile.name].map((ch, i) => (
+                      <span
+                        key={i}
+                        className="ax-d-ch"
+                        style={
+                          { "--c": i, "--m": i - profile.name.length / 2 } as React.CSSProperties
+                        }
+                      >
+                        {ch === " " ? " " : ch}
+                      </span>
+                    ))}
+                  </span>
                 </span>
               </h1>
               <span className="ax-d-cue">{t("scroll")}</span>
@@ -131,6 +145,7 @@ export async function AboutStory({ locale }: Props) {
       </section>
 
       <section
+        id="story"
         aria-labelledby="story-title"
         className="ax-s"
         style={{ "--len": items } as React.CSSProperties}
@@ -184,7 +199,7 @@ export async function AboutStory({ locale }: Props) {
 
       {/* hobbies, after Lando's "Off track": a line on each, then the photos as prints lying
           on a desk; they drop in as it scrolls into view and can be picked up and moved */}
-      <section aria-labelledby="hobbies-title" className="ax-pm">
+      <section id="off-screen" aria-labelledby="hobbies-title" className="ax-pm">
         <div className="ax-pm-head">
           <div>
             <Kicker>{t("hobbies")}</Kicker>

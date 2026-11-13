@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { LocaleToggle } from "./locale-toggle";
@@ -14,25 +14,36 @@ type Props = {
   onNavigate: (index: number) => void;
   items: MenuItem[];
   active: number;
-  labels: { navigation: string; close: string; where: string; status: string; find: string };
+  labels: {
+    brand: string;
+    navigation: string;
+    close: string;
+    closeShort: string;
+    where: string;
+    status: string;
+    find: string;
+  };
   links: { label: string; href: string }[];
 };
 
 const OUT_MS = 550;
 
 /**
- * The full-screen menu: two columns of muted photos on the left, one per section, drifting
- * up and down after the pointer, and the sections
+ * The full-screen menu: a 3D notebook on the left whose screen shows the section under the
+ * pointer, and the sections
  * stacked in the middle of the right half. The one under the pointer rolls its word over in the
  * accent and brings its photo to full colour; the current page is struck through with a wavy line.
  * A native modal dialog, so focus stays inside, Esc closes it and the page behind is inert.
  */
+/** The 3D notebook (three.js), loaded the first time the menu opens. */
+const MenuLaptop = dynamic(() => import("./menu-laptop"), { ssr: false });
+
 export function SiteMenu({ open, onClose, onNavigate, items, active, labels, links }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const [hover, setHover] = useState<number | null>(null);
-  const columns = [0, 1].map((c) =>
-    items.map((item, i) => ({ ...item, i })).filter(({ i }) => i % 2 === c),
-  );
+  // mount the notebook on the first open and keep it, so it can play its closing too
+  const [seen, setSeen] = useState(false);
+  if (open && !seen) setSeen(true);
 
   useEffect(() => {
     const d = ref.current!;
@@ -68,36 +79,29 @@ export function SiteMenu({ open, onClose, onNavigate, items, active, labels, lin
         <div className="sm-top">
           <span className="sm-brand" aria-hidden="true">
             <KevinMark className="sm-brand-mark" />
-            Kevin Henrique
+            {labels.brand}
           </span>
           <div className="sm-actions">
             <div className="sm-toggles">
               <LocaleToggle />
               <ThemeToggle />
+              <button
+                type="button"
+                className="sm-close"
+                onClick={onClose}
+                aria-label={labels.close}
+              >
+                {labels.closeShort}
+                <span aria-hidden="true">✕</span>
+              </button>
             </div>
-            <button type="button" className="sm-close" onClick={onClose} aria-label={labels.close}>
-              <span aria-hidden="true">✕</span>
-            </button>
           </div>
         </div>
 
-        {/* the section photos in two columns that drift, at two depths, after the pointer */}
+        {/* a 3D notebook that rises in, opens and leans after the pointer; its screen shows the
+            photo of the section under the pointer */}
         <div className="sm-photos" aria-hidden="true">
-          {columns.map((col, c) => (
-            <div key={c} className="sm-col">
-              {col.map(({ photo, i }) => (
-                <div key={photo} className="sm-ph" data-on={i === hover || undefined}>
-                  <Image
-                    src={photo}
-                    alt=""
-                    width={0}
-                    height={0}
-                    sizes="(min-width: 900px) 24vw, 1px"
-                  />
-                </div>
-              ))}
-            </div>
-          ))}
+          {seen && <MenuLaptop open={open} />}
         </div>
 
         <div className="sm-side">

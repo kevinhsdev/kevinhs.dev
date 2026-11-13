@@ -1,0 +1,94 @@
+<Tldr>
+  A 3D landing page tied to the scroll that went **from zero to live without me writing a line of
+  code**. AI agents wrote all of it; I directed, reviewed and built the harness that tells them how
+  to work on this project.
+</Tldr>
+
+## Context and problem
+
+I wanted to prove one thing in practice: can you ship an ambitious front end, with a 3D scene,
+scroll-driven animation and a phone version, **only by directing AI agents**? I picked a theme that
+pushes the browser hard: **Rumo**, a fictional travel agency where the whole site is a film.
+
+The camera passes through an airplane window, drops through the clouds to the destination, the cards
+fly into a dotted globe, the globe unrolls into a boarding pass and the page returns to the cabin, at
+night, with the form.
+
+## My role
+
+I didn't touch the code. My job was the one of whoever leads the build:
+
+- **Direction**: what each scene shows, the brand identity, what goes in and what stays out.
+- **Review**: checking every delivery in the browser, on desktop and phone, and asking for fixes.
+- **Harness engineering**: writing the environment the agents work in, so they get it right
+  without me repeating the rules on every request.
+
+## Constraints
+
+- **Zero hand-written lines**: every change, even a single colour, went through the agents.
+- **No framework**: plain Vite, so the 3D and the animation stay light.
+- **60 fps** with a live Three.js scene behind the text.
+- **Accessible**: visible focus, touch on phones and respect for reduced-motion preferences.
+
+## The harness
+
+The heart of the project is a guide (`CLAUDE.md`) that every agent reads before changing anything.
+It turns personal taste into rules that can be checked:
+
+| Part of the guide | What it says                                                                                                |
+| ----------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Identity**      | The palette as tokens, a single orange accent, the heading and body fonts, where the logo and favicon live. |
+| **Rules**         | Colours only through tokens, curves only from one easing file, headings in at most 2 lines, a single pin.   |
+| **Motion**        | Scroll drives the camera and the image; time drives the text. No scene just appears: each hands over.       |
+| **Where to edit** | A table that goes from "I want to change the price" to the exact file.                                      |
+| **How to check**  | The screen sizes to review, scene by scene, plus a clean console and a passing build.                       |
+
+With it, a short request like "make the accent orange" becomes a consistent change across the CSS,
+the wall shader and the globe's routes, without me pointing at each file.
+
+## Architecture
+
+<Diagram
+  label="How the site is put together"
+  flow={[
+    { title: "Lenis", detail: "smooth scrolling" },
+    { title: "Stage (ScrollTrigger)", detail: "one pin for the whole page" },
+    { title: "Scenes", detail: "opening, flight, destinations, world, pass, night, close" },
+    { title: "3D scene (Three.js)", detail: "cabin, windows, globe and routes" },
+  ]}
+  asideLabel="Harness"
+  aside={[
+    { title: "CLAUDE.md", detail: "identity, rules and where to edit" },
+    { title: "Check script", detail: "desktop, phone, console and build" },
+    { title: "Tokens and easing", detail: "one place for colour and curve" },
+  ]}
+/>
+
+## Implementation highlights
+
+- **Airplane windows modeled in code**, with shader-driven blinds and the view built from layered
+  photos.
+- **A dotted globe with routes** that draws itself and then unrolls into a flat map, printed on the
+  boarding pass.
+- **Line-masked text** that comes in on time, whatever the scroll speed.
+- **Reduced motion**: no smooth scrolling, hard cuts and opacity only.
+
+## Result and impact
+
+The site has been **live on GitHub Pages** since November 2026: about 4,200 lines of JavaScript and CSS across 38 files, none typed by me.
+
+What I take into practice: **with agents, the bottleneck stops being typing and becomes specifying
+and reviewing**. The better the harness, the less rework and the more consistent the result.
+
+## What I'd do differently and next steps
+
+The structure and animations started from a landing page template, and the photos are still the
+demo's. The next step is generating my own photos for each destination (the recipes are already in
+the repository) and wiring the form to a real submission; today it only confirms on screen.
+
+The site's brand, numbers, prices and contacts are fictional.
+
+## Links
+
+- [Code on GitHub](https://github.com/kevinhsdev/rumo)
+- [Live site](https://kevinhsdev.github.io/rumo/)

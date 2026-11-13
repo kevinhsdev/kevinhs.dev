@@ -261,7 +261,7 @@ export function Contact() {
   const f = useContactForm();
   const email = useCopyEmail();
   return (
-    <section id="contact" aria-labelledby="contact-title" className="contact dark">
+    <section id="contact" aria-labelledby="contact-title" className="contact">
       <div className="mx-auto grid min-h-svh max-w-7xl items-center gap-14 px-5 py-28 sm:px-8 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-6">
           <h2 id="contact-title" className="ct-title">
@@ -284,6 +284,8 @@ export function Contact() {
           className="ct-app-framed lg:col-span-6"
         />
       </div>
+      {/* after the section, the page eases into the footer's black */}
+      <div className="ct-fade" aria-hidden="true" />
     </section>
   );
 }

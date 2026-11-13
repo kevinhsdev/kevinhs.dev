@@ -2,6 +2,7 @@
 
 import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { LiquidGlassDock } from "@/components/ui/liquid-glass-dock";
 import { profile } from "@/content/profile";
@@ -24,13 +25,16 @@ function Glyph({ children }: { children: ReactNode }) {
 
 /**
  * The four CTAs, one click away, small in the bottom-right corner. Hidden (and inert)
- * while any watched section, which has its own CTAs, is on screen.
+ * while any watched section, which has its own CTAs, is on screen, and over the footer,
+ * so it never sits on top of the footer's links or its back-to-top button.
  */
-export function CtaDock({ watch = ["hero", "contact"] }: { watch?: string[] }) {
+export function CtaDock({ watch = ["hero", "contact", "site-footer"] }: { watch?: string[] }) {
   const t = useTranslations("cta");
   const cv = useCvLabel();
   const [visible, setVisible] = useState(false);
   const key = watch.join(",");
+  // the watched sections are page content: look them up again after each navigation
+  const pathname = usePathname();
 
   useEffect(() => {
     const seen = new Set<Element>();
@@ -49,7 +53,7 @@ export function CtaDock({ watch = ["hero", "contact"] }: { watch?: string[] }) {
     });
     targets.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, [key]);
+  }, [key, pathname]);
 
   return (
     <LiquidGlassDock
@@ -57,7 +61,7 @@ export function CtaDock({ watch = ["hero", "contact"] }: { watch?: string[] }) {
       inert={!visible}
       data-visible={visible}
       data-print="hide"
-      className="cta-dock fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 rounded-[22px]! p-1.5! [--lgd-blur:10px] [--lgd-gap:2px] [--lgd-icon:44px] [--lgd-tint:color-mix(in_srgb,var(--foreground)_7%,transparent)] sm:right-6 sm:bottom-6"
+      className="cta-dock fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 rounded-[22px]! p-1.5! [--lgd-blur:10px] [--lgd-gap:2px] [--lgd-icon:44px] [--lgd-tint:color-mix(in_srgb,var(--background)_72%,transparent)] sm:right-6 sm:bottom-6"
       items={[
         {
           title: cv.label,

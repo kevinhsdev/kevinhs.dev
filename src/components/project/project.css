@@ -302,11 +302,20 @@
 }
 
 /* the presentation video: a clean cover until it is played */
+/* the whole video fits on screen, with a little room around it */
 .pj-video {
   position: relative;
+  max-width: min(100%, calc((100svh - 12rem) * 16 / 9));
+  margin-inline: auto;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 1.5rem;
+}
+/* the caption sits under the video, centred on it */
+.pj-media > figcaption {
+  max-width: min(100%, calc((100svh - 12rem) * 16 / 9));
+  margin-inline: auto;
+  text-align: center;
 }
 .pj-video video {
   display: block;

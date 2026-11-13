@@ -5,7 +5,7 @@ import { splitMetric } from "@/components/project/metrics";
 describe("projectParams", () => {
   it("lists every project slug once", () => {
     const slugs = projectParams().map((p) => p.slug);
-    expect(slugs).toHaveLength(7);
+    expect(slugs).toHaveLength(8);
     expect([...slugs].sort()).toEqual(projects.map((p) => p.slug).sort());
   });
 });

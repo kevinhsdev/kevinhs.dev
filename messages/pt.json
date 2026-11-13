@@ -1,4 +1,5 @@
 {
+  "brand": { "codeBy": "© Code by Kevin" },
   "meta": {
     "title": "Kevin Henrique · Engenharia de Software",
     "description": "Estudante de Engenharia de Software buscando estágio em backend (Java/Spring), DevOps/Cloud e IA aplicada. Construo software que uma equipe real usa todos os dias."
@@ -15,6 +16,7 @@
   "menu": {
     "open": "Abrir menu",
     "close": "Fechar menu",
+    "closeShort": "Fechar",
     "navigation": "Navegação",
     "label": "Menu",
     "find": "Onde me encontrar"
@@ -188,6 +190,15 @@
     "nowKicker": "Hoje",
     "skills": "Todas as habilidades",
     "more": "Conheça minha história",
+    "teaserTitle": "Além do código",
+    "teaserWorld": "De onde eu sou",
+    "teaserSpin": "arraste para girar",
+    "teaserMail": "Fale comigo",
+    "teaserOff": "quando o notebook fecha",
+    "teaserTo": "Para",
+    "teaserSubject": "Assunto",
+    "teaserSubjectText": "Vamos conversar?",
+    "teaserCerts": "em {n} pastas, de idiomas a eventos",
     "endTitle": "Vamos conversar",
     "endText": "Baixe o currículo ou me mande uma mensagem.",
     "endContact": "Ir para o contato",
@@ -218,15 +229,19 @@
     "certClose": "Fechar",
     "certNoPreview": "Sem arquivo digital",
     "live": "Ao vivo",
-    "track": "Na pista",
-    "garage": "Na garagem"
+    "termTitle": "kevin — zsh — 80×24",
+    "termPrompt": "kevin@umc ~ %",
+    "termCommand": "kevin --agora",
+    "termLearning": "Estudando",
+    "termBuilding": "Construindo",
+    "termProcesses": "{n} processos"
   },
   "footer": {
     "rights": "© {year} Kevin Henrique da Silva",
     "top": "Voltar ao topo",
     "navigate": "Navegação",
     "elsewhere": "Onde me encontrar",
-    "built": "Feito do zero com Next.js · código aberto no GitHub"
+    "built": "Feito do zero com Next.js"
   },
   "cv": {
     "kicker": "Currículo",

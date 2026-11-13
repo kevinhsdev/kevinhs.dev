@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Caveat, Gloock, League_Gothic } from "next/font/google";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { NowTerminal } from "@/components/about/now-terminal";
 import { CertificatesView } from "@/components/about/certificates-view";
 import { certificateFolders } from "@/components/about/data";
 import { AboutStory, Kicker } from "@/components/about/stories";
@@ -78,9 +79,9 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
       <main id="main" className={`about ax ${tall.variable} ${serif.variable} ${hand.variable}`}>
         <AboutStory locale={locale} />
 
-        <div className="dark ax-night ax-tail">
+        <div className="ax-night ax-tail">
           {/* certificates riding a conveyor behind the title, the glass folders in front */}
-          <section aria-labelledby="certs-title" className="about-certs">
+          <section id="certificates" aria-labelledby="certs-title" className="about-certs">
             <div className="about-certs-belt" aria-hidden="true">
               {/* the second row starts halfway down the list, so the rows never line up */}
               <Esteira
@@ -110,10 +111,9 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
             </div>
           </section>
 
-          {/* studying now, after the drivers' sites: a live timing tower. On track, what he's
-              studying, P1 down, with sectors lighting up while it runs; in the garage, what
-              he's building */}
-          <section aria-labelledby="now-title" className="ax-tt">
+          {/* studying now, after the drivers' sites: a terminal that types `kevin --now` and
+              prints what he's studying and what he's building */}
+          <section id="now" aria-labelledby="now-title" className="ax-tt">
             <div className="ax-tt-head">
               <div>
                 <Kicker>{t("nowKicker")}</Kicker>
@@ -126,70 +126,32 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/about">
                 {t("live")} · {t("updated", { date: now.updatedAt.split("-").reverse().join("/") })}
               </p>
             </div>
-            <div className="ax-tt-boards">
-              <div className="ax-tt-board">
-                <p className="ax-tt-label">
-                  <span>{t("track")}</span>
-                  <span>{now.learning.length}</span>
-                </p>
-                <ol>
-                  {now.learning.map((item, i) => {
-                    const p = item.progress;
-                    return (
-                      <li key={i} className="ax-tt-row" style={{ "--i": i } as React.CSSProperties}>
-                        <span className="ax-tt-pos">P{i + 1}</span>
-                        <div className="ax-tt-main">
-                          <h3 className="ax-tt-name">{pick(item.title, locale)}</h3>
-                          <p className="ax-tt-text">{pick(item.text, locale)}</p>
-                        </div>
-                        {/* sectors: with a number they fill to it, without one they keep lapping */}
-                        <span
-                          className="ax-tt-sectors"
-                          data-lap={p == null || undefined}
-                          style={
-                            p == null ? undefined : ({ "--p": p / 100 } as React.CSSProperties)
-                          }
-                          aria-hidden="true"
-                        >
-                          <i />
-                          <i />
-                          <i />
-                        </span>
-                        <span className="ax-tt-status">
-                          {item.status ? pick(item.status, locale) : t("inProgress")}
-                          {p != null && ` · ${p}%`}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-              <div className="ax-tt-board">
-                <p className="ax-tt-label">
-                  <span>{t("garage")}</span>
-                  <span>{now.building.length}</span>
-                </p>
-                <ul>
-                  {now.building.map((b, i) => {
-                    const [name, text] = pick(b, locale).split(/[:,]\s(.*)/s);
-                    return (
-                      <li key={i} className="ax-tt-row" style={{ "--i": i } as React.CSSProperties}>
-                        <span className="ax-tt-pos">G{i + 1}</span>
-                        <div className="ax-tt-main">
-                          <h3 className="ax-tt-name">{text ? name : name!.replace(/\.$/, "")}</h3>
-                          {text && <p className="ax-tt-text">{text}</p>}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            </div>
+            <NowTerminal
+              learning={now.learning.map((item) => ({
+                name: pick(item.title, locale),
+                text: pick(item.text, locale),
+                status: item.status && pick(item.status, locale),
+                progress: item.progress,
+              }))}
+              building={now.building.map((b) => {
+                const [name, text] = pick(b, locale).split(/[:,]\s(.*)/s);
+                return { name: name!.replace(/\.$/, ""), text };
+              })}
+              labels={{
+                title: t("termTitle"),
+                prompt: t("termPrompt"),
+                command: t("termCommand"),
+                learning: t("termLearning"),
+                building: t("termBuilding"),
+                processes: t("termProcesses", { n: now.building.length }),
+                inProgress: t("inProgress"),
+              }}
+            />
           </section>
 
           {/* closing call: the K in glass, then a fade into the footer's black */}
           <section aria-labelledby="about-end-title" className="about-end">
-            <div className="mx-auto max-w-7xl px-5 pt-10 pb-36 text-center sm:px-8 lg:pb-48">
+            <div className="mx-auto max-w-7xl px-5 pt-10 pb-24 text-center sm:px-8 lg:pb-32">
               <BrandLente label={profile.name} className="about-lente mx-auto" />
               <h2 id="about-end-title" className="ax-h2">
                 {t("endTitle")}

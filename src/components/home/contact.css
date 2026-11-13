@@ -1,7 +1,29 @@
 /* always dark: from the stage above it down to the footer's black, so the two run together */
+/* the section is on the theme's own ground; the fade into the footer comes after it */
 .contact {
-  background: linear-gradient(180deg, var(--nebula-back) 0%, #05070d 100%);
-  color: var(--stage-ink);
+  --stage-ink: var(--foreground);
+  --stage-muted: var(--muted);
+  background: var(--background);
+  color: var(--foreground);
+}
+html:not(.dark) .ct-app {
+  --ct-bg: #ffffff;
+  --ct-head: #f5f7fb;
+  --ct-chip: #eef1f8;
+  --ct-field: #f5f7fb;
+  --ct-shadow: rgb(10 20 48 / 0.18);
+  --bubble-in: #eef1f8;
+}
+.ct-fade {
+  height: clamp(10rem, 22vh, 16rem);
+  background: linear-gradient(180deg, var(--background), #05070d);
+}
+/* light theme: no fade from white to black; the footer rises as a sheet with rounded shoulders */
+html:not(.dark) .ct-fade {
+  height: 2.5rem;
+  margin-top: 2rem;
+  border-radius: 2.5rem 2.5rem 0 0;
+  background: #05070d;
 }
 
 .ct-title {
@@ -42,18 +64,25 @@
 
 /* ───────── the chat app ───────── */
 .ct-app {
+  /* the app window follows the theme: night colours here, day ones below */
+  --ct-bg: #0b0f19;
+  --ct-head: #10151f;
+  --ct-chip: #161c29;
+  --ct-field: #0f1420;
+  --ct-shadow: rgb(0 0 0 / 0.7);
   height: min(42rem, 80svh);
   --bubble-in: #1b2233;
+
   --bubble-out: var(--accent);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #0b0f19;
+  background: var(--ct-bg);
 }
 .ct-app-framed {
   border: 1px solid color-mix(in srgb, var(--stage-ink) 12%, transparent);
   border-radius: 1.5rem;
-  box-shadow: 0 2rem 5rem -1.5rem rgb(0 0 0 / 0.7);
+  box-shadow: 0 2rem 5rem -1.5rem var(--ct-shadow);
 }
 .ct-app-head {
   display: flex;
@@ -61,7 +90,7 @@
   gap: 0.75rem;
   padding: 0.85rem 1.1rem;
   border-bottom: 1px solid color-mix(in srgb, var(--stage-ink) 8%, transparent);
-  background: #10151f;
+  background: var(--ct-head);
 }
 .ct-avatar {
   width: 2.5rem;
@@ -115,7 +144,7 @@
   padding: 1.1rem;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background-color: #0b0f19;
+  background-color: var(--ct-bg);
   background-image: radial-gradient(
     color-mix(in srgb, var(--stage-ink) 7%, transparent) 1px,
     transparent 1.2px
@@ -130,7 +159,7 @@
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--stage-muted);
-  background: #161c29;
+  background: var(--ct-chip);
 }
 .ct-msg {
   position: relative;
@@ -187,7 +216,7 @@
   border-radius: 0.6rem;
   font-size: 0.9rem;
   color: var(--stage-ink);
-  background: #0f1420;
+  background: var(--ct-field);
   outline: none;
 }
 .ct-card input::placeholder {
@@ -237,7 +266,7 @@
   gap: 0.4rem;
   padding: 0.6rem 1rem 0;
   overflow-x: auto;
-  background: #0b0f19;
+  background: var(--ct-bg);
   scrollbar-width: none;
 }
 .ct-quick button {
@@ -265,7 +294,7 @@
   align-items: flex-end;
   gap: 0.5rem;
   padding: 0.75rem 1rem 1rem;
-  background: #0b0f19;
+  background: var(--ct-bg);
 }
 .ct-compose textarea {
   flex: 1;
@@ -277,7 +306,7 @@
   font-size: 0.95rem;
   line-height: 1.35;
   color: var(--stage-ink);
-  background: #141a26;
+  background: var(--ct-field);
   resize: none;
   field-sizing: content;
   outline: none;

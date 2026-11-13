@@ -88,9 +88,7 @@ export async function SiteFooter() {
         </nav>
         <div className="hz-copy">
           <span>{t("footer.rights", { year: new Date().getFullYear() })}</span>
-          <a href={profile.links.siteRepo} target="_blank" rel="noopener noreferrer">
-            {t("footer.built")}
-          </a>
+          <span>{t("footer.built")}</span>
           <a href="#main" className="hz-top" aria-label={t("footer.top")}>
             <ArrowUp aria-hidden className="size-4" />
           </a>

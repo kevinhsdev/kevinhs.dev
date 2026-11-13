@@ -39,14 +39,14 @@ function Soon({ label }: { label: string }) {
 }
 
 /**
- * The two featured projects as media cards (the video plays only while on screen), then the
+ * The featured projects with a video as media cards (the video plays only while on screen), then the
  * rest as a list whose rows show their picture floating by the cursor. Everything rises in.
  */
 export function ProjectsView({ cards, labels }: Props) {
   const root = useRef<HTMLElement>(null);
   const list = useRef<HTMLOListElement>(null);
-  const featured = cards.slice(0, 2);
-  const others = cards.slice(2);
+  const featured = cards.filter((c) => c.video);
+  const others = cards.filter((c) => !c.video);
 
   useEffect(() => {
     const el = root.current!;

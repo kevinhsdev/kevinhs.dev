@@ -1,4 +1,5 @@
 {
+  "brand": { "codeBy": "© Code by Kevin" },
   "meta": {
     "title": "Kevin Henrique · Software Engineering",
     "description": "Software Engineering student looking for an internship in backend (Java/Spring), DevOps/Cloud and applied AI. I build software a real team uses every day."
@@ -15,6 +16,7 @@
   "menu": {
     "open": "Open menu",
     "close": "Close menu",
+    "closeShort": "Close",
     "navigation": "Navigation",
     "label": "Menu",
     "find": "Find me on"
@@ -187,6 +189,15 @@
     "studying": "Learning now",
     "nowKicker": "Today",
     "skills": "All skills",
+    "teaserTitle": "Beyond the code",
+    "teaserWorld": "Where I'm from",
+    "teaserSpin": "drag to spin",
+    "teaserMail": "Say hi",
+    "teaserOff": "when the laptop closes",
+    "teaserTo": "To",
+    "teaserSubject": "Subject",
+    "teaserSubjectText": "Shall we talk?",
+    "teaserCerts": "across {n} folders, from languages to events",
     "more": "Read my story",
     "endTitle": "Let's talk",
     "endText": "Grab my résumé or send me a message.",
@@ -218,15 +229,19 @@
     "certClose": "Close",
     "certNoPreview": "No digital file",
     "live": "Live",
-    "track": "On track",
-    "garage": "In the garage"
+    "termTitle": "kevin — zsh — 80×24",
+    "termPrompt": "kevin@umc ~ %",
+    "termCommand": "kevin --now",
+    "termLearning": "Learning",
+    "termBuilding": "Building",
+    "termProcesses": "{n} processes"
   },
   "footer": {
     "rights": "© {year} Kevin Henrique da Silva",
     "top": "Back to top",
     "navigate": "Navigate",
     "elsewhere": "Find me",
-    "built": "Built from scratch with Next.js · open source on GitHub"
+    "built": "Built from scratch with Next.js"
   },
   "cv": {
     "kicker": "Résumé",

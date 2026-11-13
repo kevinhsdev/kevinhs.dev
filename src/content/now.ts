@@ -38,8 +38,8 @@ export const now = {
       en: "OASE · Lar: a system for an elderly care home, gathering requirements.",
     },
     {
-      pt: "Este portfólio, com código aberto no GitHub.",
-      en: "This portfolio, open source on GitHub.",
+      pt: "Este portfólio, feito do zero com Next.js.",
+      en: "This portfolio, built from scratch with Next.js.",
     },
   ],
 } satisfies z.input<typeof nowSchema>;

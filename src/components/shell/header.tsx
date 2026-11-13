@@ -56,7 +56,12 @@ export function SiteHeader() {
           className="glass pointer-events-auto flex h-11 items-center gap-2.5 rounded-full px-4 text-sm font-semibold"
         >
           <KevinMark className="h-4 w-auto text-accent" />
-          <span className="max-sm:sr-only">Kevin Henrique</span>
+          <span className="roll-text max-sm:sr-only">
+            <span className="flex h-11 items-center whitespace-nowrap">{t("brand.codeBy")}</span>
+            <span aria-hidden className="flex h-11 items-center whitespace-nowrap">
+              {profile.name}
+            </span>
+          </span>
         </Link>
         <div className="glass pointer-events-auto flex items-center gap-0.5 rounded-full p-0.5">
           <LocaleToggle />
@@ -87,8 +92,10 @@ export function SiteHeader() {
           photo: item.photo,
         }))}
         labels={{
+          brand: t("brand.codeBy"),
           navigation: t("menu.navigation"),
           close: t("menu.close"),
+          closeShort: t("menu.closeShort"),
           status: pick(profile.status, locale as Locale),
           find: t("menu.find"),
           where: `${pick(profile.location, locale as Locale)} · ${t("hero.availability")}`,

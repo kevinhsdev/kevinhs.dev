@@ -1,4 +1,15 @@
-import { ArrowLeft, ArrowRight, ArrowUpRight, Database, Lock, Terminal } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Box,
+  Database,
+  Lock,
+  MousePointer2,
+  Sparkles,
+  Terminal,
+  Zap,
+} from "lucide-react";
 import type { Metadata } from "next";
 import { Caveat } from "next/font/google";
 import { notFound } from "next/navigation";
@@ -49,11 +60,16 @@ const STACK_LOGO: Record<string, { file: string; dark?: boolean }> = {
   "Spring Boot": { file: "springboot" },
   "Spring Data JPA": { file: "spring" },
   Docker: { file: "docker", dark: true },
+  "Claude Code": { file: "claude" },
 };
 const STACK_ICON: Record<string, React.ComponentType<{ className?: string }>> = {
   PowerShell: Terminal,
   PostgreSQL: Database,
   "GitHub Pages": GitHubIcon,
+  "Three.js": Box,
+  GSAP: Sparkles,
+  Lenis: MousePointer2,
+  Vite: Zap,
 };
 
 function StackMark({ name }: { name: string }) {
