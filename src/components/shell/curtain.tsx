@@ -2,14 +2,18 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { jumpTo } from "@/motion/smooth";
 import { KevinMark } from "./logo";
 import "./curtain.css";
 
 /** Runs before paint: no entrance screen on a repeat visit, with reduced motion or with ?pronto. */
 export const CURTAIN_SCRIPT = `try{if(sessionStorage.getItem('pl')||matchMedia('(prefers-reduced-motion: reduce)').matches||/[?&]pronto\\b/.test(location.search))document.documentElement.classList.add('pl-skip')}catch(e){}`;
 
-/** A page to go to, or something to do on this page (a jump to a section) behind the curtain. */
-type Action = string | (() => void);
+/**
+ * A page to go to, or something to do on this page (a jump to a section) behind the curtain;
+ * if it returns a promise, the curtain waits for it.
+ */
+type Action = string | (() => void | Promise<void>);
 let cover: ((action: Action, label?: string) => void) | null = null;
 let seq = 0;
 
@@ -75,10 +79,7 @@ export function Curtain({ labels }: { labels: Record<string, string> }) {
       };
       window.setTimeout(() => {
         if (typeof action === "string") router.push(action);
-        else {
-          action();
-          window.setTimeout(lift, 350);
-        }
+        else Promise.resolve(action()).then(() => window.setTimeout(lift, 200));
       }, 600);
       // never leave the page covered if the navigation goes nowhere
       window.setTimeout(lift, 8000);
@@ -90,8 +91,16 @@ export function Curtain({ labels }: { labels: Record<string, string> }) {
       if (!a || a.target || a.hasAttribute("download") || a.closest(".sm")) return;
       const url = new URL(a.href);
       if (url.origin !== location.origin || /\.\w+$/.test(url.pathname)) return;
-      // same page (a hash, or the same page in the other language): no curtain
-      if (bare(url.pathname) === bare(location.pathname)) return;
+      // same page (a hash, or the same page in the other language): no curtain; a section of
+      // this page is reached with jumpTo, which knows where pinned sections really are
+      if (bare(url.pathname) === bare(location.pathname)) {
+        if (url.hash && url.pathname === location.pathname) {
+          e.preventDefault();
+          history.replaceState(null, "", url.hash);
+          void jumpTo(url.hash.slice(1));
+        }
+        return;
+      }
       e.preventDefault();
       e.stopPropagation();
       cover!(url.pathname + url.search + url.hash);
@@ -103,13 +112,18 @@ export function Curtain({ labels }: { labels: Record<string, string> }) {
     };
   }, [router, labels]);
 
-  // the new page is in: lift
+  // the new page is in: go to its section if the address names one (the browser's own jump
+  // comes before the pinned sections add their height), then lift
   useEffect(() => {
+    const hash = location.hash.slice(1);
+    const settled = hash ? jumpTo(hash) : Promise.resolve();
     if (!pending.current) return;
     pending.current = 0;
-    requestAnimationFrame(() => {
-      if (ref.current) ref.current.dataset.state = "reveal";
-    });
+    void settled.then(() =>
+      requestAnimationFrame(() => {
+        if (ref.current) ref.current.dataset.state = "reveal";
+      }),
+    );
   }, [pathname]);
 
   return (

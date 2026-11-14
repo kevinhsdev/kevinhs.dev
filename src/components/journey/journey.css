@@ -220,7 +220,7 @@
   .jr-titles {
     width: auto;
     right: var(--pad);
-    bottom: calc(6rem + env(safe-area-inset-bottom));
+    bottom: calc(9rem + env(safe-area-inset-bottom));
   }
   .jr-heading {
     font-size: clamp(2.1rem, 10vw, 2.9rem);

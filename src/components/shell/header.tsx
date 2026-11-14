@@ -6,7 +6,7 @@ import { pick, profile } from "@/content";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { Locale } from "@/i18n/routing";
 import { Link, usePathname } from "@/i18n/navigation";
-import { scrollToTarget } from "@/motion/smooth";
+import { jumpTo, scrollToTarget } from "@/motion/smooth";
 import { curtainTo } from "./curtain";
 import { LocaleToggle } from "./locale-toggle";
 import { KevinMark } from "./logo";
@@ -37,9 +37,9 @@ export function SiteHeader() {
     const [path, hash] = href.split("#");
     if ((path || "/") === pathname) {
       return curtainTo(() => {
-        const el = hash ? document.getElementById(hash) : null;
-        scrollToTarget(el ?? 0, true);
-        if (hash) history.replaceState(null, "", `#${hash}`);
+        if (!hash) return scrollToTarget(0, true);
+        history.replaceState(null, "", `#${hash}`);
+        return jumpTo(hash);
       }, label);
     }
     curtainTo(`/${locale}${path === "/" || !path ? "" : path}${hash ? `#${hash}` : ""}`, label);

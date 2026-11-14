@@ -1225,8 +1225,18 @@ html.monta .hero__quadro:not(.c-pronta) > .stage {
   );
 }
 @media (max-width: 760px) {
+  /* phone: the waves fill the whole hero, not just the 82vw block the earlier panel layout set;
+     a scrim from the bottom keeps the name and text readable over them */
+  .hero__quadro {
+    height: auto;
+  }
   .hero__quadro::after {
-    display: none;
+    background: linear-gradient(
+      180deg,
+      transparent 20%,
+      color-mix(in srgb, var(--pagina) 55%, transparent) 55%,
+      color-mix(in srgb, var(--pagina) 80%, transparent)
+    );
   }
 }
 

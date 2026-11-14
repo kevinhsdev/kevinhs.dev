@@ -172,18 +172,14 @@ html:has(main.ax) .cta-dock {
   rotate: -6deg;
   transform-origin: 0 100%;
 }
-/* the line masks the letters as they rise in; the mask lets go once the page scrolls, so they
-   can fly off above it */
+/* the line masks the name as it rises in */
 .ax-d-full {
   display: block;
-  clip-path: inset(0 -50vw);
+  overflow: clip;
 }
 .ax-d-full > span {
   display: block;
   padding-block: 0.05em 0.06em;
-}
-.ax-d-ch {
-  display: inline-block;
 }
 .ax-d-cue {
   position: absolute;
@@ -266,6 +262,11 @@ html:has(main.ax) .cta-dock {
   font-size: 0.8em;
   letter-spacing: -0.02em;
   color: color-mix(in srgb, var(--foreground) 38%, var(--background));
+}
+@media (max-width: 639px) {
+  .ax-st {
+    padding-block: 6rem 3rem;
+  }
 }
 .ax-st-float {
   position: absolute;
@@ -1154,12 +1155,8 @@ html:not(.dark) .about-end::after {
   .ax-d-hello {
     animation: ax-fade 1s ease 0.7s both;
   }
-  .ax-d-panel {
-    animation: ax-d-open 1.1s cubic-bezier(0.77, 0, 0.175, 1) both;
-  }
-  .ax-d-ch {
-    animation: ax-d-letter 1.1s cubic-bezier(0.2, 0.9, 0.2, 1) both;
-    animation-delay: calc(0.45s + var(--c) * 40ms);
+  .ax-d-full > span {
+    animation: ax-char 1.3s cubic-bezier(0.2, 0.9, 0.2, 1) 0.2s both;
   }
   .ax-d-cue {
     animation: ax-fade 1s ease 0.9s both;
@@ -1178,53 +1175,25 @@ html:not(.dark) .about-end::after {
       animation-range: entry 100% cover 35%;
     }
 
-    /* the opening is pinned while the panel breaks into bands that slide away */
+    /* the opening is pinned while the panel closes into a rounded window in the middle of the
+       screen, the name shrinking a little inside it */
     .ax-d-hero {
-      height: 200svh;
+      height: 220svh;
       view-timeline: --dh block;
     }
     .ax-d-stage {
       position: sticky;
       top: 0;
-      z-index: 2;
-      pointer-events: none;
     }
-    /* the intro rises from below while the curtain lifts, so the page never sits empty */
-    .ax-d-hero + .ax-d-intro {
-      position: relative;
-      z-index: 1;
-      margin-top: -100svh;
-    }
-    /* the panel lifts like a curtain; the letters fly up ahead of it in a cascade */
     .ax-d-panel > .ax-d-bands {
-      animation: ax-d-lift linear both;
+      animation: ax-d-close linear both;
       animation-timeline: --dh;
-      animation-range: contain 5% contain 95%;
+      animation-range: contain 0% contain 85%;
     }
-    .ax-d-ch {
-      animation:
-        ax-d-letter 1.1s cubic-bezier(0.2, 0.9, 0.2, 1) both,
-        ax-d-fly linear both;
-      animation-delay: calc(0.45s + var(--c) * 40ms), 0s;
-      animation-timeline: auto, --dh;
-      animation-range:
-        normal,
-        contain calc(2% + var(--c) * 1.5%) contain calc(45% + var(--c) * 2%);
-    }
-    .ax-d-full {
-      animation: ax-d-unclip linear both;
+    .ax-d-name {
+      animation: ax-d-grow linear both;
       animation-timeline: --dh;
-      animation-range: contain 0% contain 2%;
-    }
-    .ax-d-hello {
-      --m: -2;
-      animation:
-        ax-fade 1s ease 0.7s both,
-        ax-d-fly linear both;
-      animation-timeline: auto, --dh;
-      animation-range:
-        normal,
-        contain 0% contain 35%;
+      animation-range: contain 0% contain 70%;
     }
     .ax-d-cue {
       animation: ax-fade-out linear both;
@@ -1345,39 +1314,19 @@ html:not(.dark) .about-end::after {
     translate: 0 1.5rem;
   }
 }
+@keyframes ax-d-close {
+  to {
+    clip-path: inset(14vh 16vw round 3rem);
+  }
+}
+@keyframes ax-d-grow {
+  to {
+    scale: 0.74;
+  }
+}
 @keyframes ax-draw {
   from {
     scale: 0 1;
-  }
-}
-@keyframes ax-d-open {
-  from {
-    clip-path: inset(50% 0 50% 0 round 1.5rem);
-  }
-  to {
-    clip-path: inset(0 round 1.5rem);
-  }
-}
-@keyframes ax-d-letter {
-  from {
-    translate: 0 110%;
-  }
-}
-@keyframes ax-d-lift {
-  to {
-    clip-path: inset(0 0 100% 0 round 1.5rem 1.5rem 3rem 3rem);
-  }
-}
-@keyframes ax-d-unclip {
-  to {
-    clip-path: inset(-100vh -50vw);
-  }
-}
-@keyframes ax-d-fly {
-  to {
-    transform: translateY(-60svh) rotate(calc(var(--m) * 3deg));
-    opacity: 0;
-    filter: blur(6px);
   }
 }
 @keyframes ax-open-up {

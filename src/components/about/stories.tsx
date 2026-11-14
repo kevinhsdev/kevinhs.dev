@@ -87,28 +87,14 @@ export async function AboutStory({ locale }: Props) {
       <section aria-labelledby="about-title" className="ax-d-hero">
         <div className="ax-d-stage">
           {/* after Leclerc: the moving "fluxo" in an inset panel with a notch for the logo and one
-              for the dock, the name across it in white; on scroll the panel breaks into slanted
-              bands that slide away, taking the name with them */}
+              for the dock, the name across it in white; on scroll the panel closes into a small
+              rounded window in the middle, the name inside it */}
           <div className="ax-d-panel">
             <ShaderStage kind="fluxo" className="ax-d-bands dark">
               <h1 id="about-title" className="ax-d-name">
                 <span className="ax-d-hello">{t("heroHello")}</span>
                 <span className="ax-d-full">
-                  <span className="sr-only">{profile.name}</span>
-                  {/* letter by letter: they rise in on load and fly off in a cascade on scroll */}
-                  <span aria-hidden="true">
-                    {[...profile.name].map((ch, i) => (
-                      <span
-                        key={i}
-                        className="ax-d-ch"
-                        style={
-                          { "--c": i, "--m": i - profile.name.length / 2 } as React.CSSProperties
-                        }
-                      >
-                        {ch === " " ? " " : ch}
-                      </span>
-                    ))}
-                  </span>
+                  <span>{profile.name}</span>
                 </span>
               </h1>
               <span className="ax-d-cue">{t("scroll")}</span>

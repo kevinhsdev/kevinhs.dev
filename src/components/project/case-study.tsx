@@ -147,7 +147,10 @@ export const mdxComponents: MDXComponents = {
   // Scrollable on phones, so it must be reachable by keyboard.
   table: (props: ComponentProps<"table">) => (
     <div tabIndex={0} className="my-8 overflow-x-auto rounded-2xl border border-border">
-      <table className="w-full border-collapse text-left text-sm sm:min-w-[40rem]" {...props} />
+      <table
+        className="w-full min-w-[36rem] border-collapse text-left text-sm sm:min-w-[40rem]"
+        {...props}
+      />
     </div>
   ),
   th: (props: ComponentProps<"th">) => (

@@ -29,10 +29,9 @@ type Props = {
 const OUT_MS = 550;
 
 /**
- * The full-screen menu: a 3D notebook on the left whose screen shows the section under the
- * pointer, and the sections
+ * The full-screen menu: a 3D notebook on the left running a hacker terminal, and the sections
  * stacked in the middle of the right half. The one under the pointer rolls its word over in the
- * accent and brings its photo to full colour; the current page is struck through with a wavy line.
+ * accent; the current page is struck through with a wavy line.
  * A native modal dialog, so focus stays inside, Esc closes it and the page behind is inert.
  */
 /** The 3D notebook (three.js), loaded the first time the menu opens. */
@@ -40,7 +39,6 @@ const MenuLaptop = dynamic(() => import("./menu-laptop"), { ssr: false });
 
 export function SiteMenu({ open, onClose, onNavigate, items, active, labels, links }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
-  const [hover, setHover] = useState<number | null>(null);
   // mount the notebook on the first open and keep it, so it can play its closing too
   const [seen, setSeen] = useState(false);
   if (open && !seen) setSeen(true);
@@ -49,7 +47,6 @@ export function SiteMenu({ open, onClose, onNavigate, items, active, labels, lin
     const d = ref.current!;
     if (open && !d.open) {
       delete d.dataset.closing;
-      setHover(null);
       d.showModal();
     }
     if (!open && d.open) {
@@ -98,23 +95,20 @@ export function SiteMenu({ open, onClose, onNavigate, items, active, labels, lin
           </div>
         </div>
 
-        {/* a 3D notebook that rises in, opens and leans after the pointer; its screen shows the
-            photo of the section under the pointer */}
+        {/* a 3D notebook that rises in, opens and leans after the pointer, glitching as it moves */}
         <div className="sm-photos" aria-hidden="true">
           {seen && <MenuLaptop open={open} />}
         </div>
 
         <div className="sm-side">
           <nav aria-label={labels.navigation}>
-            <ul className="sm-list" onMouseLeave={() => setHover(null)}>
+            <ul className="sm-list">
               {items.map((item, i) => (
                 <li key={item.href} style={{ "--i": i } as React.CSSProperties}>
                   <a
                     href={item.href}
                     className="sm-link"
                     aria-current={i === active ? "page" : undefined}
-                    onMouseEnter={() => setHover(i)}
-                    onFocus={() => setHover(i)}
                     onClick={(e) => {
                       e.preventDefault();
                       onClose();

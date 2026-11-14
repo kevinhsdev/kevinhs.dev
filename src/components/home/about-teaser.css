@@ -245,16 +245,17 @@
   aspect-ratio: 1;
   pointer-events: auto;
 }
+/* phone: the globe fills the top of the card, the route and the hint sit under it */
 @media (max-width: 639px) {
   .abt-world {
-    min-height: 22rem;
+    min-height: 25rem;
   }
   .abt-globe {
-    top: auto;
-    right: -4rem;
-    bottom: -6rem;
-    width: 19rem;
-    translate: none;
+    top: 2.25rem;
+    right: auto;
+    left: 50%;
+    width: min(19rem, 82%);
+    translate: -50% 0;
   }
 }
 .abt-globe .cg-label--marker {

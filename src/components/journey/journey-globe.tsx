@@ -234,7 +234,8 @@ export function JourneyGlobe({
         const li = labels.findIndex((l) => l.at === cards[i]!.at);
         const gap = Math.max(28, (labelEls[li]?.offsetWidth ?? 0) / 2 + 16);
         const right = p.x + gap + cw <= w - 16;
-        const x = right ? p.x + gap : p.x - gap - cw;
+        // kept on screen: on a phone neither side may have room for the whole card
+        const x = Math.min(Math.max(right ? p.x + gap : p.x - gap - cw, 16), w - cw - 16);
         const y = Math.min(Math.max(p.y - 28 - ch, 72), h - ch - 16);
         e.style.translate = `${x}px ${y}px`;
         ctx.beginPath();
