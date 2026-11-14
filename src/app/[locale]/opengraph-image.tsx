@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { hasLocale } from "next-intl";
 import { KEVIN_MARK_PATH } from "@/components/shell/logo";
 import { pick, profile } from "@/content";
 import { routing } from "@/i18n/routing";
@@ -27,7 +28,8 @@ export function generateStaticParams() {
 }
 
 export default async function Image({ params }: { params: Promise<{ locale: string }> }) {
-  const locale = (await params).locale === "en" ? "en" : "pt";
+  const requested = (await params).locale;
+  const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
   const anton = await readFile(join(process.cwd(), "src/assets/fonts/Anton-Regular.ttf"));
 
   return new ImageResponse(

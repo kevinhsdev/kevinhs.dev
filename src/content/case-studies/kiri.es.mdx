@@ -1,0 +1,126 @@
+<Tldr>
+  Un clasificador de documentos que funciona en el navegador y **triplicó la capacidad de la
+  secretaría**: de ~100 a ~300 documentos al día. Procesar un grupo pasó de 3 días a 1 como máximo.
+</Tldr>
+
+## Contexto y problema
+
+Los expedientes digitales de los alumnos llegan como PDFs escaneados con nombres como
+`scan_0412.pdf`. Para cada uno, la rutina era siempre la misma: **abrir, leer, descubrir el tipo,
+escribir el nombre estandarizado, elegir la carpeta del alumno y guardar**. Un grupo tiene cerca de
+**200 documentos**, así que organizar un grupo entero llevaba **3 días**.
+
+El tiempo no era el único problema. Los nombres escritos a mano varían ("Ficha medica", "FICHA
+MÉDICA", "ficha_saude"), y un archivo guardado en la carpeta equivocada desaparece del expediente
+del alumno.
+
+## Mi rol
+
+Autor único: detecté el cuello de botella trabajando yo mismo en la secretaría, diseñé el flujo,
+construí la herramienta y acompañé su adopción. El equipo **la usa todos los días**.
+
+## Restricciones
+
+- **Sin instalar software**: tenía que funcionar en el navegador de las PCs de la escuela.
+- **Archivos locales**: los expedientes están en carpetas de Windows, no en un servidor.
+- **Documentos escaneados**: muchos PDFs no tienen texto buscable, solo la imagen.
+- **Usuarios que no programan**: los tipos de documento y las reglas cambian según el sector, así
+  que ajustarlos no podía depender de mí.
+
+## Decisiones técnicas y trade-offs
+
+| Decisión                                                            | Alternativa                           | Por qué                                                                                                             |
+| ------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Reglas de palabras clave con peso** en un diccionario editable    | Un modelo de machine learning         | No había datos etiquetados para entrenar. Las reglas son explicables, y la secretaría las ajusta desde la interfaz. |
+| Leer **primero el texto del PDF**, OCR solo cuando no lo hay        | OCR en todos los documentos           | Los PDFs digitales se clasifican al instante; el OCR, más lento, queda para los escaneos.                           |
+| Leer solo las **2 primeras páginas**                                | El documento entero                   | El tipo casi siempre está en el encabezado, y en un lote cada segundo cuenta.                                       |
+| Un **umbral mínimo de confianza**                                   | Sugerir siempre algún tipo            | Cuando la puntuación es baja, la herramienta pregunta en vez de equivocarse con seguridad.                          |
+| **File System Access API** escribe directo en la carpeta del alumno | Descargar y mover los archivos a mano | Elimina dos pasos por documento. Firefox usa una descarga normal como alternativa.                                  |
+| Recordar la carpeta con **IndexedDB**                               | Elegir la carpeta cada vez            | El permiso de la carpeta se mantiene entre sesiones.                                                                |
+
+## Arquitectura
+
+<Diagram
+  label="El recorrido de un documento"
+  flow={[
+    { title: "Lote de PDFs", detail: "arrastrar y soltar; cola con progreso" },
+    { title: "PDF.js", detail: "renderiza y extrae el texto" },
+    { title: "Clasificador", detail: "reglas + diccionario editable" },
+    { title: "Nombre sugerido", detail: "tipo + año, estandarizado" },
+    { title: "Carpeta del alumno", detail: "escritura directa, control de duplicados" },
+  ]}
+  asideLabel="Soporte"
+  aside={[
+    { title: "OCR (Tesseract.js)", detail: "solo para PDFs sin capa de texto" },
+    { title: "IndexedDB y localStorage", detail: "carpeta, perfiles y configuración" },
+    { title: "Historial en CSV", detail: "todo lo que se renombró" },
+  ]}
+/>
+
+## Puntos destacados de la implementación
+
+### Un clasificador que se puede explicar
+
+El texto se normaliza (sin acentos, en mayúsculas) y cada tipo de documento suma los pesos de las
+palabras clave que encuentra. **Los términos cortos tienen que coincidir con la palabra entera**,
+así "RG" (el documento de identidad brasileño) no aparece dentro de otra palabra. El tipo ganador
+solo se sugiere por encima del umbral.
+
+```js title="js/script.js (recortado)"
+function scoreKeyword(text, kw) {
+  // termos curtos exigem palavra inteira (evita "RG" casar dentro de outra palavra)
+  if (kw.length <= 3) return new RegExp("\\b" + kw + "\\b").test(text);
+  return text.includes(kw);
+}
+
+function classify(text) {
+  const t = normalizeText(text);
+  let best = null,
+    bestScore = 0;
+  for (const rule of CLASSIFY_RULES) {
+    let score = 0;
+    for (const [kw, w] of rule.kw) if (scoreKeyword(t, kw)) score += w;
+    if (score > bestScore) {
+      bestScore = score;
+      best = rule.type;
+    }
+  }
+  return bestScore >= CLASSIFY_THRESHOLD ? { type: best, score: bestScore } : null;
+}
+```
+
+Las reglas de fábrica conviven con las que el equipo crea en la interfaz: un sector agrega una
+palabra clave con su peso y empieza a valer en el acto, sin que yo toque el código.
+
+### Hecho para el uso diario
+
+- **Duplicados**: si el nombre ya existe en la carpeta, la herramienta pregunta qué hacer y sugiere
+  un nombre numerado libre.
+- **Teclado**: atajos para confirmar, saltar y avanzar, así las manos no dejan el teclado en medio
+  de un lote.
+- **Historial exportable en CSV** de todo lo que se renombró.
+
+### Lectura con IA
+
+En la versión que usa la secretaría, el PDF entero se envía a la **API de Anthropic (Claude)**, que
+lee el documento y sugiere el nombre. Cuando no hay sugerencia, la persona elige el tipo de una
+lista ya preparada, y el archivo queda abierto en el visor para revisarlo. El repositorio público
+muestra la clasificación con OCR y reglas; la integración con la API no está en él.
+
+## Resultados e impacto
+
+- **3× más documentos al día**: de ~100 a ~300.
+- **Un grupo de ~200 documentos pasó de 3 días a 1 como máximo.**
+- Nombres estandarizados y archivos en la carpeta correcta, lo que **redujo los errores de
+  archivo** en los expedientes de 545 alumnos.
+
+## Qué haría distinto y próximos pasos
+
+`script.js` reúne cerca de mil líneas en un solo archivo; lo dividiría en módulos (clasificador,
+archivos, visor). También armaría un conjunto de PDFs ficticios para **medir la precisión del
+clasificador** en cada cambio de regla, en vez de revisarlo a mano.
+
+## Enlaces
+
+- [Código en GitHub](https://github.com/kevinhsdev/kiri)
+- [Demo en vivo](https://kevinhsdev.github.io/kiri/)

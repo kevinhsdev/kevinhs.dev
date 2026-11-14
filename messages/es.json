@@ -1,0 +1,264 @@
+{
+  "brand": { "codeBy": "© Code by Kevin" },
+  "meta": {
+    "title": "Kevin Henrique · Ingeniería de Software",
+    "description": "Estudiante de Ingeniería de Software en busca de prácticas en backend (Java/Spring), DevOps/Cloud e IA aplicada. Construyo software que un equipo real usa todos los días."
+  },
+  "nav": {
+    "home": "Inicio",
+    "journey": "Trayectoria",
+    "projects": "Proyectos",
+    "skills": "Habilidades",
+    "contact": "Contacto",
+    "about": "Sobre mí",
+    "skip": "Ir al contenido"
+  },
+  "menu": {
+    "open": "Abrir menú",
+    "close": "Cerrar menú",
+    "closeShort": "Cerrar",
+    "navigation": "Navegación",
+    "label": "Menú",
+    "find": "Encuéntrame en"
+  },
+  "theme": {
+    "toggle": "Cambiar tema claro/oscuro"
+  },
+  "locale": {
+    "label": "Idioma"
+  },
+  "cta": {
+    "downloadCv": "Descargar CV",
+    "downloadCvLang": "Descargar CV ({lang})",
+    "linkedin": "LinkedIn",
+    "instagram": "Instagram",
+    "github": "GitHub",
+    "copyEmail": "Copiar e-mail",
+    "emailCopied": "E-mail copiado",
+    "emailCopyFailed": "No se pudo copiar. El e-mail es {email}",
+    "dock": "Atajos de contacto"
+  },
+  "hero": {
+    "role1": "Ingeniería de Software",
+    "role2": "Backend · Cloud · IA aplicada",
+    "hello": "Hola, soy",
+    "cargo": "Estudiante de<br></br>Ingeniería de Software",
+    "links": "Redes y contacto",
+    "availability": "remoto, híbrido o presencial",
+    "numbers": "Números reales de los proyectos",
+    "bar": {
+      "group": "Agentes construyendo la página",
+      "scanning": "Escaneando la página…",
+      "agents": "agentes",
+      "layers": "capas",
+      "builtBy": "Construida por",
+      "agentsIn": "agentes en",
+      "tour": "Tour",
+      "touring": "En tour",
+      "speed": "Velocidad de los agentes: {v}×",
+      "redo": "Construir la página de nuevo"
+    },
+    "numbersKicker": "En uso real",
+    "n": {
+      "pdfDocs": "más documentos procesados al día (de ~100 a ~300)",
+      "pdfDays": "días para procesar los documentos de un grupo",
+      "sekStudents": "alumnos cubiertos por el sistema de la escuela"
+    }
+  },
+  "journey": {
+    "title": "Trayectoria",
+    "saoPaulo": "São Paulo",
+    "malta": "Malta · St. Julian's",
+    "spain": "Madrid · en planes",
+    "usa": "Cambridge · en planes",
+    "flight": "São Paulo → Malta",
+    "plans": "Próximos destinos",
+    "plansText": "Madrid, por el español, y Cambridge, en Estados Unidos, para llevar mi inglés más lejos.",
+    "outro": "El próximo destino es tu equipo.",
+    "outroCta": "Hablemos",
+    "photos": "Fotos de Malta",
+    "previous": "Foto anterior",
+    "next": "Foto siguiente",
+    "status": "Foto {i} de {n}",
+    "school": "Donde todo empezó",
+    "schoolYears": "12 años como alumno",
+    "present": "actual"
+  },
+  "projects": {
+    "title": "Proyectos",
+    "count": "{n, plural, one {proyecto} other {proyectos}}",
+    "soon": "Próximamente",
+    "featured": "Destacados",
+    "other": "Otros proyectos",
+    "open": "Ver proyecto",
+    "repo": "Código",
+    "demo": "Demo",
+    "privateCode": "Código interno (sistema de la escuela)",
+    "status": {
+      "in-use": "En uso diario",
+      "live": "Publicado",
+      "evolving": "En evolución continua",
+      "in-development": "En desarrollo",
+      "academic": "Proyecto académico"
+    }
+  },
+  "skills": {
+    "title": "Habilidades",
+    "tiers": {
+      "daily": "Uso diario",
+      "experienced": "Tengo experiencia",
+      "learning": "Estudiando ahora",
+      "concepts": "Conceptos"
+    },
+    "all": "Todo con lo que trabajo"
+  },
+  "contact": {
+    "title": "Hablemos",
+    "intro": "Busco prácticas en backend, DevOps/Cloud o IA aplicada. Remoto, híbrido o presencial, en Brasil o en el extranjero. El e-mail es la vía más rápida.",
+    "orForm": "O envía un mensaje aquí",
+    "name": "Nombre",
+    "email": "Tu e-mail",
+    "message": "Mensaje",
+    "placeholder": "Escribe tu mensaje…",
+    "send": "Enviar",
+    "sending": "Enviando…",
+    "sent": "Mensaje enviado. Responderé pronto.",
+    "invalid": "Revisa los campos: nombre, un e-mail válido y un mensaje de al menos 10 caracteres.",
+    "unconfigured": "El envío directo no está configurado. Abriendo tu app de e-mail…",
+    "failed": "No se pudo enviar. Abriendo tu app de e-mail…",
+    "honeypot": "Deja este campo vacío",
+    "presetsTitle": "Empieza con",
+    "presets": {
+      "opportunity": {
+        "label": "Oportunidad",
+        "text": "¡Hola, Kevin! Vi tu portafolio y me gustaría hablar sobre una vacante en ingeniería de datos/software. ¿Tienes disponibilidad para una llamada rápida?"
+      },
+      "project": {
+        "label": "Proyecto",
+        "text": "¡Hola, Kevin! Tengo en mente un proyecto/desafío técnico y me gustaría conversar sobre el alcance, la arquitectura y tu disponibilidad."
+      },
+      "general": {
+        "label": "General",
+        "text": "¡Hola, Kevin! Me gusta tu trabajo y quería ponerme en contacto."
+      }
+    },
+    "chat": {
+      "status": "Abierto a prácticas",
+      "hi": "¡Hola! Qué bueno que llegaste hasta aquí.",
+      "orHere": "O mándame un mensaje aquí abajo.",
+      "ask": "Cuéntame: ¿es sobre una oportunidad, un proyecto o solo un saludo?",
+      "today": "Hoy",
+      "typing": "escribiendo…",
+      "idTitle": "Para que pueda responderte:",
+      "now": "ahora"
+    }
+  },
+  "project": {
+    "back": "Todos los proyectos",
+    "problem": "El problema",
+    "built": "Lo que construí",
+    "metrics": "Números",
+    "stack": "Stack",
+    "links": "Enlaces",
+    "video": "Video de presentación de {title}",
+    "videoNote": "en portugués",
+    "screenshot": "Pantalla inicial de {title}",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "role": "Rol",
+    "year": "Año",
+    "team": "Equipo de {count}",
+    "solo": "Individual",
+    "teamLabel": "Equipo",
+    "statusLabel": "Estado",
+    "stackCount": "{count} tecnologías",
+    "contents": "En este caso de estudio",
+    "play": "Ver la presentación",
+    "nextProject": "Siguiente proyecto"
+  },
+  "about": {
+    "title": "Sobre mí",
+    "hand": "quién soy",
+    "description": "Quién es Kevin Henrique: cómo empezó a programar, qué hace hoy y qué disfruta lejos de la pantalla.",
+    "photos": "Lejos de la pantalla",
+    "certificates": "Certificados",
+    "certificatesIntro": "Abre una carpeta para ver sus certificados.",
+    "languages": "Idiomas",
+    "items": "{n} elementos",
+    "studying": "Estudiando ahora",
+    "nowKicker": "Hoy",
+    "skills": "Todas las habilidades",
+    "teaserTitle": "Más allá del código",
+    "teaserWorld": "De dónde soy",
+    "teaserSpin": "arrastra para girar",
+    "teaserMail": "Saluda",
+    "teaserOff": "cuando se cierra la laptop",
+    "teaserTo": "Para",
+    "teaserSubject": "Asunto",
+    "teaserSubjectText": "¿Hablamos?",
+    "teaserCerts": "en {n} carpetas, de idiomas a eventos",
+    "more": "Lee mi historia",
+    "endTitle": "Hablemos",
+    "endText": "Descarga mi currículum o envíame un mensaje.",
+    "endContact": "Ir al contacto",
+    "certificate": "Certificado",
+    "story": "Mi historia",
+    "inProgress": "En curso",
+    "scroll": "Desplázate para explorar",
+    "sport": "vóleibol",
+    "morePhotos": "Más fotos",
+    "chapter": "Capítulo",
+    "ch1": "Empecé a programar a los 15, con los cursos de OneBitCode.",
+    "ch2": "Ingeniería de Software en la UMC. En la secretaría de una escuela, creé KIRI y SEK.",
+    "ch3": "IA aplicada y Harness Engineering. Aprendo en eventos y uso Claude Code todos los días.",
+    "maltaText": "Me adapté a un lugar nuevo y practiqué mi inglés.",
+    "statementE": "Estudio *todos* *los días.* Construyo *lo que* el equipo usa.",
+    "malta": "malta",
+    "music": "música",
+    "updated": "Actualizado en {date}",
+    "hobbies": "Hobbies",
+    "heroHello": "Detrás del código,",
+    "dragHint": "arrastra las fotos ↗",
+    "dio": "DIO",
+    "alura": "Alura",
+    "events": "Eventos",
+    "certOpen": "Abrir original",
+    "certPrev": "Anterior",
+    "certNext": "Siguiente",
+    "certClose": "Cerrar",
+    "certNoPreview": "Sin archivo digital",
+    "live": "En vivo",
+    "termTitle": "kevin — zsh — 80×24",
+    "termPrompt": "kevin@umc ~ %",
+    "termCommand": "kevin --now",
+    "termLearning": "Aprendiendo",
+    "termBuilding": "Construyendo",
+    "termProcesses": "{n} procesos"
+  },
+  "footer": {
+    "rights": "© {year} Kevin Henrique da Silva",
+    "top": "Volver arriba",
+    "navigate": "Navegar",
+    "elsewhere": "Encuéntrame",
+    "built": "Hecho desde cero con Next.js"
+  },
+  "cv": {
+    "kicker": "Currículum",
+    "title": "Mi currículum",
+    "intro": "Experiencia, proyectos, formación e idiomas. Elige un idioma y descarga el PDF.",
+    "langs": {
+      "pt": "Portugués",
+      "en": "Inglés",
+      "es": "Español"
+    },
+    "choose": "Idioma del currículum",
+    "download": "Descargar PDF",
+    "open": "Abrir en otra pestaña",
+    "preview": "Vista previa de la primera página del currículum en {lang}"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "text": "Esta dirección no existe o cambió de lugar.",
+    "back": "Volver al inicio"
+  }
+}

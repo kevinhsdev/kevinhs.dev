@@ -21,7 +21,7 @@ const DEEP_MARBLE: ArtRecipe = {
   veins: 0.3,
 };
 
-type L = { pt: string; en: string };
+type L = { pt: string; en: string; es: string };
 const pdf = (file: string) => `/certificates/${file}`;
 /** The first page as an image (public/certificates/previews), for the belt, the grid and the viewer. */
 const pv = (file: string, width: number, height: number) => ({
@@ -43,12 +43,20 @@ const FOLDERS = [
       // TODO(kevin): the CNA certificate file, if you want it linked too
       {
         id: "cna-c1",
-        name: { pt: "Inglês Avançado (C1)", en: "Advanced English (C1)" },
+        name: {
+          pt: "Inglês Avançado (C1)",
+          en: "Advanced English (C1)",
+          es: "Inglés Avanzado (C1)",
+        },
         meta: "CNA · 2024",
       },
       {
         id: "ef-malta",
-        name: { pt: "Inglês em tempo integral · B1-2", en: "Full-time English · B1-2" },
+        name: {
+          pt: "Inglês em tempo integral · B1-2",
+          en: "Full-time English · B1-2",
+          es: "Inglés a tiempo completo · B1-2",
+        },
         meta: "EF · Malta · 07/2025",
         href: pdf("ef-malta.pdf"),
         preview: pv("ef-malta", 1009, 1400),

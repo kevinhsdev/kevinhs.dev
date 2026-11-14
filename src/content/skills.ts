@@ -41,21 +41,29 @@ export const skills = [
     items: [
       "AWS",
       "Spring Data JPA",
-      { pt: "Testes automatizados", en: "Automated testing" },
-      { pt: "Cibersegurança", en: "Cybersecurity" },
-      { pt: "IA aplicada ao Java", en: "AI applied to Java" },
+      { pt: "Testes automatizados", en: "Automated testing", es: "Pruebas automatizadas" },
+      { pt: "Cibersegurança", en: "Cybersecurity", es: "Ciberseguridad" },
+      { pt: "IA aplicada ao Java", en: "AI applied to Java", es: "IA aplicada a Java" },
     ],
   },
   {
     tier: "concepts",
     items: [
-      { pt: "Orientação a Objetos", en: "Object-oriented programming" },
-      { pt: "Padrão DAO", en: "DAO pattern" },
+      {
+        pt: "Orientação a Objetos",
+        en: "Object-oriented programming",
+        es: "Programación orientada a objetos",
+      },
+      { pt: "Padrão DAO", en: "DAO pattern", es: "Patrón DAO" },
       "REST APIs",
-      { pt: "Arquitetura em camadas", en: "Layered architecture" },
+      { pt: "Arquitetura em camadas", en: "Layered architecture", es: "Arquitectura en capas" },
       "UML",
-      { pt: "Versionamento", en: "Version control" },
-      { pt: "LGPD aplicada a software", en: "Privacy by design (LGPD)" },
+      { pt: "Versionamento", en: "Version control", es: "Control de versiones" },
+      {
+        pt: "LGPD aplicada a software",
+        en: "Privacy by design (LGPD)",
+        es: "Privacidad desde el diseño (LGPD)",
+      },
     ],
   },
 ] satisfies z.input<typeof skillGroupSchema>[];

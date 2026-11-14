@@ -79,7 +79,7 @@ hr {
 .contacts {
   display: flex;
   flex-wrap: wrap;
-  gap: 2pt 18pt;
+  gap: 2pt 13pt;
   font-size: 9pt;
 }
 .contacts a {

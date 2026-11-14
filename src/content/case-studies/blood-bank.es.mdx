@@ -1,0 +1,103 @@
+<Tldr>
+  Un sistema de banco de sangre hecho **por un equipo de 3 en la universidad**: el stock por tipo
+  sanguíneo lo mantiene **la propia base de datos** mediante un trigger de MySQL, y las reglas de
+  compatibilidad para donar viven en el modelo Java.
+</Tldr>
+
+## Contexto y problema
+
+Un proyecto de la materia **Programación Orientada a Objetos con JDBC** en la UMC, en 2026. El desafío
+era modelar el día a día de un banco de sangre: **registrar donantes, anotar donaciones, controlar el
+stock de cada tipo sanguíneo y atender pacientes**, manteniendo los números del stock siempre
+correctos.
+
+Lo delicado es la consistencia: cada donación registrada cambia el stock. Si esa cuenta depende de
+que cada pantalla recuerde actualizar el stock, algún día una se olvida, y el número en pantalla deja
+de coincidir con la sangre que realmente existe.
+
+## Mi rol
+
+Un **equipo de 3**. Fui responsable de la **capa DAO** y de los **triggers de MySQL** que actualizan
+el stock, en los módulos de Paciente, Donante, Donación y Stock.
+
+## Restricciones
+
+- **JDBC puro**, sin ORM: la materia trataba de entender el acceso a datos por dentro.
+- **Diseño orientado a objetos** como criterio de evaluación: modelos, responsabilidades y capas bien
+  separadas.
+- Plazo de la materia y trabajo dividido entre tres personas.
+
+## Decisiones técnicas y trade-offs
+
+| Decisión                                                       | Alternativa                                    | Por qué                                                                                                                                           |
+| -------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stock actualizado por un **trigger de MySQL**                  | Actualizar el stock en Java tras cada donación | La regla vive en un solo lugar. El stock sigue correcto aunque otra parte del sistema registre una donación; `EstoqueDAO` solo necesita **leer**. |
+| **Un DAO por entidad** más una `ConnectionFactory`             | SQL repartido por las pantallas                | Capas separadas: las pantallas no conocen SQL, y la conexión se configura en un solo lugar.                                                       |
+| **`PreparedStatement`** en todas las consultas                 | Armar el SQL concatenando strings              | Parámetros tipados y protección contra inyección SQL.                                                                                             |
+| Compatibilidad como **regla en el modelo** (switch expression) | Una tabla de compatibilidad en la base         | Las reglas de donación son fijas, caben en un método legible y son fáciles de probar.                                                             |
+
+## Arquitectura
+
+<Diagram
+  label="Capas"
+  flow={[
+    { title: "Páginas web", detail: "donantes, donaciones, stock y compatibilidad" },
+    { title: "Modelos", detail: "Donante, Donación, Paciente, Stock, Compatibilidad" },
+    { title: "DAOs (JDBC)", detail: "uno por entidad, PreparedStatement" },
+    { title: "MySQL 8", detail: "un trigger mantiene el stock por tipo sanguíneo" },
+  ]}
+/>
+
+## Puntos destacados de la implementación
+
+### La base de datos es dueña del stock
+
+La prueba está en el propio código: `EstoqueDAO` no tiene métodos para insertar ni actualizar, solo
+para consultar. La tabla `ESTOQUE` la mantiene el trigger que se dispara en cada donación.
+
+```java title="src/DAO/EstoqueDAO.java (trimmed)"
+public List<Estoque> consultarTodos() throws ClassNotFoundException, SQLException {
+    Connection con = ConnectionFactory.getConnection();
+    PreparedStatement comando = con.prepareStatement("select * from ESTOQUE");
+    ResultSet rs = comando.executeQuery();
+    // ...builds the list of Estoque (blood type and amount)
+}
+```
+
+### Compatibilidad sanguínea legible
+
+Las reglas de quién puede donar a quién se convirtieron en un solo método con switch expressions de
+Java. El código está en portugués, como pedía la materia.
+
+```java title="src/Model/Compatibilidade.java (trimmed)"
+return switch (tipoDoador) {
+    case "O-"  -> true;                        // universal donor
+    case "O+"  -> tipoPaciente.endsWith("+");  // every Rh+
+    case "A+"  -> tipoPaciente.equals("A+")  || tipoPaciente.equals("AB+");
+    case "B+"  -> tipoPaciente.equals("B+")  || tipoPaciente.equals("AB+");
+    case "AB+" -> tipoPaciente.equals("AB+");
+    // ...and the negative types
+    default    -> false;
+};
+```
+
+## Resultados e impacto
+
+- Entregado para la materia, con los módulos de **Paciente, Donante, Donación y Stock** y la
+  pantalla de compatibilidad.
+- En la práctica, fue donde consolidé **JDBC, el patrón DAO y el diseño en capas**, la base de lo que
+  hoy estudio con Spring Data JPA.
+
+## Qué haría distinto y próximos pasos
+
+Fue un proyecto en equipo. Mirando el código hoy, cambiaría:
+
+- usar `try-with-resources`, porque algunas consultas abren una conexión y nunca la cierran;
+- actualizar una donación por su propio `id`, no por `id_doador`, que cambia todas las donaciones del
+  mismo donante;
+- versionar el script de la base (tablas y trigger) junto al código;
+- escribir pruebas para `Compatibilidade`, la regla más fácil de probar y la más cara si falla.
+
+## Enlaces
+
+- [Código en GitHub](https://github.com/kevinhsdev/blood-base-management)

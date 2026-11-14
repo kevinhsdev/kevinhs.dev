@@ -1,0 +1,163 @@
+<Tldr>
+  Un **sistema de gestión escolar offline, multiusuario y sin dependencias externas**, que construí
+  por iniciativa propia en 4 etapas para reemplazar hojas de cálculo sueltas por un único lugar. Hoy
+  lo **usa toda la secretaría**.
+</Tldr>
+
+## Contexto y problema
+
+Trabajo como aprendiz en la secretaría de una escuela con **cerca de 535 alumnos**, desde preescolar
+hasta la secundaria. El día a día funcionaba con **hojas de Excel y documentos de Word sueltos**,
+repartidos entre varios sistemas: el sistema académico (una aplicación de escritorio), la herramienta
+de admisiones, el registro escolar digital del estado y el sistema del comedor.
+
+En la práctica, cada tarea implicaba buscar la hoja correcta, copiar datos de un lugar a otro y armar
+documentos a mano. Rematrícula, documentos pendientes, contratos, oficios, becas, control de cobros y
+autorizaciones de salida vivían en archivos distintos, y ninguno sabía de los demás.
+
+## Mi rol
+
+Un **proyecto personal que empecé por iniciativa propia**, hecho en solitario: requisitos,
+arquitectura, código, pruebas, documentación e instalación. Uso **Claude Code como pair programmer**,
+con un documento de traspaso vivo (decisiones, trampas, hoja de ruta) para que cada sesión retome
+exactamente donde terminó la anterior.
+
+## Restricciones
+
+- **Sin equipo de TI** y con PCs Windows comunes, sin garantía de poder instalar software.
+- **Tiene que funcionar offline**: la red de la escuela no es confiable.
+- **Datos de menores**: todo lo relacionado con la privacidad (la LGPD de Brasil) pesa más que
+  cualquier comodidad.
+- **Varias personas a la vez**: una PC hace de servidor y las demás se conectan por el navegador.
+- **Integración solo por exportaciones**: no hay acceso garantizado a la base del sistema académico,
+  así que los datos entran por los `.xlsx` que este ya exporta.
+- **Quien lo mantenga puede no ser desarrollador**: instalar y actualizar tiene que llevar dos clics.
+
+## Decisiones técnicas y trade-offs
+
+| Decisión                                                     | Alternativa                                    | Por qué                                                                                                                                                 |
+| ------------------------------------------------------------ | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| App web **local**: una PC es el servidor                     | Nube / SaaS                                    | Los datos de menores no salen a internet, no hay suscripción y todo funciona offline.                                                                   |
+| **Node.js portátil, sin npm, sin dependencias**              | npm + un framework (React, Express)            | Se ejecuta con dos clics y sin paso de build. No hay paquetes que actualizar, que se rompan o que se vean comprometidos.                                |
+| Base **`node:sqlite`** integrada, en modo WAL                | MySQL / PostgreSQL                             | Un solo archivo y ningún servidor de base que instalar; copias en caliente con `VACUUM INTO`.                                                           |
+| Importar las **exportaciones `.xlsx`** del sistema académico | Leer directamente su base MySQL                | El acceso a la base no está garantizado, y exportar es algo que la secretaría ya sabe hacer. El lector de `.xlsx` está escrito a mano, sin bibliotecas. |
+| **Actualización con un botón** vía `git pull --ff-only`      | Un instalador o copiar archivos a mano         | Quien no programa lo actualiza solo: la app muestra qué cambió, hace una copia, aplica y reinicia. Se niega si hay cambios locales.                     |
+| **Concurrencia optimista** (una versión por registro)        | Bloquear el registro mientras alguien lo edita | Nadie queda bloqueado; el conflicto solo aparece cuando ocurre de verdad, con nombre y hora.                                                            |
+
+## Arquitectura
+
+<Diagram
+  label="Flujo principal"
+  flow={[
+    {
+      title: "Navegadores en las PCs de la secretaría",
+      detail: "HTML, CSS y JS puros; rutas por hash",
+    },
+    {
+      title: "Servidor Node.js portátil",
+      detail: "HTTP, sesiones, CSRF, CSP y registro de auditoría",
+    },
+    { title: "node:sqlite (WAL)", detail: "un archivo, migraciones al iniciar" },
+  ]}
+  asideLabel="Alrededor"
+  aside={[
+    { title: "Copias cifradas", detail: "AES-256-GCM, a un pendrive o a OneDrive" },
+    { title: "Actualización vía Git", detail: "novedades, copia, aplicación y reinicio" },
+    { title: "Exportaciones .xlsx", detail: "alumnos, responsables y boletines" },
+  ]}
+/>
+
+El servidor es un proceso Node.js sin framework. Las rutas viven en módulos por área (`rotas/*.js`) y
+reciben un contexto compartido. **Todo cambio pasa por un registro de auditoría**, y los documentos
+oficiales se generan a partir de plantillas `.xlsx` que el propio código completa.
+
+## Puntos destacados de la implementación
+
+### Copias cifradas que viajan en un pendrive
+
+Las copias se hacen con el sistema en marcha (`VACUUM INTO`) y, cuando hay una contraseña definida,
+se cifran con **AES-256-GCM**: clave derivada con `scrypt`, sal e IV aleatorios y una marca al inicio
+para reconocer el archivo. La restauración ocurre en dos pasos: la app valida la copia, programa el
+cambio y solo reemplaza la base en el siguiente arranque, guardando una copia de la anterior.
+
+```js title="app/lib/backup.js"
+function cifrar(dados, senha) {
+  const sal = crypto.randomBytes(16);
+  const iv = crypto.randomBytes(12);
+  const chave = crypto.scryptSync(senha, sal, 32);
+  const c = crypto.createCipheriv("aes-256-gcm", chave, iv);
+  const corpo = Buffer.concat([c.update(dados), c.final()]);
+  return Buffer.concat([MARCA, sal, iv, c.getAuthTag(), corpo]);
+}
+```
+
+### Dos personas editando el mismo registro
+
+La pantalla envía la versión que cargó. Si otra persona guardó mientras tanto, el servidor responde
+**409** diciendo quién y cuándo. En el cliente solo se envían los campos modificados: si cada persona
+editó un campo distinto, se conservan los dos cambios.
+
+```js title="app/server.js"
+function conferirVersao(atual, b, u) {
+  const versao = b._versao,
+    forcar = b._forcar;
+  delete b._versao;
+  delete b._forcar;
+  if (versao === undefined || forcar) return;
+  if ((atual.atualizado_em || null) === (versao || null)) return;
+  if (!atual.atualizado_por || atual.atualizado_por === u.login) return;
+  // ...looks up the name of whoever saved it
+  falha(409, `${nome} alterou isto enquanto você editava.`, {
+    conflito: { por: nome, em: atual.atualizado_em },
+  });
+}
+```
+
+El código está en portugués a propósito: lo mantiene y lo usa una secretaría escolar brasileña.
+
+### Qué más protege los datos
+
+- **Inicio de sesión por persona** con perfiles (administrador y aprendiz), cambio de contraseña
+  obligatorio en el primer acceso, bloqueo de pantalla controlado por el servidor y una Content
+  Security Policy.
+- **Sesiones guardadas en la base** (solo el hash del token): reiniciar el servidor no desconecta a
+  nadie. Si se cae, la pantalla muestra un aviso de "sin conexión" y **lo que se escribió se
+  conserva** como borrador recuperable.
+- **Privacidad (LGPD)**: registro de quién abrió cada ficha de alumno, exportación de todo lo que se
+  guarda sobre un alumno y eliminación que anonimiza a los exalumnos sin perder las estadísticas.
+- **Los datos reales nunca llegan a Git**: un script limpia las plantillas antes de cualquier commit,
+  y todas las pruebas usan una demo con datos ficticios.
+
+## Resultados e impacto
+
+- **Lo usa toda la secretaría.** Tareas que antes llevaban horas o incluso días, como emitir
+  historiales escolares, controlar documentos pendientes y armar hojas de organización, ahora llevan
+  pocos minutos. Esa mejora es lo que relata el equipo, todavía no una medición formal.
+- Versión **5.8.x**, en evolución continua, con cerca de **875 KB de JavaScript** escritos sin
+  framework.
+- Medido con una demo de ~530 alumnos ficticios: la API responde en **menos de 30 ms** y ninguna
+  pantalla tarda más de **0,4 s**. Listas que llegaban a 30.000 píxeles de alto bajaron a unos 6.000
+  con carga progresiva.
+- Una suite de pruebas propia apaga el servidor de verdad, simula a dos personas editando a la vez,
+  restaura copias y revisa las 30 pantallas de la app.
+
+## Qué haría distinto y próximos pasos
+
+**Haría primero el piloto.** Construí cuatro etapas antes de que un solo módulo funcionara con datos
+reales. Hoy empezaría con **un módulo en un piloto de dos semanas**, porque eso es lo que demuestra
+valor y gana la confianza de quien decide. Sin piloto, el resto es solo código.
+
+Próximos pasos, en este orden:
+
+1. **Medir el tiempo** de cada tarea antes y después, para reemplazar el relato del equipo por
+   números.
+2. Seguir evolucionando a partir de lo que la secretaría más usa, un módulo a la vez.
+
+Y lo que decidí **no** hacer: reescribirlo en React (meses perdidos, más un paso de build y
+dependencias), llevarlo a la nube (datos de menores en internet multiplican la responsabilidad) y
+automatizar envíos masivos por WhatsApp (la API oficial es de pago, y las no oficiales hacen que
+bloqueen el número de la escuela).
+
+## Enlaces
+
+- Código: **interno**, porque es el sistema de la escuela, con sus propias reglas y plantillas.

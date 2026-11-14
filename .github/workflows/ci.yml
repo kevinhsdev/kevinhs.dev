@@ -12,6 +12,9 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    # to push the rebuilt CV back to main
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,13 +22,26 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # The CV is written from the site's content: on main, rebuild it and commit it if anything
+      # changed, so the PDFs never fall behind the site. (A pull request fails the CV test instead.)
+      - name: Rebuild the CV
+        if: github.event_name == 'push'
+        run: |
+          npm run cv
+          if [ -n "$(git status --porcelain scripts/cv public/cv)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add scripts/cv public/cv
+            git commit -m "Rebuild the CV from the site's content"
+            git push
+          fi
       - run: npx next typegen
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format:check
       - run: npm test
       - run: npm run build
-      - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()

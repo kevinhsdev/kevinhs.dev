@@ -12,6 +12,7 @@ import { z } from "zod";
 export const localized = z.object({
   pt: z.string().min(1),
   en: z.string().min(1),
+  es: z.string().min(1),
 });
 export type Localized = z.infer<typeof localized>;
 
@@ -40,6 +41,8 @@ export const profileSchema = z.object({
   }),
   email: z.email(),
   links: z.object({
+    /** The portfolio itself. */
+    site: z.url(),
     github: z.url(),
     linkedin: z.url(),
     instagram: z.url(),

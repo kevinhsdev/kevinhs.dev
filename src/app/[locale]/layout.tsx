@@ -40,7 +40,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const t = await getTranslations({ locale, namespace: "nav" });
   return (
     <html
-      lang={locale === "pt" ? "pt-BR" : "en"}
+      lang={{ pt: "pt-BR", en: "en", es: "es" }[locale]}
       className={`${GeistSans.variable} ${GeistMono.variable} ${anton.variable}`}
       suppressHydrationWarning
     >

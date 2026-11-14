@@ -1,0 +1,95 @@
+<Tldr>
+  Una landing page 3D ligada al scroll que pasó **de cero a publicada sin que yo escribiera una
+  línea de código**. Agentes de IA la escribieron entera; yo dirigí, revisé y construí el harness
+  que les dice cómo trabajar en este proyecto.
+</Tldr>
+
+## Contexto y problema
+
+Quería probar una cosa en la práctica: ¿se puede entregar un front end ambicioso, con escena 3D,
+animación guiada por el scroll y versión para móvil, **solo dirigiendo agentes de IA**? Elegí un tema
+que exige mucho al navegador: **Rumo**, una agencia de viajes ficticia en la que todo el sitio es una
+película.
+
+La cámara atraviesa la ventanilla de un avión, baja entre las nubes hasta el destino, las tarjetas
+vuelan hacia un globo de puntos, el globo se despliega en una tarjeta de embarque y la página vuelve a
+la cabina, de noche, con el formulario.
+
+## Mi rol
+
+No toqué el código. Mi trabajo fue el de quien lidera la construcción:
+
+- **Dirección**: qué muestra cada escena, la identidad de la marca, qué entra y qué queda fuera.
+- **Revisión**: comprobar cada entrega en el navegador, en escritorio y en móvil, y pedir ajustes.
+- **Ingeniería del harness**: escribir el entorno en el que trabajan los agentes, para que acierten
+  sin que yo repita las reglas en cada pedido.
+
+## Restricciones
+
+- **Cero líneas escritas a mano**: cada cambio, incluso un solo color, pasó por los agentes.
+- **Sin framework**: Vite puro, para que el 3D y la animación sigan livianos.
+- **60 fps** con una escena Three.js en vivo detrás del texto.
+- **Accesible**: foco visible, táctil en móviles y respeto por la preferencia de movimiento reducido.
+
+## El harness
+
+El corazón del proyecto es una guía (`CLAUDE.md`) que todo agente lee antes de cambiar cualquier
+cosa. Convierte el gusto personal en reglas que se pueden verificar:
+
+| Parte de la guía   | Qué dice                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Identidad**      | La paleta como tokens, un solo acento naranja, las fuentes de títulos y texto, dónde están el logo y el favicon.                  |
+| **Reglas**         | Colores solo por tokens, curvas solo desde un archivo de easing, títulos en 2 líneas como máximo, un solo pin.                    |
+| **Movimiento**     | El scroll mueve la cámara y la imagen; el tiempo mueve el texto. Ninguna escena aparece sin más: cada una da paso a la siguiente. |
+| **Dónde editar**   | Una tabla que va de "quiero cambiar el precio" al archivo exacto.                                                                 |
+| **Cómo verificar** | Los tamaños de pantalla a revisar, escena por escena, más una consola limpia y un build que pasa.                                 |
+
+Con ella, un pedido corto como "haz el acento naranja" se convierte en un cambio coherente en el CSS,
+el shader de la pared y las rutas del globo, sin que yo señale cada archivo.
+
+## Arquitectura
+
+<Diagram
+  label="Cómo se arma el sitio"
+  flow={[
+    { title: "Lenis", detail: "scroll suave" },
+    { title: "Escenario (ScrollTrigger)", detail: "un solo pin para toda la página" },
+    { title: "Escenas", detail: "apertura, vuelo, destinos, mundo, tarjeta, noche, cierre" },
+    { title: "Escena 3D (Three.js)", detail: "cabina, ventanillas, globo y rutas" },
+  ]}
+  asideLabel="Harness"
+  aside={[
+    { title: "CLAUDE.md", detail: "identidad, reglas y dónde editar" },
+    { title: "Script de verificación", detail: "escritorio, móvil, consola y build" },
+    { title: "Tokens y easing", detail: "un solo lugar para color y curva" },
+  ]}
+/>
+
+## Puntos destacados de la implementación
+
+- **Ventanillas de avión modeladas en código**, con cortinas movidas por shader y la vista armada con
+  fotos en capas.
+- **Un globo de puntos con rutas** que se dibuja solo y después se despliega en un mapa plano,
+  impreso en la tarjeta de embarque.
+- **Texto con máscara por línea** que entra a tiempo, sea cual sea la velocidad del scroll.
+- **Movimiento reducido**: sin scroll suave, cortes secos y solo opacidad.
+
+## Resultado e impacto
+
+El sitio está **publicado en GitHub Pages** desde noviembre de 2026: cerca de 4.200 líneas de JavaScript y CSS en 38 archivos, ninguna escrita por mí.
+
+Lo que llevo a la práctica: **con agentes, el cuello de botella deja de ser escribir y pasa a ser
+especificar y revisar**. Cuanto mejor es el harness, menos retrabajo y más coherente el resultado.
+
+## Qué haría distinto y próximos pasos
+
+La estructura y las animaciones partieron de una plantilla de landing page, y las fotos todavía son
+las de la demo. El próximo paso es generar fotos propias para cada destino (las recetas ya están en el
+repositorio) y conectar el formulario a un envío real; hoy solo confirma en pantalla.
+
+La marca, los números, los precios y los contactos del sitio son ficticios.
+
+## Enlaces
+
+- [Código en GitHub](https://github.com/kevinhsdev/rumo)
+- [Sitio en vivo](https://kevinhsdev.github.io/rumo/)

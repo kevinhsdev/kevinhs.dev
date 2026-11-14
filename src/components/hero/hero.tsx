@@ -168,7 +168,7 @@ export async function Hero({ locale }: { locale: Locale }) {
           touring: t("bar.touring"),
           speed: t("bar.speed", { v: "{v}" }),
           redo: t("bar.redo"),
-          locale: locale === "en" ? "en-US" : "pt-BR",
+          locale: { pt: "pt-BR", en: "en-US", es: "es-ES" }[locale],
         }}
       />
     </>

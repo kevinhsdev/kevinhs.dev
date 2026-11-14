@@ -25,8 +25,7 @@
     "toggle": "Alternar tema claro/escuro"
   },
   "locale": {
-    "switch": "Ver em inglês",
-    "short": "EN"
+    "label": "Idioma"
   },
   "cta": {
     "downloadCv": "Baixar CV",
