@@ -19,9 +19,9 @@ export const projects = [
       es: "Sistema de gestión escolar offline, multiusuario y sin dependencias",
     },
     summary: {
-      pt: "A secretaria de uma escola com cerca de 535 alunos, do Maternal ao Ensino Médio, trabalhava com planilhas e documentos avulsos espalhados por vários sistemas. Por iniciativa própria, construí um app web local: um PC funciona como servidor, os outros acessam pelo navegador, e tudo funciona sem internet.",
-      en: "The office of a school with around 535 students, from preschool to high school, ran on loose spreadsheets and documents spread across several systems. On my own initiative, I built a local web app: one PC acts as the server, the others connect through the browser, and everything works offline.",
-      es: "La secretaría de una escuela con cerca de 535 alumnos, de preescolar a bachillerato, trabajaba con hojas de cálculo y documentos sueltos repartidos en varios sistemas. Por iniciativa propia, construí una app web local: una PC funciona como servidor, las demás acceden por el navegador y todo funciona sin internet.",
+      pt: "A secretaria de uma escola com cerca de 545 alunos, do Maternal ao Ensino Médio, trabalhava com planilhas e documentos avulsos espalhados por vários sistemas. Por iniciativa própria, construí um app web local: um PC funciona como servidor, os outros acessam pelo navegador, e tudo funciona sem internet.",
+      en: "The office of a school with around 545 students, from preschool to high school, ran on loose spreadsheets and documents spread across several systems. On my own initiative, I built a local web app: one PC acts as the server, the others connect through the browser, and everything works offline.",
+      es: "La secretaría de una escuela con cerca de 545 alumnos, de preescolar a bachillerato, trabajaba con hojas de cálculo y documentos sueltos repartidos en varios sistemas. Por iniciativa propia, construí una app web local: una PC funciona como servidor, las demás acceden por el navegador y todo funciona sin internet.",
     },
     impact: {
       pt: "De planilhas soltas a um sistema único, em uso por toda a secretaria",
@@ -35,7 +35,7 @@ export const projects = [
     },
     metrics: [
       {
-        value: "~535",
+        value: "~545",
         label: { pt: "alunos no escopo", en: "students in scope", es: "alumnos en el alcance" },
       },
       {

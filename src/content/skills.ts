@@ -33,6 +33,8 @@ export const skills = [
       "IntelliJ",
       "Eclipse",
       "VS Code",
+      "Cursor",
+      "v0",
       "Obsidian",
     ],
   },
@@ -41,6 +43,7 @@ export const skills = [
     items: [
       "AWS",
       "Spring Data JPA",
+      "n8n",
       { pt: "Testes automatizados", en: "Automated testing", es: "Pruebas automatizadas" },
       { pt: "Cibersegurança", en: "Cybersecurity", es: "Ciberseguridad" },
       { pt: "IA aplicada ao Java", en: "AI applied to Java", es: "IA aplicada a Java" },

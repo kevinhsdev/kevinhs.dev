@@ -36,9 +36,9 @@ export const timeline = [
         es: "Creé KIRI, una herramienta web con OCR que clasifica y renombra documentos escolares, llevando a la secretaría de ~100 a ~300 documentos al día (3×) y un grupo (~200 documentos) de 3 días a 1 como máximo.",
       },
       {
-        pt: "Por iniciativa própria, criei o SEK, sistema de gestão escolar offline que substituiu planilhas soltas e hoje é usado por toda a secretaria, com cerca de 535 alunos no escopo.",
-        en: "On my own initiative, built SEK, an offline school management system that replaced scattered spreadsheets and is now used by the whole office, with around 535 students in scope.",
-        es: "Por iniciativa propia, creé SEK, un sistema de gestión escolar offline que reemplazó hojas de cálculo sueltas y hoy usa toda la secretaría, con cerca de 535 alumnos en su alcance.",
+        pt: "Por iniciativa própria, criei o SEK, sistema de gestão escolar offline que substituiu planilhas soltas e hoje é usado por toda a secretaria, com cerca de 545 alunos no escopo.",
+        en: "On my own initiative, built SEK, an offline school management system that replaced scattered spreadsheets and is now used by the whole office, with around 545 students in scope.",
+        es: "Por iniciativa propia, creé SEK, un sistema de gestión escolar offline que reemplazó hojas de cálculo sueltas y hoy usa toda la secretaría, con cerca de 545 alumnos en su alcance.",
       },
       {
         pt: "Padronizei os registros de 545 alunos, reduzindo erros de arquivamento.",
