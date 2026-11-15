@@ -61,7 +61,7 @@ export const timeline = [
       es: "Grado en Ingeniería de Software",
     },
     org: "Universidade de Mogi das Cruzes (UMC)",
-    start: "2024-01",
+    start: "2025-01",
     end: "2028-12",
     endIsExpected: true,
     image: {
@@ -119,9 +119,9 @@ export const timeline = [
     id: "aws-cert",
     kind: "study",
     title: {
-      pt: "Certificação AWS Cloud Practitioner (prevista para dez. 2026)",
-      en: "AWS Certified Cloud Practitioner (expected Dec 2026)",
-      es: "Certificación AWS Cloud Practitioner (prevista para dic. 2026)",
+      pt: "Certificação AWS Cloud Practitioner (prevista para jan. 2027)",
+      en: "AWS Certified Cloud Practitioner (expected Jan 2027)",
+      es: "Certificación AWS Cloud Practitioner (prevista para ene. 2027)",
     },
     org: "AWS",
     // Wikimedia Commons (AWS 2025 logo); the dark-theme file has the lettering reversed to white,
